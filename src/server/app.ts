@@ -1,4 +1,7 @@
 import express from "express";
+import { AiService } from "./ai/service.js";
+import { QwenModel, type JsonModel } from "./providers/qwen.js";
+import { assistRouter } from "./routes/assist.js";
 import { readFile } from "node:fs/promises";
 import { randomUUID } from "node:crypto";
 import { getConfig, type AppConfig } from "./config.js";
@@ -19,6 +22,7 @@ export interface RequestLog {
 }
 export interface ApplicationOptions extends Partial<AppConfig> {
   provider?: AmapProvider;
+  model?: JsonModel;
   logger?: (entry: RequestLog) => void;
   now?: () => Date;
   registerRoutes?: (app: express.Express, services: CoreServices) => void;
@@ -34,7 +38,17 @@ export async function createApplication(options: ApplicationOptions = {}) {
     options.provider ??
     new AmapHttpProvider({ key: config.amapKey, baseUrl: config.amapBaseUrl });
   const query = new QueryService(catalog, provider, options.now);
-  const services = { catalog, provider, query };
+  const ai = new AiService(
+    options.model ??
+      new QwenModel({
+        key: config.qwenKey,
+        baseUrl: config.qwenBaseUrl,
+        model: config.qwenModel,
+        timeoutMs: config.aiTimeoutMs,
+      }),
+    config.aiTimeoutMs,
+  );
+  const services = { catalog, provider, query, ai };
   const app = express();
   app.disable("x-powered-by");
   app.use((req, res, next) => {
@@ -65,6 +79,7 @@ export async function createApplication(options: ApplicationOptions = {}) {
     }),
   );
   app.use("/api/v1", coreRouter(services));
+  app.use("/api/v1", assistRouter(ai));
   options.registerRoutes?.(app, services);
   app.use("/api", (_req, _res, next) =>
     next(new AppError("NOT_FOUND", "This endpoint was not found.", 404)),
@@ -96,24 +111,22 @@ export async function createApplication(options: ApplicationOptions = {}) {
         : jsonError
           ? "INVALID_JSON"
           : "INTERNAL_ERROR";
-      res
-        .status(known ? error.status : jsonError ? 400 : 500)
-        .json({
-          requestId: res.locals.requestId,
-          error: {
-            code: known
-              ? error.code
-              : jsonError
-                ? "INVALID_JSON"
-                : "INTERNAL_ERROR",
-            message: known
-              ? error.message
-              : jsonError
-                ? "The request body is not valid JSON."
-                : "The request could not be completed.",
-            retryable: known ? error.retryable : !jsonError,
-          },
-        });
+      res.status(known ? error.status : jsonError ? 400 : 500).json({
+        requestId: res.locals.requestId,
+        error: {
+          code: known
+            ? error.code
+            : jsonError
+              ? "INVALID_JSON"
+              : "INTERNAL_ERROR",
+          message: known
+            ? error.message
+            : jsonError
+              ? "The request body is not valid JSON."
+              : "The request could not be completed.",
+          retryable: known ? error.retryable : !jsonError,
+        },
+      });
     },
   );
   return { app, services, config };

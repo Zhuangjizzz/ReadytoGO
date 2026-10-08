@@ -67,7 +67,8 @@ export interface Toilet {
   sourcePosition: SourcePosition | null;
   positionSource: string | null;
   poiId: string | null;
-  matchMethod: "poi_id" | "name_address" | "name_distance" | null;
+  matchMethod:
+    "poi_id" | "name_address" | "name_distance" | "ai_assisted" | null;
   facilities: Facilities;
   seatStatus: SeatStatus;
   seatBasis: string[];
@@ -175,4 +176,24 @@ export interface CatalogFile {
   schemaVersion: 1;
   report: ImportReport;
   toilets: Toilet[];
+}
+
+export interface AssistParseRequest {
+  text: string;
+  mode: "itinerary";
+  language: Language;
+  preference: Preference;
+}
+export interface ItineraryParseResult {
+  status: "complete" | "fallback";
+  originalText: string;
+  proposedPreference: Preference | null;
+  placeQueries: {
+    order: number;
+    originalText: string;
+    queryZh: string;
+    note: string | null;
+  }[];
+  unsupportedNeeds: string[];
+  warnings: string[];
 }

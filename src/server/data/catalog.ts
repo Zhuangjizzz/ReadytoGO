@@ -28,7 +28,11 @@ function normalize(s: string): string {
     .replace(/公共卫生间|公共厕所|公厕|卫生间|厕所/g, "");
 }
 
-const MATCH_RULE_VERSION = 2;
+const MATCH_RULE_VERSION = 3;
+export type RecordMatchAssistant = (
+  poi: ProviderPoi,
+  records: Toilet[],
+) => Promise<string | null>;
 interface AddressParts {
   road: string;
   number: string;
@@ -92,6 +96,10 @@ export class Catalog {
   readonly toilets = new Map<string, Toilet>();
   private poiIds = new Map<string, string>();
   private persistQueue = Promise.resolve();
+  private matchAssistant?: RecordMatchAssistant;
+  setMatchAssistant(assistant: RecordMatchAssistant) {
+    this.matchAssistant = assistant;
+  }
   constructor(
     readonly file: CatalogFile,
     private cachePath: string | null,
@@ -182,6 +190,74 @@ export class Catalog {
           distanceMeters(origin, a.sourcePosition!) -
           distanceMeters(origin, b.sourcePosition!),
       );
+  }
+  async integrateWithAssistance(poi: ProviderPoi): Promise<Toilet> {
+    const current = this.integrate(poi);
+    if (!this.matchAssistant || !current.id.startsWith("amap_")) return current;
+    const overlap = (left: string, right: string) => {
+      const a = new Set(Array.from(normalize(left)));
+      const b = new Set(Array.from(normalize(right)));
+      if (a.size < 2 || b.size < 2) return 0;
+      return (
+        [...a].filter((letter) => b.has(letter)).length /
+        Math.max(a.size, b.size)
+      );
+    };
+    const pool = [...this.toilets.values()]
+      .filter((t) => {
+        if (
+          t.poiId ||
+          t.id.startsWith("amap_") ||
+          !t.district ||
+          t.district !== poi.district
+        )
+          return false;
+        const p = t.position ?? t.sourcePosition;
+        if (!p || distanceMeters(p, poi.position) > 800) return false;
+        const local =
+          addressParts(t.addressZh, t.district) ??
+          addressParts(t.nameZh, t.district);
+        const remote = addressParts(poi.address, poi.district);
+        const localRoad =
+          local?.road ?? roadWithoutHouseNumber(t.addressZh, t.district);
+        const remoteRoad =
+          remote?.road ?? roadWithoutHouseNumber(poi.address, poi.district);
+        if (localRoad && remoteRoad && localRoad !== remoteRoad) return false;
+        if (local && remote && local.number !== remote.number) return false;
+        return (
+          overlap(t.nameZh, poi.name) >= 0.4 ||
+          overlap(t.addressZh, poi.address) >= 0.5
+        );
+      })
+      .sort(
+        (a, b) =>
+          distanceMeters(a.position ?? a.sourcePosition!, poi.position) -
+          distanceMeters(b.position ?? b.sourcePosition!, poi.position),
+      )
+      .slice(0, 4);
+    if (!pool.length) return current;
+    try {
+      const id = await this.matchAssistant(poi, pool);
+      const selected = pool.find((t) => t.id === id);
+      // An in-flight match may have attached a record elsewhere. Never steal it.
+      if (!selected || selected.poiId) return current;
+      selected.position = poi.position;
+      selected.positionSource = "amap";
+      selected.poiId = poi.id;
+      selected.matchMethod = "ai_assisted";
+      selected.openingHoursRaw = poi.openingHours;
+      selected.sources = [
+        ...selected.sources,
+        ...current.sources.filter((source) => source.provider === "amap"),
+      ];
+      if (!selected.addressZh) selected.addressZh = poi.address;
+      this.toilets.delete(current.id);
+      this.toilets.set(selected.id, selected);
+      this.poiIds.set(poi.id, selected.id);
+      return selected;
+    } catch {
+      return current;
+    }
   }
   integrate(poi: ProviderPoi): Toilet {
     const knownId = this.poiIds.get(poi.id);

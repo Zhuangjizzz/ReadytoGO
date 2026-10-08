@@ -1,6 +1,6 @@
 # 05: 通用行程理解与候选分析
 
-Status: ready-for-agent
+Status: claimed
 Type: task
 Stage: 4
 Blocked by: 01

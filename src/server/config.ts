@@ -16,6 +16,10 @@ export interface AppConfig {
   matchCachePath: string | null;
   amapKey: string;
   amapBaseUrl: string;
+  qwenKey: string;
+  qwenBaseUrl: string;
+  qwenModel: string;
+  aiTimeoutMs: number;
   port: number;
   clientPath: string;
 }
@@ -32,6 +36,12 @@ export function getConfig(): AppConfig {
           ),
     amapKey: process.env.AMAP_KEY || process.env.AMAP_WEBSERVICE_KEY || "",
     amapBaseUrl: "https://restapi.amap.com",
+    qwenKey: process.env.DASHSCOPE_API_KEY || "",
+    qwenBaseUrl:
+      process.env.QWEN_BASE_URL ||
+      "https://dashscope.aliyuncs.com/compatible-mode/v1",
+    qwenModel: process.env.QWEN_MODEL || "",
+    aiTimeoutMs: 12000,
     port: Number(process.env.PORT || 3001),
     clientPath: resolve("dist/client"),
   };
