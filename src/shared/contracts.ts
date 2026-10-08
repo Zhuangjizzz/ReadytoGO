@@ -75,7 +75,7 @@ export interface Toilet {
   openingHoursRaw: string | null;
   accessCondition: AccessCondition;
   accessNote: string | null;
-  availability: "active" | "permanently_closed" | "unknown";
+  availability: "active" | "permanently_closed" | "out_of_service" | "unknown";
   sources: Source[];
 }
 export interface Route {
