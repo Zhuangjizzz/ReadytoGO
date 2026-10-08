@@ -1,0 +1,662 @@
+{
+  "provenance": {
+    "kind": "Offline display replay of recorded real Qwen/Amap responses; not a new provider call or a production example",
+    "parseRecordedAt": "2026-10-08T19:19:25.386Z",
+    "previewRecordedAt": "2026-10-08T19:45:44.811Z",
+    "excerpt": "Only initial displayed candidates retained; pagination tokens and raw source columns omitted. Candidate identities, facility values, routes and reasons are unchanged."
+  },
+  "input": "Start at the National Museum, then Shichahai, and finish at Beijing Zoo. I would prefer a seated toilet.",
+  "parse": {
+    "status": "complete",
+    "originalText": "Start at the National Museum, then Shichahai, and finish at Beijing Zoo. I would prefer a seated toilet.",
+    "proposedPreference": "seated_required",
+    "placeQueries": [
+      {
+        "order": 1,
+        "originalText": "National Museum",
+        "queryZh": "中国国家博物馆",
+        "note": null
+      },
+      {
+        "order": 2,
+        "originalText": "Shichahai",
+        "queryZh": "什刹海",
+        "note": null
+      },
+      {
+        "order": 3,
+        "originalText": "Beijing Zoo",
+        "queryZh": "北京动物园",
+        "note": null
+      }
+    ],
+    "unsupportedNeeds": [],
+    "warnings": []
+  },
+  "stations": [
+    {
+      "place": {
+        "provider": "amap",
+        "poiId": "B000A83U0P",
+        "nameZh": "中国国家博物馆",
+        "nameEn": null,
+        "addressZh": "东长安街16号天安门广场东侧",
+        "district": "东城区",
+        "city": "北京市",
+        "position": {
+          "lng": 116.401304,
+          "lat": 39.905374,
+          "crs": "GCJ02"
+        },
+        "originType": "poi"
+      },
+      "analysisStatus": "complete",
+      "cards": [
+        {
+          "group": "matched",
+          "candidate": {
+            "toiletId": "bj_2c9b9264dadd3a272a76",
+            "nameZh": "菖蒲河公园公厕",
+            "nameEn": "Chang Pu He Gong Yuan · Public restroom",
+            "addressZh": "菖蒲河公园公厕",
+            "district": "东城区",
+            "position": {
+              "lng": 116.400497,
+              "lat": 39.908314,
+              "crs": "GCJ02"
+            },
+            "seatStatus": "inferred",
+            "seatBasis": [
+              "AI basis: accessible toilet room",
+              "AI basis: fully accessible toilet",
+              "AI basis: accessible stalls"
+            ],
+            "seatConflict": false,
+            "facilities": {
+              "maleStalls": 5,
+              "femaleStalls": 5,
+              "unisexStalls": 1,
+              "thirdRestroom": 0,
+              "accessibility": true,
+              "accessibleRoom": true,
+              "allAccessible": true,
+              "accessibleStalls": 2,
+              "managementRoom": true,
+              "washroom": true,
+              "adultSeated": null,
+              "childSeatedOnly": null,
+              "notes": null
+            },
+            "openingStatus": "expected_open",
+            "openingHoursRaw": "周一至周日 00:00-24:00",
+            "accessCondition": "unknown",
+            "accessNote": null,
+            "routeStatus": "success",
+            "walkSeconds": 480,
+            "walkMeters": 600,
+            "straightLineMeters": 334,
+            "reason": "Accessible room and stalls suggest seated facilities may be available. Walking about 8 min.",
+            "sources": [
+              {
+                "provider": "beijing_csv",
+                "name": "北京市公厕台账",
+                "fileName": "BJ-ToiletInfo.csv",
+                "rowNumber": 713,
+                "governmentId": "101102101093",
+                "rawFields": {}
+              },
+              {
+                "provider": "amap",
+                "name": "高德地图",
+                "poiId": "B000A82OXU",
+                "rawFields": {}
+              }
+            ],
+            "ordinaryAlternative": false
+          }
+        },
+        {
+          "group": "farther",
+          "candidate": {
+            "toiletId": "bj_f17838d8cbb4d8508bf2",
+            "nameZh": "人大西侧路",
+            "nameEn": "Ren Da Xi Ce Lu · Public restroom",
+            "addressZh": "人民大会堂南侧",
+            "district": "西城区",
+            "position": {
+              "lng": 116.395501,
+              "lat": 39.902687,
+              "crs": "GCJ02"
+            },
+            "seatStatus": "inferred",
+            "seatBasis": [
+              "AI basis: fully accessible toilet",
+              "AI basis: accessible stalls"
+            ],
+            "seatConflict": false,
+            "facilities": {
+              "maleStalls": 13,
+              "femaleStalls": 43,
+              "unisexStalls": 2,
+              "thirdRestroom": 0,
+              "accessibility": true,
+              "accessibleRoom": false,
+              "allAccessible": true,
+              "accessibleStalls": 2,
+              "managementRoom": true,
+              "washroom": true,
+              "adultSeated": null,
+              "childSeatedOnly": null,
+              "notes": null
+            },
+            "openingStatus": "unknown",
+            "openingHoursRaw": null,
+            "accessCondition": "unknown",
+            "accessNote": null,
+            "routeStatus": "success",
+            "walkSeconds": 623,
+            "walkMeters": 779,
+            "straightLineMeters": 578,
+            "reason": "Accessibility features imply the presence of seated toilet facilities. Walking about 11 min.",
+            "sources": [
+              {
+                "provider": "beijing_csv",
+                "name": "北京市公厕台账",
+                "fileName": "BJ-ToiletInfo.csv",
+                "rowNumber": 1936,
+                "governmentId": "1021020012107",
+                "rawFields": {}
+              },
+              {
+                "provider": "amap",
+                "name": "高德地图",
+                "poiId": "B0H011QXCY",
+                "rawFields": {}
+              }
+            ],
+            "ordinaryAlternative": false
+          }
+        },
+        {
+          "group": "farther",
+          "candidate": {
+            "toiletId": "bj_d48f74745530f07da467",
+            "nameZh": "北湾子20号",
+            "nameEn": "Bei Wan Zi 20 Hao · Public restroom",
+            "addressZh": "北湾子20号",
+            "district": "东城区",
+            "position": {
+              "lng": 116.404326,
+              "lat": 39.910244,
+              "crs": "GCJ02"
+            },
+            "seatStatus": "inferred",
+            "seatBasis": [
+              "AI basis: accessibility facilities",
+              "AI basis: accessible stalls"
+            ],
+            "seatConflict": false,
+            "facilities": {
+              "maleStalls": 4,
+              "femaleStalls": 5,
+              "unisexStalls": 0,
+              "thirdRestroom": 0,
+              "accessibility": true,
+              "accessibleRoom": false,
+              "allAccessible": false,
+              "accessibleStalls": 2,
+              "managementRoom": false,
+              "washroom": false,
+              "adultSeated": null,
+              "childSeatedOnly": null,
+              "notes": null
+            },
+            "openingStatus": "unknown",
+            "openingHoursRaw": null,
+            "accessCondition": "unknown",
+            "accessNote": null,
+            "routeStatus": "success",
+            "walkSeconds": 922,
+            "walkMeters": 1153,
+            "straightLineMeters": 600,
+            "reason": "Accessible stalls suggest that seated toilets might be available. Walking about 16 min.",
+            "sources": [
+              {
+                "provider": "beijing_csv",
+                "name": "北京市公厕台账",
+                "fileName": "BJ-ToiletInfo.csv",
+                "rowNumber": 968,
+                "governmentId": "101102301055",
+                "rawFields": {}
+              },
+              {
+                "provider": "amap",
+                "name": "高德地图",
+                "poiId": "B0FFH20UN7",
+                "rawFields": {}
+              }
+            ],
+            "ordinaryAlternative": false
+          }
+        }
+      ],
+      "primaryId": "bj_2c9b9264dadd3a272a76"
+    },
+    {
+      "place": {
+        "provider": "amap",
+        "poiId": "B000A7O5PK",
+        "nameZh": "什刹海",
+        "nameEn": null,
+        "addressZh": "地安门西大街49号",
+        "district": "西城区",
+        "city": "北京市",
+        "position": {
+          "lng": 116.385121,
+          "lat": 39.941893,
+          "crs": "GCJ02"
+        },
+        "originType": "poi"
+      },
+      "analysisStatus": "fallback",
+      "cards": [
+        {
+          "group": "matched",
+          "candidate": {
+            "toiletId": "bj_fdd100d2652d106def56",
+            "nameZh": "后海南沿1号旁",
+            "nameEn": "Hou Hai Nan Yan 1 Hao Pang · Public restroom",
+            "addressZh": "后海南沿1号旁",
+            "district": "西城区",
+            "position": {
+              "lng": 116.386476,
+              "lat": 39.940248,
+              "crs": "GCJ02"
+            },
+            "seatStatus": "inferred",
+            "seatBasis": [
+              "资料记载无障碍厕位"
+            ],
+            "seatConflict": false,
+            "facilities": {
+              "maleStalls": 3,
+              "femaleStalls": 3,
+              "unisexStalls": 0,
+              "thirdRestroom": 0,
+              "accessibility": true,
+              "accessibleRoom": false,
+              "allAccessible": false,
+              "accessibleStalls": 2,
+              "managementRoom": false,
+              "washroom": false,
+              "adultSeated": null,
+              "childSeatedOnly": null,
+              "notes": null
+            },
+            "openingStatus": "unknown",
+            "openingHoursRaw": null,
+            "accessCondition": "unknown",
+            "accessNote": null,
+            "routeStatus": "success",
+            "walkSeconds": 249,
+            "walkMeters": 311,
+            "straightLineMeters": 216,
+            "reason": "Facility records suggest an adult seated toilet may be available.",
+            "sources": [
+              {
+                "provider": "beijing_csv",
+                "name": "北京市公厕台账",
+                "fileName": "BJ-ToiletInfo.csv",
+                "rowNumber": 2752,
+                "governmentId": "10210201213105",
+                "rawFields": {}
+              },
+              {
+                "provider": "amap",
+                "name": "高德地图",
+                "poiId": "B0FFHLT137",
+                "rawFields": {}
+              }
+            ],
+            "ordinaryAlternative": false
+          }
+        },
+        {
+          "group": "matched",
+          "candidate": {
+            "toiletId": "bj_8a3dcc160fd2c3b4fd19",
+            "nameZh": "羊房胡同23号旁",
+            "nameEn": "Yang Fang Hu Tong 23 Hao Pang · Public restroom",
+            "addressZh": "德内大街羊房胡同23号旁",
+            "district": "西城区",
+            "position": {
+              "lng": 116.382092,
+              "lat": 39.941655,
+              "crs": "GCJ02"
+            },
+            "seatStatus": "inferred",
+            "seatBasis": [
+              "资料记载第三卫生间",
+              "资料记载无障碍厕所间",
+              "资料记载无障碍厕位"
+            ],
+            "seatConflict": false,
+            "facilities": {
+              "maleStalls": 5,
+              "femaleStalls": 6,
+              "unisexStalls": 0,
+              "thirdRestroom": 1,
+              "accessibility": true,
+              "accessibleRoom": true,
+              "allAccessible": false,
+              "accessibleStalls": 3,
+              "managementRoom": true,
+              "washroom": true,
+              "adultSeated": null,
+              "childSeatedOnly": null,
+              "notes": null
+            },
+            "openingStatus": "unknown",
+            "openingHoursRaw": null,
+            "accessCondition": "unknown",
+            "accessNote": null,
+            "routeStatus": "success",
+            "walkSeconds": 504,
+            "walkMeters": 630,
+            "straightLineMeters": 260,
+            "reason": "Facility records suggest an adult seated toilet may be available.",
+            "sources": [
+              {
+                "provider": "beijing_csv",
+                "name": "北京市公厕台账",
+                "fileName": "BJ-ToiletInfo.csv",
+                "rowNumber": 2684,
+                "governmentId": "1021020121111",
+                "rawFields": {}
+              },
+              {
+                "provider": "amap",
+                "name": "高德地图",
+                "poiId": "B000A83LGP",
+                "rawFields": {}
+              }
+            ],
+            "ordinaryAlternative": false
+          }
+        },
+        {
+          "group": "matched",
+          "candidate": {
+            "toiletId": "bj_3d4ea021a6d8885bd45a",
+            "nameZh": "小新开胡同3号旁",
+            "nameEn": "Xiao Xin Kai Hu Tong 3 Hao Pang · Public restroom",
+            "addressZh": "柳荫街小新开胡同3号旁",
+            "district": "西城区",
+            "position": {
+              "lng": 116.383976,
+              "lat": 39.938843,
+              "crs": "GCJ02"
+            },
+            "seatStatus": "inferred",
+            "seatBasis": [
+              "资料记载第三卫生间",
+              "资料记载无障碍厕所间",
+              "资料记载无障碍厕位"
+            ],
+            "seatConflict": false,
+            "facilities": {
+              "maleStalls": 6,
+              "femaleStalls": 9,
+              "unisexStalls": 0,
+              "thirdRestroom": 1,
+              "accessibility": true,
+              "accessibleRoom": true,
+              "allAccessible": true,
+              "accessibleStalls": 3,
+              "managementRoom": true,
+              "washroom": true,
+              "adultSeated": null,
+              "childSeatedOnly": null,
+              "notes": null
+            },
+            "openingStatus": "unknown",
+            "openingHoursRaw": null,
+            "accessCondition": "unknown",
+            "accessNote": null,
+            "routeStatus": "success",
+            "walkSeconds": 512,
+            "walkMeters": 640,
+            "straightLineMeters": 353,
+            "reason": "Facility records suggest an adult seated toilet may be available.",
+            "sources": [
+              {
+                "provider": "beijing_csv",
+                "name": "北京市公厕台账",
+                "fileName": "BJ-ToiletInfo.csv",
+                "rowNumber": 2685,
+                "governmentId": "1021020121112",
+                "rawFields": {}
+              },
+              {
+                "provider": "amap",
+                "name": "高德地图",
+                "poiId": "B0FFHLSDOQ",
+                "rawFields": {}
+              }
+            ],
+            "ordinaryAlternative": false
+          }
+        }
+      ],
+      "primaryId": "bj_fdd100d2652d106def56"
+    },
+    {
+      "place": {
+        "provider": "amap",
+        "poiId": "B000A87IUX",
+        "nameZh": "北京动物园",
+        "nameEn": null,
+        "addressZh": "西直门外大街137号",
+        "district": "西城区",
+        "city": "北京市",
+        "position": {
+          "lng": 116.336701,
+          "lat": 39.942105,
+          "crs": "GCJ02"
+        },
+        "originType": "poi"
+      },
+      "analysisStatus": "complete",
+      "cards": [
+        {
+          "group": "matched",
+          "candidate": {
+            "toiletId": "bj_a2e8f1e6dd58453c9bc1",
+            "nameZh": "海洋馆北门（内）",
+            "nameEn": "Hai Yang Guan Bei Men （ Nei ） · Public restroom",
+            "addressZh": "高粱桥斜街乙18号海洋馆内停车场50米处",
+            "district": "海淀区",
+            "position": {
+              "lng": 116.341061,
+              "lat": 39.944646,
+              "crs": "GCJ02"
+            },
+            "seatStatus": "inferred",
+            "seatBasis": [
+              "AI basis: accessible toilet room",
+              "AI basis: accessible stalls"
+            ],
+            "seatConflict": false,
+            "facilities": {
+              "maleStalls": 3,
+              "femaleStalls": 5,
+              "unisexStalls": 0,
+              "thirdRestroom": 0,
+              "accessibility": true,
+              "accessibleRoom": true,
+              "allAccessible": false,
+              "accessibleStalls": 2,
+              "managementRoom": false,
+              "washroom": false,
+              "adultSeated": null,
+              "childSeatedOnly": null,
+              "notes": null
+            },
+            "openingStatus": "unknown",
+            "openingHoursRaw": null,
+            "accessCondition": "unknown",
+            "accessNote": null,
+            "routeStatus": "success",
+            "walkSeconds": 419,
+            "walkMeters": 524,
+            "straightLineMeters": 467,
+            "reason": "Accessible room and stalls suggest seated toilet availability. Walking about 7 min.",
+            "sources": [
+              {
+                "provider": "beijing_csv",
+                "name": "北京市公厕台账",
+                "fileName": "BJ-ToiletInfo.csv",
+                "rowNumber": 7017,
+                "governmentId": "10810204dt164",
+                "rawFields": {}
+              },
+              {
+                "provider": "amap",
+                "name": "高德地图",
+                "poiId": "B0G0LOKFLW",
+                "rawFields": {}
+              }
+            ],
+            "ordinaryAlternative": false
+          }
+        },
+        {
+          "group": "farther",
+          "candidate": {
+            "toiletId": "bj_2264e9cfb04d5938c4bc",
+            "nameZh": "五塔寺楼厕西",
+            "nameEn": "Wu Ta Si Lou Ce Xi · Public restroom",
+            "addressZh": "五塔寺路西100米",
+            "district": "海淀区",
+            "position": {
+              "lng": 116.331893,
+              "lat": 39.944598,
+              "crs": "GCJ02"
+            },
+            "seatStatus": "inferred",
+            "seatBasis": [
+              "AI basis: accessible toilet room",
+              "AI basis: accessible stalls"
+            ],
+            "seatConflict": false,
+            "facilities": {
+              "maleStalls": 2,
+              "femaleStalls": 4,
+              "unisexStalls": 0,
+              "thirdRestroom": 0,
+              "accessibility": true,
+              "accessibleRoom": true,
+              "allAccessible": false,
+              "accessibleStalls": 2,
+              "managementRoom": true,
+              "washroom": false,
+              "adultSeated": null,
+              "childSeatedOnly": null,
+              "notes": null
+            },
+            "openingStatus": "unknown",
+            "openingHoursRaw": null,
+            "accessCondition": "unknown",
+            "accessNote": null,
+            "routeStatus": "success",
+            "walkSeconds": 695,
+            "walkMeters": 869,
+            "straightLineMeters": 495,
+            "reason": "Accessible room and stalls suggest seated toilet availability. Walking about 12 min.",
+            "sources": [
+              {
+                "provider": "beijing_csv",
+                "name": "北京市公厕台账",
+                "fileName": "BJ-ToiletInfo.csv",
+                "rowNumber": 6913,
+                "governmentId": "108102042t172",
+                "rawFields": {}
+              },
+              {
+                "provider": "amap",
+                "name": "高德地图",
+                "poiId": "B0H2CUT254",
+                "rawFields": {}
+              }
+            ],
+            "ordinaryAlternative": false
+          }
+        },
+        {
+          "group": "farther",
+          "candidate": {
+            "toiletId": "bj_863ebe1a8b62f9f59c0a",
+            "nameZh": "北营房中街7号对面",
+            "nameEn": "Bei Ying Fang Zhong Jie 7 Hao Dui Mian · Public restroom",
+            "addressZh": "北营房中街",
+            "district": "西城区",
+            "position": {
+              "lng": 116.3496,
+              "lat": 39.926883,
+              "crs": "GCJ02"
+            },
+            "seatStatus": "inferred",
+            "seatBasis": [
+              "AI basis: third restroom",
+              "AI basis: accessible toilet room",
+              "AI basis: accessible stalls"
+            ],
+            "seatConflict": false,
+            "facilities": {
+              "maleStalls": 5,
+              "femaleStalls": 8,
+              "unisexStalls": 1,
+              "thirdRestroom": 1,
+              "accessibility": true,
+              "accessibleRoom": true,
+              "allAccessible": true,
+              "accessibleStalls": 5,
+              "managementRoom": true,
+              "washroom": true,
+              "adultSeated": null,
+              "childSeatedOnly": null,
+              "notes": null
+            },
+            "openingStatus": "expected_open",
+            "openingHoursRaw": "周一至周日 00:00-24:00",
+            "accessCondition": "unknown",
+            "accessNote": null,
+            "routeStatus": "success",
+            "walkSeconds": 2177,
+            "walkMeters": 2721,
+            "straightLineMeters": 2019,
+            "reason": "Third restroom and accessible facilities suggest seated toilet. Walking about 37 min.",
+            "sources": [
+              {
+                "provider": "beijing_csv",
+                "name": "北京市公厕台账",
+                "fileName": "BJ-ToiletInfo.csv",
+                "rowNumber": 2868,
+                "governmentId": "1021020095101",
+                "rawFields": {}
+              },
+              {
+                "provider": "amap",
+                "name": "高德地图",
+                "poiId": "B0FFHLSN90",
+                "rawFields": {}
+              }
+            ],
+            "ordinaryAlternative": false
+          }
+        }
+      ],
+      "primaryId": "bj_a2e8f1e6dd58453c9bc1"
+    }
+  ]
+}

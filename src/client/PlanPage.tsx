@@ -7,6 +7,8 @@ import { PlanResults, type PlanActions } from "./PlanResults";
 import { usePlanResults } from "./usePlanResults";
 import { newClientId } from "./clientId";
 import { PlanConfirm } from "./PlanConfirm";
+import { AiPlanInput } from "./AiPlanInput";
+import { samePlace } from "../shared/plan";
 
 export function PlanPage({
   controller,
@@ -40,14 +42,7 @@ export function PlanPage({
     if (place.originType === "geolocation") return;
     if (
       !confirmed &&
-      plan.stops.some(
-        (s) =>
-          s.stopId !== editing &&
-          (place.poiId
-            ? s.place.poiId === place.poiId
-            : s.place.position.lng === place.position.lng &&
-              s.place.position.lat === place.position.lat),
-      )
+      plan.stops.some((s) => s.stopId !== editing && samePlace(s.place, place))
     ) {
       setDuplicate(place);
       return;
@@ -84,6 +79,11 @@ export function PlanPage({
           : "Add 1–10 Beijing attractions or entrances for a comfort stop nearby."}
       </p>
       <PlanSettings settings={plan} onChange={controller.changeSettings} />
+      <AiPlanInput
+        controller={controller}
+        active={active && mode === "edit"}
+        onConfirmed={onResult}
+      />
       {mode === "results" ? (
         <PlanResults
           controller={controller}
