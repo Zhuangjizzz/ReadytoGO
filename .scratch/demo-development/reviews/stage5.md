@@ -27,15 +27,15 @@
 
 ## 整改与复核
 
-状态：整改与独立复核完成，等待最终修复版本二次发布。上述四项 P2 与一项 P3 统一由同一个实施代理在 `codex/demo-final-fixes` 独立工作树修复；通过已授权的公开 HTTP / 正式导入 / 离线 DOM 复现并验证。实际手机与最终实际应用浏览器的验收缺口保持未完成，不用代码改动或自动化结果替代。
+状态：整改、独立复核和最终修复版本二次发布均已完成。上述四项 P2 与一项 P3 统一由同一个实施代理在 `codex/demo-final-fixes` 独立工作树修复；通过已授权的公开 HTTP / 正式导入 / 离线 DOM 复现并验证。实际手机与最终实际应用浏览器的验收缺口保持未完成，不用代码改动或自动化结果替代。
 
-原始审查和可复现实验暂存于 `/private/tmp/readytogo-demo-notes/final-standards-review.md`、`final-spec-review.md`、`final-spec-ui-evidence.md`、`spec-ui-probe.mjs`、`final-spec-data-probe.md`、`final-spec-data-probe.mjs` 与 `final-spec-data-probe.json`；修复后将保留对应的仓库回归入口。
+原始审查和可复现实验暂存于 `/private/tmp/readytogo-demo-notes/final-standards-review.md`、`final-spec-review.md`、`final-spec-ui-evidence.md`、`spec-ui-probe.mjs`、`final-spec-data-probe.md`、`final-spec-data-probe.mjs` 与 `final-spec-data-probe.json`；对应修复的回归入口已保存在下列仓库测试中。
 
 汇总：Standards 1 项判断性发现（最高 P3）、硬性违规 0；Spec 4 项工程发现（最高 P2），另有 1 项已知实际手机验收缺口。
 
 ### 实施修复与交付前验证
 
-同一实施分支 `codex/demo-final-fixes` 以 `76b29da` 完成全部五项整改，基于集成 `e3ed7f5`；独立复核后已合入 `2fafc9c`，等待二次发布。
+同一实施分支 `codex/demo-final-fixes` 以 `76b29da` 完成全部五项整改，基于集成 `e3ed7f5`；独立复核后已合入 `2fafc9c`，并完成二次发布。
 
 - 来源状态：正式导入与运行时共同识别未开放、尚未启用及明确重新开放，保留历史/否定和周期营业边界。`tests/query-rules.test.ts` 新增公开HTTP回归先失败后通过，`tests/import.test.ts` 补正式CLI导入至公开详情验证。原CSV审查对象复验不再进入推荐，详情为 `out_of_service`，原备注保留。
 - 供应商分页：依据过滤前的原始页规模判断剩余页；全页被过滤不代表原始结果耗尽。`tests/provider.test.ts` 两项HTTP回归先失败后通过，分别覆盖24个北京+1个外地后的第二页，以及连续全过滤页后的有效结果与8页上限。原审查探针现在请求第1、2页并返回25个有效候选。
@@ -57,6 +57,6 @@
 | Standards | 1 项 P3 判断项，0 项硬性违规 | 共享合并已完成；新增发现 0 | [Standards 复核](final-standards-recheck.md) |
 | Spec | 4 项 P2 工程问题 | 原始复现转绿，4 项均关闭；无新实际回归 | [Spec 复核](final-spec-recheck.md) |
 
-两个轴的结论分别保留。Spec 的实际手机主线验收缺口仍未关闭；发布结果将由 [发布记录](../../../docs/delivery/deployment-record.md)继续补录。
+两个轴的结论分别保留。Spec 的实际手机主线验收缺口仍未关闭；最终修复版本已发布，并完成旧业务版本回切及新版恢复，见[最终发布记录](../../../docs/delivery/final-review-release.md)。
 
 汇总：Standards 原 1 项 P3 已关闭，未决 0；Spec 原 4 项 P2 已关闭，工程未决 0，实际手机验收仍未完成。

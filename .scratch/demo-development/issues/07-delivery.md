@@ -1,6 +1,6 @@
 # 07: 真实服务联调、运行说明与发布
 
-Status: claimed
+Status: resolved
 Type: task
 Stage: 5
 Blocked by: 02, 03, 04, 05, 06
@@ -36,8 +36,12 @@ Parent: [开发规格](../spec.md)
 
 ## Answer
 
-已完成全部可执行工程交付。运行版本 `c82770b6be6d70e3da20a81cdd0d1f196841c008` 在独立release/current与readytogo.service发布，真实回环stage→公网健康/资产/地点/首批preview→smoke回滚→恢复正式服务均通过。凭据经SSH stdin进入0600文件，Linux安装76项生产依赖，当前正式服务active/enabled；80/8080及网络配置保持原状。
+已完成全部可执行工程交付。最终运行版本 `2fafc9c14934cccbde188a8613cf7ac8b85435e2` 已通过独立 release/current 与 `readytogo.service` 发布；真实回环 stage、公网健康/资产、旧业务版本 `c82770b` 回切及恢复新版均已验证。正式服务 active/running/enabled，smoke inactive/disabled；七个运行文件与集成构建一致，凭据继续由 0600 文件加载。发布文件所有权已规范为 root:root，其他项目和持久状态所有权保持原状。
 
-首次stage漏备注触发通用修复；旧失败记录保留，修复后唯一必要parse复验按完整原文source_context、地点与需求检查通过。最终运行代码111项默认测试、check、build通过。永久[交付验收](../../../docs/delivery/acceptance.md)、[发布记录与证据](../../../docs/delivery/deployment-record.md)、[AI摘要](../../../docs/delivery/ai-evidence.md)及README已完成。
+工单初始提交 `5c6bfd4`、最终审查修复 `76b29da` 和发布证据 `9f6a9e0` 已分别合入集成分支，最终文档合并提交为 `13c032e`。完整 **120/120** 测试、类型检查和构建通过；最终 Standards 的一项 P3 与 Spec 的四项 P2 全部修复并由原独立审查者复核关闭，没有工程未决项，见[阶段 5 review](../reviews/stage5.md)。
 
-工单的“如实记录设备验证”条件已完成；原规格第61项和阶段5实际手机退出条件仍未通过，实际应用Browser Use拒绝未绕过。本交接不将完整规格或真机验收标为全部通过。工单分诊状态由root在集成及最终整分支Standards/Spec审查后更新。
+第一次发布前的漏备注失败保留，通用原文上下文修复及真实复验已有独立证据。最终二次发布首次地点请求返回 503，尚未调用模型；一次有界重试后首批十条路线和 AI 分析通过。根因未被确定，不将等待时长当作已证实网络原因。公网回切没有重复调用地图或模型，根另行确认最终公网健康与未开放记录的缓存详情状态。
+
+永久材料：[交付验收](../../../docs/delivery/acceptance.md)、[最终发布及证据](../../../docs/delivery/final-review-release.md)、[历史发布记录](../../../docs/delivery/deployment-record.md)、[AI 摘要](../../../docs/delivery/ai-evidence.md)及根 README。
+
+本工单的设备验证记录条件已完成；原规格第 61 项、阶段 5 实际手机主线和最终实际应用浏览器/视觉验收仍未完成。Browser Use 拒绝未被绕过，未将 HTTP 或离线 DOM 结果代替真机验收。父规格保留待实际手机验收状态。
