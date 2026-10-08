@@ -261,6 +261,7 @@ export class AiService {
               null,
             facilities: c.facilities,
             seatStatus: c.seatStatus,
+            seatConflict: c.seatConflict ?? false,
             seatBasis: c.seatBasis,
             routeStatus: c.routeStatus,
             walkSeconds: c.walkSeconds,
@@ -336,7 +337,9 @@ export class AiService {
       const enriched = candidates.map((c) => {
         const item = byId.get(c.toiletId)!;
         const canInfer =
-          c.seatStatus !== "documented" && c.seatStatus !== "unavailable";
+          c.seatStatus !== "documented" &&
+          c.seatStatus !== "unavailable" &&
+          c.seatConflict !== true;
         const seatStatus = canInfer
           ? (item.seatInference ?? c.seatStatus)
           : c.seatStatus;

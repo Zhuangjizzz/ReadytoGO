@@ -72,6 +72,7 @@ export interface Toilet {
   facilities: Facilities;
   seatStatus: SeatStatus;
   seatBasis: string[];
+  seatConflict?: boolean;
   openingHoursRaw: string | null;
   accessCondition: AccessCondition;
   accessNote: string | null;
@@ -96,6 +97,7 @@ export interface Candidate {
   position: Position | null;
   seatStatus: SeatStatus;
   seatBasis: string[];
+  seatConflict?: boolean;
   facilities: Facilities;
   openingStatus: OpeningStatus;
   openingHoursRaw: string | null;
@@ -133,6 +135,7 @@ export interface SearchResult {
   pendingWork: boolean;
   hasMore: boolean;
   nextCursor: string | null;
+  batchCursor?: string;
 }
 export interface ApiSuccess<T> {
   requestId: string;

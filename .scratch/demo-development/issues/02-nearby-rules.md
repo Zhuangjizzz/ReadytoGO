@@ -1,6 +1,6 @@
 # 02: 完整附近推荐与渐进结果
 
-Status: ready-for-agent
+Status: claimed
 Type: task
 Stage: 2
 Blocked by: 01
