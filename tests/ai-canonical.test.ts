@@ -62,6 +62,12 @@ const poi: ProviderPoi = {
   openingHours: null,
 };
 const provider: AmapProvider = {
+  reverseGeocode: async () => ({
+    adcode: "110101",
+    address: "北京市东城区",
+    district: "东城区",
+    city: "北京市",
+  }),
   searchPlaces: async () => ({ pois: [], hasMore: false }),
   nearbyToilets: async () => ({ pois: [poi], hasMore: false }),
   walking: async (origin, destination) => ({

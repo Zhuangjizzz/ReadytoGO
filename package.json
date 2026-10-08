@@ -15,7 +15,8 @@
     "build": "vite build && esbuild src/server/main.ts --bundle --platform=node --format=esm --packages=external --outfile=dist/server/main.js",
     "check": "tsc --noEmit",
     "test": "node --import tsx --test tests/*.test.ts tests/dom/*.test.tsx",
-    "test:dom": "node --import tsx --test tests/dom/*.test.tsx"
+    "test:dom": "node --import tsx --test tests/dom/*.test.tsx",
+    "test:wayfinding": "node --import tsx --test tests/navigation.browser.ts"
   },
   "dependencies": {
     "csv-parse": "^7.0.3",

@@ -10,6 +10,8 @@ import { Catalog } from "./data/catalog.js";
 import { QueryService, type QueryOptions } from "./query.js";
 import { AmapHttpProvider, type AmapProvider } from "./providers/amap.js";
 import { coreRouter, type CoreServices } from "./routes/core.js";
+import { mapsRouter } from "./routes/maps.js";
+import { navigationRouter } from "./routes/navigation.js";
 import type { CatalogFile } from "../shared/contracts.js";
 export interface RequestLog {
   event: "http_request";
@@ -93,6 +95,8 @@ export async function createApplication(options: ApplicationOptions = {}) {
     }),
   );
   app.use("/api/v1", coreRouter(services));
+  app.use("/api/v1", navigationRouter(services));
+  app.use("/api/v1", mapsRouter(config));
   app.use("/api/v1", assistRouter(ai));
   options.registerRoutes?.(app, services);
   app.use("/api", (_req, _res, next) =>
