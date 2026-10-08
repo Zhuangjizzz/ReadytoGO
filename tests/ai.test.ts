@@ -157,7 +157,12 @@ test("itinerary HTTP parsing preserves repeated places, time notes and explicit 
       ),
       ["Beihai Park", "National Art Museum", "Beihai Park"],
     );
-    assert.equal(body.data.placeQueries[0].note, "9am");
+    assert.ok(
+      body.data.placeQueries.every(
+        (place: { note: string; noteKind?: string }) =>
+          place.note === originalText && place.noteKind === "source_context",
+      ),
+    );
     assert.equal(body.data.proposedPreference, "seated_required");
     assert.deepEqual(body.data.unsupportedNeeds, ["baby changing"]);
   } finally {
@@ -960,6 +965,232 @@ test("the initial output and its repair still share one analysis deadline", asyn
     assert.equal(result.analysisStatus, "fallback");
     assert.equal(result.pendingWork, false);
     assert.equal(result.groups.otherNearby[0].walkSeconds, 301);
+  } finally {
+    await f.close();
+  }
+});
+
+test("itinerary notes retain surrounding source text when the model omits a relative-time phrase", async () => {
+  const text = "Before the concert, visit City Gallery.";
+  const f = await fixture([
+    {
+      proposedPreference: null,
+      preferenceEvidence: null,
+      placeQueries: [
+        {
+          order: 1,
+          originalText: "City Gallery",
+          queryZh: "城市画廊",
+          note: null,
+        },
+      ],
+      unsupportedNeeds: [],
+      warnings: [],
+    },
+  ]);
+  try {
+    const { body } = await f.post(text);
+    assert.equal(body.data.status, "complete");
+    assert.equal(body.data.placeQueries[0].note, text);
+    assert.equal(body.data.placeQueries[0].noteKind, "source_context");
+    assert.equal(body.data.placeQueries.length, 1);
+    assert.equal(f.upstreamRequests(), 1);
+  } finally {
+    await f.close();
+  }
+});
+
+const sourceContextCases = [
+  {
+    name: "different times in one sentence",
+    text: "City Gallery at 09:15, then Riverside Park at 13:45.",
+    places: ["City Gallery", "Riverside Park"],
+  },
+  {
+    name: "a date before several visits",
+    text: "Tomorrow:\nCity Gallery; Riverside Park",
+    places: ["City Gallery", "Riverside Park"],
+  },
+  {
+    name: "a remark applying to several visits",
+    text: "City Gallery; Riverside Park. Both after lunch.",
+    places: ["City Gallery", "Riverside Park"],
+  },
+  {
+    name: "Chinese dates with repeated visits",
+    text: "11月3日\n上午九点参观市立图书馆，下午去河畔公园，晚饭前回市立图书馆。",
+    places: ["市立图书馆", "河畔公园", "市立图书馆"],
+  },
+  {
+    name: "a date on a separate line between visits",
+    text: "City Gallery\nOctober 12\nRiverside Park",
+    places: ["City Gallery", "Riverside Park"],
+  },
+  {
+    name: "punctuation within verified names and abbreviations",
+    text: "At 9 a.m., Gallery; Annex. After that, St. Mary's Park.",
+    places: ["Gallery; Annex", "St. Mary's Park"],
+  },
+  {
+    name: "meaningful symbols around a place list",
+    text: "🏃 City Gallery → Riverside Park ♿",
+    places: ["City Gallery", "Riverside Park"],
+  },
+  {
+    name: "uncertainty punctuation",
+    text: "City Gallery? Riverside Park?",
+    places: ["City Gallery", "Riverside Park"],
+  },
+  {
+    name: "the entire 2000-character source",
+    text: `City Gallery\n${"行程备注".repeat(496)}末尾。`,
+    places: ["City Gallery"],
+  },
+];
+for (const example of sourceContextCases)
+  test(`itinerary source context preserves ${example.name} without attributing or inventing notes`, async () => {
+    const f = await fixture([
+      {
+        proposedPreference: null,
+        preferenceEvidence: null,
+        placeQueries: example.places.map((originalText, index) => ({
+          order: index + 1,
+          originalText,
+          queryZh: originalText,
+          note: "An invented arrival appointment. ".repeat(30),
+        })),
+        unsupportedNeeds: [],
+        warnings: [],
+      },
+    ]);
+    try {
+      const { status, body } = await f.post(example.text);
+      assert.equal(status, 200);
+      assert.equal(body.data.status, "complete");
+      assert.deepEqual(
+        body.data.placeQueries.map(
+          (place: { originalText: string }) => place.originalText,
+        ),
+        example.places,
+      );
+      for (const place of body.data.placeQueries) {
+        assert.equal(place.note, example.text);
+        assert.equal(place.noteKind, "source_context");
+      }
+      assert.equal(f.upstreamRequests(), 1);
+    } finally {
+      await f.close();
+    }
+  });
+
+for (const example of [
+  { text: "City Gallery", places: ["City Gallery"] },
+  {
+    text: "City Gallery, Riverside Park, City Gallery",
+    places: ["City Gallery", "Riverside Park", "City Gallery"],
+  },
+  {
+    text: "City Gallery → Riverside Park;\nCity Gallery。",
+    places: ["City Gallery", "Riverside Park", "City Gallery"],
+  },
+  {
+    text: "Gallery; Annex / St. Mary's Park",
+    places: ["Gallery; Annex", "St. Mary's Park"],
+  },
+])
+  test(`a pure itinerary place list has no synthesized note: ${example.text}`, async () => {
+    const f = await fixture([
+      {
+        proposedPreference: null,
+        preferenceEvidence: null,
+        placeQueries: example.places.map((originalText, index) => ({
+          order: index + 1,
+          originalText,
+          queryZh: originalText,
+          note: "The model invented a time.",
+        })),
+        unsupportedNeeds: [],
+        warnings: [],
+      },
+    ]);
+    try {
+      const { body } = await f.post(example.text);
+      assert.equal(body.data.status, "complete");
+      assert.equal(body.data.placeQueries.length, example.places.length);
+      for (const place of body.data.placeQueries) {
+        assert.equal(place.note, null);
+        assert.equal(place.noteKind, undefined);
+      }
+      assert.equal(f.upstreamRequests(), 1);
+    } finally {
+      await f.close();
+    }
+  });
+
+test("source context does not create places or change a supported preference proposal", async () => {
+  const evidence = "I do not need a seated toilet.";
+  for (const hasPlace of [false, true]) {
+    const text = hasPlace ? `Visit City Gallery. ${evidence}` : evidence;
+    const f = await fixture([
+      {
+        proposedPreference: "any",
+        preferenceEvidence: evidence,
+        placeQueries: hasPlace
+          ? [
+              {
+                order: 1,
+                originalText: "City Gallery",
+                queryZh: "城市画廊",
+                note: null,
+              },
+            ]
+          : [],
+        unsupportedNeeds: [],
+        warnings: [],
+      },
+    ]);
+    try {
+      const { body } = await f.post(text);
+      assert.equal(body.data.status, "complete");
+      assert.equal(body.data.proposedPreference, "any");
+      assert.equal(body.data.placeQueries.length, hasPlace ? 1 : 0);
+      if (hasPlace) assert.equal(body.data.placeQueries[0].note, text);
+      assert.equal(f.upstreamRequests(), 1);
+    } finally {
+      await f.close();
+    }
+  }
+});
+
+test("the model cannot set the software-owned source-context label", async () => {
+  const text = "Before dinner, City Gallery.";
+  const valid = {
+    proposedPreference: null,
+    preferenceEvidence: null,
+    placeQueries: [
+      {
+        order: 1,
+        originalText: "City Gallery",
+        queryZh: "城市画廊",
+        note: null,
+      },
+    ],
+    unsupportedNeeds: [],
+    warnings: [],
+  };
+  const f = await fixture([
+    {
+      ...valid,
+      placeQueries: [{ ...valid.placeQueries[0], noteKind: "source_context" }],
+    },
+    valid,
+  ]);
+  try {
+    const { body } = await f.post(text);
+    assert.equal(body.data.status, "complete");
+    assert.equal(body.data.placeQueries[0].note, text);
+    assert.equal(body.data.placeQueries[0].noteKind, "source_context");
+    assert.equal(f.upstreamRequests(), 2);
   } finally {
     await f.close();
   }
