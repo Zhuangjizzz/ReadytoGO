@@ -1,7 +1,7 @@
 // Explicitly invoked, bounded real-provider release check. Never part of npm test.
 import { createHash } from "node:crypto";
 import { setTimeout as delay } from "node:timers/promises";
-const [base, label, revision, query, text] = process.argv.slice(2);
+const [base, label, revision, query, text, option] = process.argv.slice(2);
 if (!base || !label || !revision || !query || !text)
   throw new Error("base, label, revision, query and test text are required");
 const started = Date.now();
@@ -77,20 +77,27 @@ try {
     html.ok &&
     assets.length >= 2 &&
     out.assets.every((a) => a.status === 200 && a.bytes > 0);
-  const parseBegin = Date.now();
-  const parsed = await json("/api/v1/assist/parse", {
-    text,
-    mode: "itinerary",
-    language: "en",
-    preference: "seated_required",
-  });
-  out.parse = {
-    elapsedMs: Date.now() - parseBegin,
-    status: parsed.data.status,
-    proposedPreference: parsed.data.proposedPreference,
-    places: parsed.data.placeQueries,
-    warnings: parsed.data.warnings,
-  };
+  if (option === "--skip-parse") {
+    out.parse = {
+      skipped: true,
+      reason: "Same-code stage parse evidence is reused; no new parse call.",
+    };
+  } else {
+    const parseBegin = Date.now();
+    const parsed = await json("/api/v1/assist/parse", {
+      text,
+      mode: "itinerary",
+      language: "en",
+      preference: "seated_required",
+    });
+    out.parse = {
+      elapsedMs: Date.now() - parseBegin,
+      status: parsed.data.status,
+      proposedPreference: parsed.data.proposedPreference,
+      places: parsed.data.placeQueries,
+      warnings: parsed.data.warnings,
+    };
+  }
   const search = await json(
     `/api/v1/places/search?q=${encodeURIComponent(query)}&language=en`,
   );

@@ -1,0 +1,30 @@
+{
+  "checkedAt": "2026-10-08T20:47:58.828534+00:00",
+  "target": "public restored ReadytoGo",
+  "health": {
+    "status": "ok",
+    "service": "readytogo",
+    "catalogCount": 13148
+  },
+  "cachedDetail": {
+    "id": "bj_1155d7c86129bb5e0621",
+    "positionRestored": true,
+    "sources": ["beijing_csv", "amap"]
+  },
+  "assets": {
+    "dist/client/index.html": {
+      "status": 200,
+      "matchesRelease": true
+    },
+    "dist/client/assets/index-CrxEjtCT.css": {
+      "status": 200,
+      "matchesRelease": true
+    },
+    "dist/client/assets/index-BUNanOJP.js": {
+      "status": 200,
+      "matchesRelease": true
+    }
+  },
+  "passed": true,
+  "newModelCalls": 0
+}

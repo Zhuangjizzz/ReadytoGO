@@ -49,3 +49,7 @@
 建议总状态：**真实数据、地图、模型与安全降级已有有界 HTTP 证据，页面行为有回放/隔离测试证据；实际手机验收仍未完成，不能宣称全部验收通过。**
 
 来源：`real-parse-holdout-results.json`、`real-plan-probe-results.json`、`shichahai-ai-diagnostic-results.json`、`shichahai-ai-diagnostic.md`、`repair-feedback-live-results.json`；仓库 `docs/data-processing.md`、`docs/implementation/`、`docs/prd/acceptance.md`、`.scratch/demo-development/spec.md`、`execution.md`、`reviews/stage4.md`。
+
+## 发布阶段的新增验证
+
+首个真实stage发现模型漏掉相对时间备注，实际结果保留在[发布记录](deployment-record.md)。通用修复通过已验证地点span判断是否有额外原文上下文：纯列表保持空备注，其余保留完整输入并标记source_context，界面提醒核对且确认后作为备注保存。修复后的唯一一次必要真实parse返回完整原文、正确地点和明确否定偏好；这证明软件保留上下文，不宣称模型理解了时间归属。stage和public各一批10路线/AI分析完成，仍只有首批窗口。历史三站中的fallback与失败诊断保持原样。
