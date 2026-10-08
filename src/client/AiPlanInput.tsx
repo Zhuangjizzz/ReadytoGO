@@ -61,6 +61,7 @@ export function AiPlanInput({
           stopId: newClientId("stop"),
           place: row.selected!,
           ...(row.note ? { note: row.note } : {}),
+          ...(row.note && row.noteKind ? { noteKind: row.noteKind } : {}),
         })),
         proposal.preference ?? undefined,
       );
@@ -372,10 +373,18 @@ export function AiPlanInput({
               <label className="field-label" htmlFor={`note-${row.id}`}>
                 {zh ? `第 ${index + 1} 站备注` : `Notes for stop ${index + 1}`}
               </label>
-              <input
+              {row.noteKind === "source_context" && (
+                <p className="fine-print">
+                  {zh
+                    ? "原文上下文，可能包含多站，请核对"
+                    : "Original context may cover multiple stops. Please check."}
+                </p>
+              )}
+              <textarea
                 id={`note-${row.id}`}
                 value={row.note}
-                maxLength={500}
+                rows={3}
+                maxLength={2000}
                 onChange={(event) => draft.editNote(row.id, event.target.value)}
               />
             </section>

@@ -9,6 +9,7 @@ import { newClientId } from "./clientId";
 import { PlanConfirm } from "./PlanConfirm";
 import { AiPlanInput } from "./AiPlanInput";
 import { samePlace } from "../shared/plan";
+import { PlanNote } from "./PlanNote";
 
 export function PlanPage({
   controller,
@@ -53,7 +54,7 @@ export function PlanPage({
         ? [...stops, { stopId, place }].slice(0, 10)
         : stops.map((s) =>
             s.stopId === editing
-              ? { stopId: s.stopId, place, note: s.note }
+              ? { stopId: s.stopId, place, note: s.note, noteKind: s.noteKind }
               : s,
           ),
     );
@@ -123,7 +124,12 @@ export function PlanPage({
                   {stop.place.nameZh} · {stop.place.district} ·{" "}
                   {stop.place.addressZh}
                 </p>
-                {stop.note && <p className="muted">{stop.note}</p>}
+                <PlanNote
+                  note={stop.note}
+                  noteKind={stop.noteKind}
+                  language={plan.language}
+                  className="muted"
+                />
               </div>
               <div className="stop-tools">
                 <button
