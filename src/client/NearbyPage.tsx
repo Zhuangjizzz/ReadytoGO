@@ -17,6 +17,8 @@ import type {
   QuerySettings,
 } from "../shared/contracts";
 import { searchToilets } from "./api";
+import { mergeSearchPages } from "../shared/searchResults";
+import { sameToilet } from "../shared/plan";
 import { PlacePicker } from "./PlacePicker";
 import { ToiletCard } from "./ToiletCard";
 const groupNames = {
@@ -60,55 +62,24 @@ export interface NearbyPageProps {
     auto?: boolean;
   }>;
 }
-function mergePages(
-  pages: Map<string, SearchResult>,
-  latest: SearchResult,
-): SearchResult {
-  const groups: CandidateGroups = {
-    matched: [],
-    farther: [],
-    otherNearby: [],
-    conditionalAccess: [],
-    routeUnknown: [],
-  };
-  const entries = new Map<
-    string,
-    { group: keyof CandidateGroups; candidate: Candidate }
-  >();
-  for (const page of pages.values())
-    for (const group of Object.keys(page.groups) as Array<
-      keyof CandidateGroups
-    >)
-      for (const candidate of page.groups[group])
-        entries.set(candidate.toiletId, { group, candidate });
-  for (const { group, candidate } of entries.values())
-    groups[group].push(candidate);
-  for (const list of Object.values(groups))
-    list.sort((a, b) =>
-      a.routeStatus === "success" && b.routeStatus === "success"
-        ? (a.walkSeconds ?? Infinity) - (b.walkSeconds ?? Infinity) ||
-          (a.walkMeters ?? Infinity) - (b.walkMeters ?? Infinity) ||
-          a.toiletId.localeCompare(b.toiletId)
-        : (a.straightLineMeters ?? Infinity) -
-            (b.straightLineMeters ?? Infinity) ||
-          a.toiletId.localeCompare(b.toiletId),
-    );
-  return {
-    ...latest,
-    groups,
-    status: [...pages.values()].some((p) => p.status === "partial")
-      ? "partial"
-      : entries.size
-        ? "complete"
-        : latest.status,
-  };
-}
 function initialAccess() {
   try {
     return localStorage.getItem("readytogo-conditional") === "true";
   } catch {
     return false;
   }
+}
+function originIdentity(origin: Origin | null) {
+  return (
+    origin && [
+      origin.lng,
+      origin.lat,
+      origin.crs,
+      origin.label,
+      origin.source,
+      origin.accuracyMeters ?? null,
+    ]
+  );
 }
 export function NearbyPage({
   language,
@@ -133,18 +104,24 @@ export function NearbyPage({
   const extendedRadiusKm = settings?.extendedRadiusKm ?? localRadius;
   const includeConditionalAccess =
     settings?.includeConditionalAccess ?? localConditional;
-  const setWalkLimit = (walkLimitMinutes: 10 | 20) =>
-    onSettingsChange
-      ? onSettingsChange({ walkLimitMinutes })
-      : setLocalWalk(walkLimitMinutes);
-  const setRadius = (extendedRadiusKm: 5 | 10) =>
-    onSettingsChange
-      ? onSettingsChange({ extendedRadiusKm })
-      : setLocalRadius(extendedRadiusKm);
-  const setConditional = (includeConditionalAccess: boolean) =>
-    onSettingsChange
-      ? onSettingsChange({ includeConditionalAccess })
-      : setLocalConditional(includeConditionalAccess);
+  const setWalkLimit = (value: 10 | 20) => {
+    if (value === walkLimitMinutes) return;
+    cancel();
+    if (onSettingsChange) onSettingsChange({ walkLimitMinutes: value });
+    else setLocalWalk(value);
+  };
+  const setRadius = (value: 5 | 10) => {
+    if (value === extendedRadiusKm) return;
+    cancel();
+    if (onSettingsChange) onSettingsChange({ extendedRadiusKm: value });
+    else setLocalRadius(value);
+  };
+  const setConditional = (value: boolean) => {
+    if (value === includeConditionalAccess) return;
+    cancel();
+    if (onSettingsChange) onSettingsChange({ includeConditionalAccess: value });
+    else setLocalConditional(value);
+  };
   const [result, setResult] = useState<SearchResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -155,17 +132,23 @@ export function NearbyPage({
   const version = useRef(0);
   const controller = useRef<AbortController | null>(null);
   const pages = useRef(new Map<string, SearchResult>());
+  const languageRefresh = useRef<{
+    keys: string[];
+    index: number;
+    cursor: string | null;
+  } | null>(null);
   const searched = useRef(false);
   const resultRef = useRef(result);
   resultRef.current = result;
-  const conditionKey = JSON.stringify([
-    origin,
+  const selectionKey = JSON.stringify([
+    originIdentity(origin),
     preference,
     walkLimitMinutes,
     extendedRadiusKm,
     includeConditionalAccess,
-    language,
   ]);
+  const conditionKey = JSON.stringify([selectionKey, language]);
+  const previousSelectionKey = useRef(selectionKey);
   const currentKey = useRef(conditionKey);
   currentKey.current = conditionKey;
   const cancel = useCallback(() => {
@@ -174,7 +157,11 @@ export function NearbyPage({
     setLoading(false);
   }, []);
   const run = useCallback(
-    async (cursor: string | null = null, retry = false) => {
+    async (
+      cursor: string | null = null,
+      retry = false,
+      preserveResults = false,
+    ) => {
       if (!origin || !active) return;
       cancel();
       searched.current = true;
@@ -182,6 +169,7 @@ export function NearbyPage({
       const key = conditionKey;
       const abort = new AbortController();
       controller.current = abort;
+      const refresh = languageRefresh.current;
       const request: SearchRequest = {
         origin,
         context: "nearby",
@@ -191,15 +179,15 @@ export function NearbyPage({
         extendedRadiusKm,
         language,
         queryVersion,
-        cursor,
+        cursor: refresh ? refresh.cursor : cursor,
         retry,
       };
       setLoading(true);
       setError("");
       setWaitStopped(false);
-      if (!cursor) {
+      if (!cursor && !refresh) {
         pages.current.clear();
-        if (!retry) setResult(null);
+        if (!retry && !preserveResults) setResult(null);
       }
       const deadline = Date.now() + 130_000;
       try {
@@ -213,15 +201,75 @@ export function NearbyPage({
             return;
           const page = response.data;
           const token = page.batchCursor ?? request.cursor ?? "first";
-          pages.current.set(token, page);
-          setResult(mergePages(pages.current, page));
-          request.cursor = page.batchCursor ?? request.cursor;
+          const slot =
+            refresh?.keys[refresh.index] ??
+            [...pages.current].find(
+              ([, saved]) => saved.batchCursor === token,
+            )?.[0] ??
+            token;
+          const unrefreshedKeys = new Set(
+            refresh?.keys.slice(refresh.index + 1) ?? [],
+          );
+          const previousPage = pages.current.get(slot);
+          pages.current.set(
+            slot,
+            refresh && page.pendingWork && previousPage
+              ? mergeSearchPages(
+                  new Map([
+                    ["previous", previousPage],
+                    ["current", page],
+                  ]),
+                  page,
+                )
+              : page,
+          );
+          const moreLoadedPages =
+            !!refresh &&
+            !page.pendingWork &&
+            refresh.index + 1 < refresh.keys.length &&
+            page.hasMore &&
+            !!page.nextCursor;
+          request.cursor = moreLoadedPages
+            ? page.nextCursor
+            : (page.batchCursor ?? request.cursor);
+          if (refresh) {
+            refresh.cursor = request.cursor ?? null;
+            if (moreLoadedPages) refresh.index++;
+            else if (!page.pendingWork) {
+              // Exhaustion can shorten the previously loaded range. Until
+              // then, unrefreshed pages stay visible without old explanations.
+              for (const key of refresh.keys.slice(refresh.index + 1))
+                pages.current.delete(key);
+              languageRefresh.current = null;
+            }
+          }
+          setResult(
+            mergeSearchPages(
+              refresh
+                ? new Map(
+                    [...pages.current].sort(
+                      ([a], [b]) =>
+                        Number(unrefreshedKeys.has(b)) -
+                        Number(unrefreshedKeys.has(a)),
+                    ),
+                  )
+                : pages.current,
+              {
+                ...page,
+                pendingWork: page.pendingWork || moreLoadedPages,
+                analysisStatus: moreLoadedPages
+                  ? "pending"
+                  : page.analysisStatus,
+              },
+            ),
+          );
           request.retry = false;
-          if (!page.pendingWork) break;
+          if (!page.pendingWork && !moreLoadedPages) break;
           if (Date.now() >= deadline) {
             setWaitStopped(true);
             break;
           }
+          if (moreLoadedPages) continue;
           await new Promise<void>((resolve) => {
             const timer = setTimeout(resolve, 500);
             abort.signal.addEventListener(
@@ -235,7 +283,7 @@ export function NearbyPage({
           });
         }
       } catch (e) {
-        if (!abort.signal.aborted && version.current === queryVersion)
+        if (!abort.signal.aborted && version.current === queryVersion) {
           setError(
             e instanceof Error
               ? e.message
@@ -243,6 +291,18 @@ export function NearbyPage({
                 ? "查询暂不可用"
                 : "Search is unavailable.",
           );
+          if (preserveResults || refresh)
+            setResult((previous) =>
+              previous
+                ? {
+                    ...previous,
+                    status: "partial",
+                    pendingWork: false,
+                    analysisStatus: "fallback",
+                  }
+                : null,
+            );
+        }
       } finally {
         if (version.current === queryVersion) setLoading(false);
       }
@@ -261,19 +321,51 @@ export function NearbyPage({
     ],
   );
   useEffect(() => {
+    const languageOnly = previousSelectionKey.current === selectionKey;
+    previousSelectionKey.current = selectionKey;
     cancel();
     setError("");
-    setSelected(null);
-    setShowOthers(false);
-    pages.current.clear();
-    setResult(null);
-    if (searched.current && origin && active) void run();
+    if (languageOnly) {
+      // Keep the map mounted and the user's selection visible. Source facts
+      // remain useful while language-specific descriptions are refreshed.
+      const keys = [...pages.current.keys()];
+      languageRefresh.current = keys.length
+        ? { keys, index: 0, cursor: null }
+        : null;
+      for (const [key, previous] of pages.current) {
+        pages.current.set(key, {
+          ...previous,
+          summary: "",
+          pendingWork: true,
+          analysisStatus: "pending",
+          batchCursor: undefined,
+          nextCursor: null,
+          hasMore: false,
+          groups: Object.fromEntries(
+            Object.entries(previous.groups).map(([group, rows]) => [
+              group,
+              rows.map((candidate) => ({ ...candidate, reason: "" })),
+            ]),
+          ) as CandidateGroups,
+        });
+      }
+      const previous = [...pages.current.values()].at(-1);
+      setResult(previous ? mergeSearchPages(pages.current, previous) : null);
+    } else {
+      languageRefresh.current = null;
+      pages.current.clear();
+      setSelected(null);
+      setShowOthers(false);
+      setResult(null);
+    }
+    if (searched.current && origin && active)
+      void run(null, false, languageOnly);
   }, [conditionKey]);
   useEffect(() => {
     if (!active) cancel();
     else if (searched.current && origin && !resultRef.current) void run();
     else if (resultRef.current?.pendingWork && searched.current)
-      void run(resultRef.current.batchCursor ?? null);
+      void run(resultRef.current.batchCursor ?? null, false, true);
     return () => {
       version.current++;
       controller.current?.abort();
@@ -288,9 +380,17 @@ export function NearbyPage({
       );
     } catch {}
   }, [includeConditionalAccess, settings]);
-  function select(p: Place) {
+  function changeOrigin(value: Origin) {
+    if (
+      JSON.stringify(originIdentity(value)) ===
+      JSON.stringify(originIdentity(origin))
+    )
+      return;
     cancel();
-    onOriginChange({
+    onOriginChange(value);
+  }
+  function select(p: Place) {
+    changeOrigin({
       ...p.position,
       label: p.nameZh,
       source:
@@ -303,6 +403,7 @@ export function NearbyPage({
     setPicker(false);
   }
   function changePreference(value: Preference) {
+    if (value === preference) return;
     cancel();
     onPreferenceChange(value);
   }
@@ -333,6 +434,10 @@ export function NearbyPage({
         routeUnknown: [],
       };
   const candidates = Object.values(visibleGroups).flat();
+  const visibleSelectedId =
+    candidates.find(
+      (candidate) => selectedId && sameToilet(candidate, selectedId),
+    )?.toiletId ?? selectedId;
   const noMatched =
     result && !result.pendingWork && result.groups.matched.length === 0;
   const selectCandidate = (id: string) => {
@@ -369,13 +474,7 @@ export function NearbyPage({
             <span aria-hidden="true">↗</span>
           </button>
           {LocateComponent && (
-            <LocateComponent
-              language={language}
-              onSelect={(value) => {
-                cancel();
-                onOriginChange(value);
-              }}
-            />
+            <LocateComponent language={language} onSelect={changeOrigin} />
           )}
           <fieldset>
             <legend>{zh ? "厕所需求" : "What do you need?"}</legend>
@@ -409,10 +508,7 @@ export function NearbyPage({
                 <button
                   key={n}
                   className={walkLimitMinutes === n ? "active" : ""}
-                  onClick={() => {
-                    cancel();
-                    setWalkLimit(n);
-                  }}
+                  onClick={() => setWalkLimit(n)}
                   aria-pressed={walkLimitMinutes === n}
                 >
                   {n} {zh ? "分钟" : "min"}
@@ -433,10 +529,7 @@ export function NearbyPage({
                     key={n}
                     aria-pressed={extendedRadiusKm === n}
                     className={extendedRadiusKm === n ? "active" : ""}
-                    onClick={() => {
-                      cancel();
-                      setRadius(n);
-                    }}
+                    onClick={() => setRadius(n)}
                   >
                     {n} km
                   </button>
@@ -453,10 +546,7 @@ export function NearbyPage({
             <input
               type="checkbox"
               checked={includeConditionalAccess}
-              onChange={(e) => {
-                cancel();
-                setConditional(e.target.checked);
-              }}
+              onChange={(e) => setConditional(e.target.checked)}
             />
             <span>
               {zh
@@ -613,10 +703,7 @@ export function NearbyPage({
                     {walkLimitMinutes === 10 && (
                       <button
                         className="secondary"
-                        onClick={() => {
-                          cancel();
-                          setWalkLimit(20);
-                        }}
+                        onClick={() => setWalkLimit(20)}
                       >
                         {zh ? "扩大到20分钟" : "Try 20 minutes"}
                       </button>
@@ -668,7 +755,7 @@ export function NearbyPage({
                 <MapComponent
                   origin={origin}
                   candidates={candidates}
-                  selectedId={selectedId}
+                  selectedId={visibleSelectedId}
                   onSelect={selectCandidate}
                   language={language}
                 />
@@ -685,7 +772,7 @@ export function NearbyPage({
                           key={c.toiletId}
                           candidate={c}
                           language={language}
-                          selected={selectedId === c.toiletId}
+                          selected={visibleSelectedId === c.toiletId}
                           onSelect={() => setSelected(c.toiletId)}
                           onDetails={
                             onDetails && origin

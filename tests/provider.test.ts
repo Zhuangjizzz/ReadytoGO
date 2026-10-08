@@ -5,6 +5,7 @@ import { mkdtemp, writeFile, rm } from "node:fs/promises";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
 import { createApplication } from "../src/server/app.js";
+import { AmapHttpProvider } from "../src/server/providers/amap.js";
 import type { ApiSuccess, SearchResult } from "../src/shared/contracts.js";
 
 test("HTTP search reads nested route cost and distinguishes malformed routes from explicit empty paths", async () => {
@@ -120,4 +121,158 @@ test("HTTP search reads nested route cost and distinguishes malformed routes fro
     upstream.close();
     await rm(dir, { recursive: true, force: true });
   }
+});
+
+async function withPaginatedMap(
+  pageRows: (page: number) => unknown[],
+  check: (url: string) => Promise<void>,
+) {
+  const upstream = createServer((req, res) => {
+    const url = new URL(req.url!, "http://localhost");
+    res.setHeader("content-type", "application/json");
+    const data =
+      url.pathname === "/v5/direction/walking"
+        ? { route: { paths: [{ distance: "120", cost: { duration: "100" } }] } }
+        : { pois: pageRows(Number(url.searchParams.get("page_num") ?? 1)) };
+    res.end(JSON.stringify({ status: "1", ...data }));
+  });
+  upstream.listen(0, "127.0.0.1");
+  await new Promise<void>((resolve) => upstream.once("listening", resolve));
+  const address = upstream.address();
+  assert.ok(address && typeof address !== "string");
+  const dir = await mkdtemp(join(tmpdir(), "readytogo-provider-pages-"));
+  const catalogPath = join(dir, "catalog.json");
+  await writeFile(
+    catalogPath,
+    JSON.stringify({ schemaVersion: 1, report: {}, toilets: [] }),
+  );
+  const provider = new AmapHttpProvider({
+    key: "offline-fixture",
+    baseUrl: `http://127.0.0.1:${address.port}`,
+    startIntervalMs: 0,
+  });
+  const { app } = await createApplication({
+    catalogPath,
+    matchCachePath: null,
+    provider,
+    qwenKey: "",
+    logger: () => {},
+    queryOptions: { firstResponseWaitMs: 1000 },
+  });
+  const server = app.listen(0, "127.0.0.1");
+  await new Promise<void>((resolve) => server.once("listening", resolve));
+  const service = server.address();
+  assert.ok(service && typeof service !== "string");
+  try {
+    await check(`http://127.0.0.1:${service.port}/api/v1`);
+  } finally {
+    server.close();
+    upstream.close();
+    await rm(dir, { recursive: true, force: true });
+  }
+}
+const providerRow = (number: number) => ({
+  id: `paged-${number}`,
+  name: `分页公厕${number}`,
+  address: `示例路${number}号`,
+  adname: "通州区",
+  cityname: "北京市",
+  typecode: "200300",
+  type: "公共设施;公共厕所",
+  location: `${116.72 + number * 0.00001},39.62`,
+});
+async function collectPages(url: string) {
+  const ids = new Set<string>();
+  let cursor: string | null = null;
+  for (let batch = 0; batch < 10; batch++) {
+    const response: Response = await fetch(url + "/toilets/search", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        origin: {
+          lng: 116.72,
+          lat: 39.62,
+          crs: "GCJ02",
+          source: "place",
+          label: "边界起点",
+        },
+        context: "nearby",
+        preference: "any",
+        walkLimitMinutes: 10,
+        includeConditionalAccess: false,
+        extendedRadiusKm: 5,
+        language: "en",
+        queryVersion: 1,
+        cursor,
+      }),
+    });
+    assert.equal(response.status, 200);
+    const data = ((await response.json()) as ApiSuccess<SearchResult>).data;
+    Object.values(data.groups)
+      .flat()
+      .forEach((row) => ids.add(row.toiletId));
+    if (data.pendingWork) cursor = data.batchCursor ?? cursor;
+    else if (data.hasMore) cursor = data.nextCursor;
+    else return ids;
+  }
+  assert.fail("The bounded fixture did not reach its terminal page");
+}
+
+test("provider filtering keeps the next raw page reachable through public search pagination", async () => {
+  await withPaginatedMap(
+    (page) =>
+      page === 1
+        ? [
+            ...Array.from({ length: 24 }, (_, index) => providerRow(index + 1)),
+            { ...providerRow(25), cityname: "廊坊市", adname: "广阳区" },
+          ]
+        : page === 2
+          ? [providerRow(26)]
+          : [],
+    async (url) => {
+      const ids = await collectPages(url);
+      assert.equal(ids.has("amap_paged-26"), true);
+      assert.equal(ids.has("amap_paged-25"), false);
+      assert.equal(ids.size, 25);
+    },
+  );
+});
+
+test("fully filtered raw pages do not hide a later valid candidate or bypass the page bound", async () => {
+  let highestPage = 0;
+  await withPaginatedMap(
+    (page) => {
+      highestPage = Math.max(highestPage, page);
+      if (page === 1)
+        return Array.from({ length: 25 }, (_, index) => ({
+          ...providerRow(index + 1),
+          cityname: "廊坊市",
+          adname: "广阳区",
+        }));
+      if (page === 2)
+        return Array.from({ length: 25 }, (_, index) => ({
+          ...providerRow(index + 26),
+          typecode: "200304",
+        }));
+      return page === 3 ? [providerRow(60)] : [];
+    },
+    async (url) => {
+      assert.deepEqual([...(await collectPages(url))], ["amap_paged-60"]);
+      assert.equal(highestPage, 3);
+    },
+  );
+  highestPage = 0;
+  await withPaginatedMap(
+    (page) => {
+      highestPage = Math.max(highestPage, page);
+      return Array.from({ length: 25 }, (_, index) => ({
+        ...providerRow(page * 25 + index),
+        typecode: "200304",
+      }));
+    },
+    async (url) => {
+      assert.deepEqual([...(await collectPages(url))], []);
+      assert.equal(highestPage, 8);
+    },
+  );
 });

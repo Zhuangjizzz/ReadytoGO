@@ -220,7 +220,7 @@ export async function importCsv(
       continue;
     }
     const availability = availabilityFromStatements(
-      [row[14] || ""],
+      [row[14] || "", f.notes || ""],
       row[14]?.trim() === "现有" ? "active" : "unknown",
     );
     toilets.set(id, {

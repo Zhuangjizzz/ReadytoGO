@@ -214,15 +214,13 @@ export class QueryService {
         .map((p) => p.id)
         .sort()
         .join("|");
-      const repeated = stream.fingerprints.has(fingerprint);
-      stream.fingerprints.add(fingerprint);
+      // An empty filtered page does not prove that the raw provider page was
+      // empty. Only a nonempty repeated identity set can end discovery early.
+      const repeated = !!fingerprint && stream.fingerprints.has(fingerprint);
+      if (fingerprint) stream.fingerprints.add(fingerprint);
       await this.add(s, result.pois, r);
       stream.page++;
-      stream.more =
-        result.hasMore &&
-        !repeated &&
-        result.pois.length > 0 &&
-        stream.page <= 8;
+      stream.more = result.hasMore && !repeated && stream.page <= 8;
     } catch {
       stream.failed = true;
       stream.more = false;
