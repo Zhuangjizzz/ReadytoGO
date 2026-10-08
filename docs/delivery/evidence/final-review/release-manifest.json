@@ -1,0 +1,13 @@
+{
+  "revision": "2fafc9c14934cccbde188a8613cf7ac8b85435e2",
+  "createdAt": "2026-10-08T21:23:50.952626+00:00",
+  "files": {
+    "package.json": "b480d42638f2c9b77f8fa12f6b83da5250a543b256b2821946de3168b00bbbc1",
+    "package-lock.json": "1191c4bb6c55afa4b81f179783602dd01024050f88c912c2963fff13c52d8a10",
+    "data/BJ-ToiletInfo.csv": "84bf3b1e4c1a399acb28ab9c4b272856980e3b10cde0918e8323684b1ce2c961",
+    "dist/server/main.js": "e8be4583cd6569bf7dcc59743b209a55515c899276000c73f15c2df5244cd088",
+    "dist/client/index.html": "517c0ff34a92697df5a5b6fe386e9dcfd6c1ec1df8fd4593b63581c6a59cfde3",
+    "dist/client/assets/index-DPxUhsrL.js": "81ef2031e96017e64ab1ee8543da31fc5b45d26354a22a6ff4252a18bcb281c3",
+    "dist/client/assets/index-CrxEjtCT.css": "081a58051f9c6a89da545ce76f37c989f3812de83fb09125fa9f2883914babfd"
+  }
+}

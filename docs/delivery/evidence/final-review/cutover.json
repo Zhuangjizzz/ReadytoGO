@@ -1,0 +1,16 @@
+{
+  "cutoverAt": "2026-10-08T21:28:23.929064+00:00",
+  "revision": "2fafc9c14934cccbde188a8613cf7ac8b85435e2",
+  "previousRelease": "/opt/readytogo/releases/c82770b6be6d70e3da20a81cdd0d1f196841c008",
+  "release": "/opt/readytogo/releases/2fafc9c14934cccbde188a8613cf7ac8b85435e2",
+  "backup": "/opt/readytogo/backups/before-2fafc9c14934",
+  "stateBackupDereferenced": true,
+  "configurationChanged": false,
+  "unitChanged": false,
+  "health": {
+    "status": "ok",
+    "service": "readytogo",
+    "catalogCount": 13148
+  },
+  "pid": 3515837
+}

@@ -1,0 +1,15 @@
+{
+  "revision": "2fafc9c14934cccbde188a8613cf7ac8b85435e2",
+  "previousRevision": "c82770b6be6d70e3da20a81cdd0d1f196841c008",
+  "archiveSha256": "f0c73463be08224c9bd8d73bf04f2e842448ae7dc94cf6b32f8b5c84bb2443b6",
+  "bundleSha256": "e8be4583cd6569bf7dcc59743b209a55515c899276000c73f15c2df5244cd088",
+  "integrationBuildMatches": true,
+  "runtimeFiles": 7,
+  "productionInstall": "Linux Node24.15.0/npm11.12.1; npm ci --omit=dev --no-audit --no-fund; 76 packages installed",
+  "apiSecretScan": "No configured API secret value found in runtime allowlist; values not printed.",
+  "parserEvidence": "Parser/prompt unchanged from c82770b; no new parse request.",
+  "previewScope": "Initial search failed before preview/model; one bounded retry completed one first-batch preview window.",
+  "publicAndRollbackNewProviderCalls": 0,
+  "publicAndRollbackNewModelCalls": 0,
+  "physicalPhoneAcceptance": "Still unmet; spec61 unchanged."
+}

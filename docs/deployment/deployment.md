@@ -42,9 +42,9 @@ RTG_SSH=(ssh -i "$RTG_KEY" -o IdentitiesOnly=yes -o BatchMode=yes -o StrictHostK
 "${RTG_SSH[@]}" 'ss -ltnp'
 ```
 
-检查当前3000的服务归属，以及待用回环端口（本次33001）无监听。首次替换smoke前备份其目录和unit，保留原文件。后续发布记录 `current` 的旧目标，备份旧unit、root-only环境文件及必要状态；新release必须此前不存在，不能原地覆盖运行版本。
+检查当前3000的服务归属，以及待用回环端口（本次33001）无监听。首次替换smoke前备份其目录和unit，保留原文件。后续发布记录 `current` 的旧目标，备份旧unit、root-only环境文件及必要状态；新release必须此前不存在，不能原地覆盖运行版本。StateDirectory可能为systemd管理的symlink；在停止相应服务后备份时使用解引用快照（例如`cp -aL`），不要只保存指向仍会变化目录的链接。无存储格式变化时，回切代码可继续使用兼容状态，避免无必要的数据回退。
 
-上传归档到 `/opt/readytogo/uploads/`，核对远程SHA256一致，解包到新release后安装生产依赖。代码、node_modules和原CSV归root所有、服务可读；所有运行写入走 StateDirectory。
+上传归档到 `/opt/readytogo/uploads/`，核对远程SHA256一致，使用`tar --no-same-owner -xzf <归档> -C <新release>`解包，再安装生产依赖，避免继承macOS数字UID/GID。代码、node_modules和原CSV归root所有、服务可读；用stat核对。若已解包为本机UID，只在本项目release内规范所有权且不跟随symlink目标，并重新核对内容SHA。所有运行写入走StateDirectory。
 
 配置只需四项：`AMAP_KEY`、`DASHSCOPE_API_KEY`、`QWEN_BASE_URL`、`QWEN_MODEL`。从本机已有忽略的`.env`解析白名单，在内存中编码后通过 **SSH stdin** 写入远程同目录临时文件，再rename为目标，设置root:root和0600。不得echo、shell trace、放入命令行参数、Git或归档。更新已有配置前先保存0600备份。
 
@@ -94,7 +94,7 @@ systemctl is-active readytogo.service
 curl --fail --max-time 10 http://127.0.0.1:3000/health
 ```
 
-本机再检查公网 `/health`、首页资产与有限业务API。验证新服务MainPID的`/proc/<pid>/cwd`等于release，服务器bundle与本机产物SHA一致。旧smoke使用`/healthz`和`service=readytogo-smoke`，不作为新应用成功证据。
+本机再检查公网 `/health`、首页资产与有限业务API。当前台交互或分页修复未修改解析实现时，可只在stage做一次必要业务查询，公网/回切改用[资产验证脚本](verify-release-assets.py)：参数为base URL、对应release的manifest路径和记录标签，仅请求健康与静态资产，新增供应商/模型调用为0。验证新服务MainPID的`/proc/<pid>/cwd`等于release，服务器bundle与本机产物SHA一致。旧smoke使用`/healthz`和`service=readytogo-smoke`，不作为新应用成功证据。
 
 全部成功后enable readytogo；首次发布disable smoke。保留smoke文件，记录新服务active/enabled、smoke inactive/disabled、80/8080仍归原服务、实际release和产物摘要。当前验收不执行被工具拒绝的实际应用浏览器，不绕过拒绝；真实手机条件单独记录为未满足。
 

@@ -1,0 +1,156 @@
+{
+  "schema": "readytogo.release-http.v1",
+  "generatedAt": "2026-10-08T21:26:31.892Z",
+  "label": "final-review-stage-retry1",
+  "revision": "2fafc9c14934cccbde188a8613cf7ac8b85435e2",
+  "transport": "HTTP only; no browser",
+  "testInput": {
+    "query": "陶然亭公园",
+    "text": "Parser unchanged; no new parse requested in this release."
+  },
+  "requests": {
+    "/health": {
+      "count": 1,
+      "firstRequestId": null,
+      "lastRequestId": null,
+      "lastStatus": 200,
+      "totalHttpMs": 69,
+      "errorCode": null
+    },
+    "/api/v1/data/summary": {
+      "count": 1,
+      "firstRequestId": "6c7f523e-06e8-4370-aa68-b465f8254d41",
+      "lastRequestId": "6c7f523e-06e8-4370-aa68-b465f8254d41",
+      "lastStatus": 200,
+      "totalHttpMs": 5,
+      "errorCode": null
+    },
+    "/api/v1/places/search": {
+      "count": 1,
+      "firstRequestId": "af498317-8826-4f74-92b3-ac9873b37a81",
+      "lastRequestId": "af498317-8826-4f74-92b3-ac9873b37a81",
+      "lastStatus": 200,
+      "totalHttpMs": 1021,
+      "errorCode": null
+    },
+    "/api/v1/plans/preview": {
+      "count": 24,
+      "firstRequestId": "3eff5f16-dde9-4d0d-915e-738494aef6fd",
+      "lastRequestId": "03498ee9-c64f-4c95-8e58-df7700955fa5",
+      "lastStatus": 200,
+      "totalHttpMs": 3790,
+      "errorCode": null
+    },
+    "/api/v1/toilets/bj_1155d7c86129bb5e0621": {
+      "count": 1,
+      "firstRequestId": "2cbd7420-df3e-4362-95b8-f637ad7c1f07",
+      "lastRequestId": "2cbd7420-df3e-4362-95b8-f637ad7c1f07",
+      "lastStatus": 200,
+      "totalHttpMs": 4,
+      "errorCode": null
+    },
+    "/api/v1/navigation/link": {
+      "count": 1,
+      "firstRequestId": "3b58fe0f-b87f-48e6-a5da-5f368b5ab9d4",
+      "lastRequestId": "3b58fe0f-b87f-48e6-a5da-5f368b5ab9d4",
+      "lastStatus": 200,
+      "totalHttpMs": 8,
+      "errorCode": null
+    }
+  },
+  "checks": {
+    "correctService": true,
+    "sourceImported": true,
+    "clientAssets": true,
+    "terminalPreviewWithRoute": true,
+    "detailIdentity": true,
+    "navigationMatches": true,
+    "mapImage": true
+  },
+  "health": {
+    "status": "ok",
+    "service": "readytogo",
+    "catalogCount": 13124
+  },
+  "import": {
+    "inputRecords": 13156,
+    "importedCount": 13124,
+    "mergedCount": 32
+  },
+  "assets": [
+    {
+      "path": "/assets/index-DPxUhsrL.js",
+      "status": 200,
+      "bytes": 390607,
+      "sha256": "81ef2031e96017e64ab1ee8543da31fc5b45d26354a22a6ff4252a18bcb281c3"
+    },
+    {
+      "path": "/assets/index-CrxEjtCT.css",
+      "status": 200,
+      "bytes": 22114,
+      "sha256": "081a58051f9c6a89da545ce76f37c989f3812de83fb09125fa9f2883914babfd"
+    }
+  ],
+  "parse": {
+    "skipped": true,
+    "reason": "Same-code stage parse evidence is reused; no new parse call."
+  },
+  "place": {
+    "nameZh": "陶然亭公园",
+    "poiId": "B000A4D500",
+    "district": "西城区",
+    "returnedChoices": 10
+  },
+  "previewRequestSettings": {
+    "revision": 1,
+    "language": "en",
+    "preference": "seated_required",
+    "includeConditionalAccess": true,
+    "walkLimitMinutes": 20,
+    "extendedRadiusKm": 5
+  },
+  "flowNote": "Parse and preview are separate release checks; no saved user plan is changed.",
+  "preview": {
+    "elapsedMs": 22203,
+    "status": "complete",
+    "analysisStatus": "complete",
+    "pendingWork": false,
+    "hasMore": true,
+    "groupCounts": {
+      "matched": 2,
+      "farther": 3,
+      "otherNearby": 5,
+      "conditionalAccess": 0,
+      "routeUnknown": 0
+    },
+    "returnedCandidates": 10,
+    "successfulRoutes": 10,
+    "error": null
+  },
+  "candidate": {
+    "toiletId": "bj_1155d7c86129bb5e0621",
+    "nameZh": "永内西街北里",
+    "seatStatus": "inferred",
+    "walkSeconds": 1139,
+    "walkMeters": 1424,
+    "reason": "Accessible stalls suggest seated facilities may be available. Walking about 19 min.",
+    "sources": ["beijing_csv", "amap"]
+  },
+  "navigation": {
+    "routeStatus": "success",
+    "walkSeconds": 1139,
+    "walkMeters": 1424,
+    "hasAppUrl": true,
+    "hasWebUrl": true,
+    "hasCopyText": true
+  },
+  "map": {
+    "status": 200,
+    "contentType": "image/png",
+    "validPng": true,
+    "width": 640,
+    "height": 480
+  },
+  "elapsedMs": 24645,
+  "technicalChecksPass": true
+}

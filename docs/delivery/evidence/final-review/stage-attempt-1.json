@@ -1,0 +1,73 @@
+{
+  "schema": "readytogo.release-http.v1",
+  "generatedAt": "2026-10-08T21:24:39.180Z",
+  "label": "final-review-stage",
+  "revision": "2fafc9c14934cccbde188a8613cf7ac8b85435e2",
+  "transport": "HTTP only; no browser",
+  "testInput": {
+    "query": "陶然亭公园",
+    "text": "Parser unchanged; no new parse requested in this release."
+  },
+  "requests": {
+    "/health": {
+      "count": 1,
+      "firstRequestId": null,
+      "lastRequestId": null,
+      "lastStatus": 200,
+      "totalHttpMs": 46,
+      "errorCode": null
+    },
+    "/api/v1/data/summary": {
+      "count": 1,
+      "firstRequestId": "b331700f-d1bf-4312-999b-c19f37dc4705",
+      "lastRequestId": "b331700f-d1bf-4312-999b-c19f37dc4705",
+      "lastStatus": 200,
+      "totalHttpMs": 4,
+      "errorCode": null
+    },
+    "/api/v1/places/search": {
+      "count": 1,
+      "firstRequestId": "5cf61494-ae68-45b6-80d6-afffc0e6c562",
+      "lastRequestId": "5cf61494-ae68-45b6-80d6-afffc0e6c562",
+      "lastStatus": 503,
+      "totalHttpMs": 5012,
+      "errorCode": "MAP_UNAVAILABLE"
+    }
+  },
+  "checks": {
+    "correctService": true,
+    "sourceImported": true,
+    "clientAssets": true
+  },
+  "health": {
+    "status": "ok",
+    "service": "readytogo",
+    "catalogCount": 13124
+  },
+  "import": {
+    "inputRecords": 13156,
+    "importedCount": 13124,
+    "mergedCount": 32
+  },
+  "assets": [
+    {
+      "path": "/assets/index-DPxUhsrL.js",
+      "status": 200,
+      "bytes": 390607,
+      "sha256": "81ef2031e96017e64ab1ee8543da31fc5b45d26354a22a6ff4252a18bcb281c3"
+    },
+    {
+      "path": "/assets/index-CrxEjtCT.css",
+      "status": 200,
+      "bytes": 22114,
+      "sha256": "081a58051f9c6a89da545ce76f37c989f3812de83fb09125fa9f2883914babfd"
+    }
+  ],
+  "parse": {
+    "skipped": true,
+    "reason": "Same-code stage parse evidence is reused; no new parse call."
+  },
+  "elapsedMs": 5097,
+  "failure": "HTTP 503 /api/v1/places/search MAP_UNAVAILABLE",
+  "technicalChecksPass": false
+}

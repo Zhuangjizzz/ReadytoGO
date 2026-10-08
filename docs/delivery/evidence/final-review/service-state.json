@@ -1,0 +1,49 @@
+{
+  "checkedAt": "2026-10-08T21:31:01.970305+00:00",
+  "revision": "2fafc9c14934cccbde188a8613cf7ac8b85435e2",
+  "release": "/opt/readytogo/releases/2fafc9c14934cccbde188a8613cf7ac8b85435e2",
+  "pid": 3516638,
+  "cwd": "/opt/readytogo/releases/2fafc9c14934cccbde188a8613cf7ac8b85435e2",
+  "runtimeFilesMatched": 7,
+  "runtimeFilesOwner": "root:root",
+  "ownershipNormalization": {
+    "releases": [
+      "2fafc9c14934cccbde188a8613cf7ac8b85435e2",
+      "c82770b6be6d70e3da20a81cdd0d1f196841c008"
+    ],
+    "operation": "chown -R -h root:root; symlink targets not followed; bytes unchanged",
+    "credentialsOrStateOwnershipChanged": false
+  },
+  "bundleSha256": "e8be4583cd6569bf7dcc59743b209a55515c899276000c73f15c2df5244cd088",
+  "unitSha256": "fbc5c8195378d858b24e67eba1f85be35be62631bef6db701d6e145ed28baee0",
+  "configurationAndStateMetadata": {
+    "/etc/readytogo/readytogo.env": {
+      "mode": "0o600",
+      "uid": 0,
+      "gid": 0
+    },
+    "/var/lib/readytogo/catalog.json": {
+      "mode": "0o640",
+      "uid": 61684,
+      "gid": 61684
+    },
+    "/var/lib/readytogo/matches.json": {
+      "mode": "0o640",
+      "uid": 61684,
+      "gid": 61684
+    }
+  },
+  "service": {
+    "exitCode": 0,
+    "output": "NRestarts=0\nMemoryCurrent=229003264\nActiveState=active\nSubState=running\nUnitFileState=enabled"
+  },
+  "smoke": {
+    "exitCode": 0,
+    "output": "ActiveState=inactive\nUnitFileState=disabled"
+  },
+  "ports": {
+    "exitCode": 0,
+    "output": "State  Recv-Q Send-Q Local Address:Port Peer Address:PortProcess                                   \nLISTEN 0      4096         0.0.0.0:8080      0.0.0.0:*    users:((\"docker-proxy\",pid=2268209,fd=8))\nLISTEN 0      511          0.0.0.0:3000      0.0.0.0:*    users:((\"MainThread\",pid=3516638,fd=21)) \nLISTEN 0      511          0.0.0.0:80        0.0.0.0:*    users:((\"MainThread\",pid=3472909,fd=21))"
+  },
+  "backup": "/opt/readytogo/backups/before-2fafc9c14934"
+}

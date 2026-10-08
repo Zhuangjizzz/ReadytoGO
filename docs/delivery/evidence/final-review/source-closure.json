@@ -1,0 +1,15 @@
+{
+  "checkedAt": "2026-10-08T21:25:14.974467+00:00",
+  "revision": "2fafc9c14934cccbde188a8613cf7ac8b85435e2",
+  "manifestFilesMatched": 7,
+  "requestId": "335c14c6-1370-4d73-863d-2d36401013c7",
+  "sourceClosure": {
+    "toiletId": "bj_8cdd730ed449b80c314a",
+    "nameZh": "东崔铸造厂公厕",
+    "availability": "out_of_service",
+    "sourceNote": "未开放",
+    "passed": true
+  },
+  "newProviderCalls": 0,
+  "newModelCalls": 0
+}
