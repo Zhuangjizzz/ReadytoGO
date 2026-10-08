@@ -170,7 +170,12 @@ export class Catalog {
     }
   }
   get(id: string): Toilet | undefined {
-    const t = this.toilets.get(id);
+    // Standalone POI IDs can already be selected or saved when a later query
+    // links their POI to local records. The POI map is also restored from cache.
+    const canonicalId = id.startsWith("amap_")
+      ? (this.poiIds.get(id.slice("amap_".length)) ?? id)
+      : id;
+    const t = this.toilets.get(canonicalId);
     return t ? deriveToilet(t) : undefined;
   }
   nearby(origin: Position, radius: number): Toilet[] {
@@ -247,9 +252,11 @@ export class Catalog {
     if (!pool.length) return current;
     try {
       const id = await this.matchAssistant(poi, pool);
+      const canonical = this.get(current.id);
+      if (canonical && canonical.id !== current.id) return canonical;
       const selected = pool.find((t) => t.id === id);
       // An in-flight match may have attached a record elsewhere. Never steal it.
-      if (!selected || selected.poiId) return current;
+      if (!selected || selected.poiId) return canonical ?? current;
       selected.position = poi.position;
       selected.positionSource = "amap";
       selected.poiId = poi.id;
@@ -265,7 +272,7 @@ export class Catalog {
       this.poiIds.set(poi.id, selected.id);
       return selected;
     } catch {
-      return current;
+      return this.get(current.id) ?? current;
     }
   }
   integrate(poi: ProviderPoi): Toilet {
