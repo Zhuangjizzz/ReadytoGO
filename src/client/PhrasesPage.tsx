@@ -1,6 +1,5 @@
 import { useState } from "react";
 import type { Language } from "../shared/contracts";
-import "./wayfinding.css";
 const phrases = [
   [
     "请问这里有成人可用的坐便器吗？",

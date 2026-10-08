@@ -12,7 +12,7 @@ async function withFixture(
 ) {
   const built = await build({
     stdin: {
-      contents: `import React,{useState} from 'react';import{createRoot}from'react-dom/client';import{StaticMap}from'./src/client/StaticMap';import{Navigation}from'./src/client/Navigation';import{LocateButton}from'./src/client/LocateButton';import{PlacePicker}from'./src/client/PlacePicker';import{PhrasesPage}from'./src/client/PhrasesPage';import{usePageNavigation}from'./src/client/usePageNavigation';import{DetailPage}from'./src/client/DetailPage';import './src/client/styles.css';function Fixture(){${body}}createRoot(document.getElementById('root')).render(<Fixture/>);`,
+      contents: `import React,{useState} from 'react';import{createRoot}from'react-dom/client';import{StaticMap}from'./src/client/StaticMap';import{Navigation}from'./src/client/Navigation';import{LocateButton}from'./src/client/LocateButton';import{PlacePicker}from'./src/client/PlacePicker';import{PhrasesPage}from'./src/client/PhrasesPage';import{usePageNavigation}from'./src/client/usePageNavigation';import{DetailPage}from'./src/client/DetailPage';import './src/client/styles.css';import './src/client/wayfinding.css';function Fixture(){${body}}createRoot(document.getElementById('root')).render(<Fixture/>);`,
       resolveDir: process.cwd(),
       loader: "tsx",
     },

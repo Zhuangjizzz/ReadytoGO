@@ -9,7 +9,6 @@ import type {
 import { getToilet } from "./api";
 import { Navigation } from "./Navigation";
 import { StaticMap } from "./StaticMap";
-import "./wayfinding.css";
 const facilityNames: Record<keyof Facilities, [string, string]> = {
   maleStalls: ["Male stalls", "男厕厕位"],
   femaleStalls: ["Female stalls", "女厕厕位"],

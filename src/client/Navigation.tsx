@@ -3,7 +3,6 @@ import type { Language, Origin } from "../shared/contracts";
 import type { NavigationResult } from "../shared/navigation";
 import { api } from "./api";
 import { locate, locationError, sessionLocation } from "./LocateButton";
-import "./wayfinding.css";
 
 export function Navigation({
   toiletId,

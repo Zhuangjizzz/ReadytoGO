@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { z } from "zod";
+import { validateBeijingOrigin } from "../location.js";
 import { AppError } from "../errors.js";
 import {
   languageSchema,
@@ -55,6 +56,8 @@ export function coreRouter(services: CoreServices) {
   router.post("/toilets/search", async (req, res) => {
     const args = parse(searchSchema, req.body);
     requireBeijing(args.origin);
+    if (args.origin.source !== "place")
+      await validateBeijingOrigin(services.provider, args.origin);
     const result = await services.query.search(args);
     res.json({ requestId: res.locals.requestId, ...result });
   });

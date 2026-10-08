@@ -250,6 +250,7 @@ export function NearbyPage({
   }, [conditionKey]);
   useEffect(() => {
     if (!active) cancel();
+    else if (searched.current && origin && !resultRef.current) void run();
     else if (resultRef.current?.pendingWork && searched.current)
       void run(resultRef.current.batchCursor ?? null);
     return () => {
@@ -701,6 +702,7 @@ export function NearbyPage({
       {picker && (
         <PlacePicker
           language={language}
+          initialPosition={origin ?? undefined}
           onSelect={select}
           onClose={() => setPicker(false)}
         />

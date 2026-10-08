@@ -308,3 +308,19 @@ test("a temporary origin-validation failure keeps coordinate-based navigation av
     assert.ok(result.body.data.appUrl);
     assert.ok(result.body.data.webUrl);
   }));
+
+test("nearby search does not accept a map-origin outside Beijing merely because it falls inside the bounding box", () =>
+  withNavigation(async (base) => {
+    const result = await post(base, "/toilets/search", {
+      origin: { ...origin, lng: 116.9, lat: 39.7, source: "map" },
+      context: "nearby",
+      preference: "any",
+      walkLimitMinutes: 10,
+      includeConditionalAccess: false,
+      extendedRadiusKm: 5,
+      language: "en",
+      queryVersion: 1,
+    });
+    assert.equal(result.status, 422);
+    assert.equal(result.body.error.code, "OUTSIDE_BEIJING");
+  }));

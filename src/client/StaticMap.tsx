@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 import type { Language, Position } from "../shared/contracts";
-import "./wayfinding.css";
 
 export interface MapMarker {
   id: string;

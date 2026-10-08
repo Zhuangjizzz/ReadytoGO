@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import type { Language, Origin } from "../shared/contracts";
 import { api, ApiError } from "./api";
-import "./wayfinding.css";
 let current: { origin: Origin; at: number } | null = null;
 export function sessionLocation(): Origin | null {
   return current && Date.now() - current.at < 120_000 ? current.origin : null;
