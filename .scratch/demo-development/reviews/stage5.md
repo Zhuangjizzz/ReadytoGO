@@ -44,3 +44,5 @@
 - 合并复用：附近与规划使用同一纯合并模块，保持排序、状态和最新游标规则；新增公开UI回归覆盖分页高德别名被规范ID替换、选择保留、无重复卡片与分页终止。原规划回归继续通过。
 
 验证：完整 `npm test` **119/119**，`npm run check`、`npm run build`、`git diff --check` 全部通过。数据审查探针复验记录另存于 `/private/tmp/readytogo-demo-notes/final-spec-data-recheck.mjs` 与 `.json`，原失败证据未覆盖。本轮没有新增真实API/模型调用或实际应用浏览器访问；上述结果不替代未完成的实际手机验收。
+
+独立merger随后补出语言刷新的空 `pendingWork=true` 首响应边界。新增DOM回归先失败后通过：当前刷新页仍保留原有来源候选，旧语言理由不出现；新响应同ID/规范ID资料优先，终态再替换。merger另行确认终态明确耗尽时旧页被移除，未越过原刷新范围。最新完整测试 **120/120**、类型检查、构建和差异检查通过。独立探针为 `/private/tmp/readytogo-demo-notes/final-fixes-language-pending-probe.mjs`、`final-fixes-language-exhausted-probe.mjs`，没有新增实际应用浏览器或真实API调用。

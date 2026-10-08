@@ -210,7 +210,19 @@ export function NearbyPage({
           const unrefreshedKeys = new Set(
             refresh?.keys.slice(refresh.index + 1) ?? [],
           );
-          pages.current.set(slot, page);
+          const previousPage = pages.current.get(slot);
+          pages.current.set(
+            slot,
+            refresh && page.pendingWork && previousPage
+              ? mergeSearchPages(
+                  new Map([
+                    ["previous", previousPage],
+                    ["current", page],
+                  ]),
+                  page,
+                )
+              : page,
+          );
           const moreLoadedPages =
             !!refresh &&
             !page.pendingWork &&

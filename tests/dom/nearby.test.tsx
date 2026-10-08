@@ -556,3 +556,84 @@ test("a language refresh retains a selected later-page candidate and refreshes o
     globalThis.fetch = originalFetch;
   }
 });
+
+test("an empty pending language batch keeps the selected source candidate until its terminal replacement", async () => {
+  const originalFetch = globalThis.fetch;
+  let finishPending!: () => void;
+  globalThis.fetch = async (_url, init) => {
+    const request = JSON.parse(String(init?.body)) as SearchRequest;
+    if (request.language === "en")
+      return response(request, [
+        candidate("chosen-source", { reason: "Original English explanation" }),
+      ]);
+    if (!request.cursor)
+      return response(request, [], "matched", {
+        status: "partial",
+        pendingWork: true,
+        analysisStatus: "pending",
+        batchCursor: "new-language-batch",
+      });
+    await new Promise<void>((resolve) => {
+      finishPending = resolve;
+    });
+    return response(
+      request,
+      [
+        candidate("chosen-source", {
+          reason: "新的中文说明",
+          walkSeconds: 120,
+        }),
+      ],
+      "matched",
+      {
+        batchCursor: "new-language-batch",
+      },
+    );
+  };
+  function LanguageHarness() {
+    const [language, setLanguage] = useState<Language>("en");
+    return (
+      <>
+        <button onClick={() => setLanguage("zh-CN")}>中文</button>
+        <NearbyPage
+          language={language}
+          origin={origin}
+          onOriginChange={() => {}}
+          preference="any"
+          onPreferenceChange={() => {}}
+        />
+      </>
+    );
+  }
+  try {
+    render(<LanguageHarness />);
+    const user = userEvent.setup({ document: dom.window.document });
+    await user.click(
+      screen.getAllByRole("button", { name: "Find a toilet" })[0],
+    );
+    await user.click(await screen.findByText("chosen-source"));
+    await user.click(screen.getByRole("button", { name: "中文" }));
+    await screen.findByText("正在补充候选分析；现有结果可继续使用。");
+    assert.equal(Boolean(screen.queryByText("chosen-source")), true);
+    assert.equal(
+      screen.getByRole("article").classList.contains("is-selected"),
+      true,
+    );
+    assert.equal(
+      Boolean(screen.queryByText("Original English explanation")),
+      false,
+    );
+    await waitFor(() => assert.equal(typeof finishPending, "function"));
+    await act(async () => finishPending());
+    await screen.findByText("新的中文说明");
+    assert.equal(
+      screen.getByRole("article").classList.contains("is-selected"),
+      true,
+    );
+    assert.equal(screen.getAllByRole("article").length, 1);
+    assert.ok(screen.getByText("2 分钟 · 1 m"));
+  } finally {
+    cleanup();
+    globalThis.fetch = originalFetch;
+  }
+});
