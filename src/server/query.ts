@@ -56,6 +56,7 @@ interface Session {
   found: Map<string, Toilet>;
   used: Set<string>;
   usedPois: Set<string>;
+  assistedPois: Set<string>;
   streams: Stream[];
   batches: Batch[];
   warnings: Set<string>;
@@ -172,12 +173,32 @@ export class QueryService {
       ? r.extendedRadiusKm * 1000
       : limits.ordinaryRadiusMeters[r.walkLimitMinutes];
   }
-  private add(s: Session, pois: ProviderPoi[], r: SearchRequest) {
+  private async add(s: Session, pois: ProviderPoi[], r: SearchRequest) {
+    const assistance: Promise<void>[] = [];
     for (const poi of pois) {
       const t = this.catalog.integrate(poi);
       if (t.position && distanceMeters(r.origin, t.position) <= this.radius(r))
         s.found.set(t.id, t);
+      if (
+        t.id.startsWith("amap_") &&
+        this.catalog.canAssist(poi) &&
+        s.assistedPois.size < 2 &&
+        !s.assistedPois.has(poi.id)
+      ) {
+        s.assistedPois.add(poi.id);
+        assistance.push(
+          this.catalog.integrateWithAssistance(poi).then((matched) => {
+            if (matched.id !== t.id) s.found.delete(t.id);
+            if (
+              matched.position &&
+              distanceMeters(r.origin, matched.position) <= this.radius(r)
+            )
+              s.found.set(matched.id, matched);
+          }),
+        );
+      }
     }
+    await Promise.all(assistance);
   }
   private async fetchStream(s: Session, stream: Stream, r: SearchRequest) {
     if (!stream.more || stream.page > 8) return;
@@ -195,7 +216,7 @@ export class QueryService {
         .join("|");
       const repeated = stream.fingerprints.has(fingerprint);
       stream.fingerprints.add(fingerprint);
-      this.add(s, result.pois, r);
+      await this.add(s, result.pois, r);
       stream.page++;
       stream.more =
         result.hasMore &&
@@ -214,14 +235,20 @@ export class QueryService {
     }
   }
   private remaining(s: Session, r: SearchRequest): Toilet[] {
-    const rows = [...s.found.values()]
-      .map((t) => this.catalog.get(t.id))
-      .filter((t): t is Toilet => !!t)
+    const canonical = new Map<string, Toilet>();
+    for (const found of s.found.values()) {
+      const t = this.catalog.get(found.id);
+      if (t) canonical.set(t.id, t);
+    }
+    const used = new Set(
+      [...s.used].map((id) => this.catalog.get(id)?.id ?? id),
+    );
+    const rows = [...canonical.values()]
       .map(deriveToilet)
       .filter(
         (t) =>
           t.position &&
-          !s.used.has(t.id) &&
+          !used.has(t.id) &&
           !(t.poiId && s.usedPois.has(t.poiId)) &&
           eligible(t, r, this.now()) &&
           distanceMeters(r.origin, t.position) <= this.radius(r),
@@ -258,6 +285,7 @@ export class QueryService {
       ),
       used: new Set(),
       usedPois: new Set(),
+      assistedPois: new Set(),
       streams: (r.preference === "seated_required"
         ? [ordinary, this.radius(r)]
         : [ordinary]
@@ -295,7 +323,7 @@ export class QueryService {
               { toiletsOnly: true, limit: 5 },
             );
             s.upstreamSuccess = true;
-            this.add(s, results.pois, r);
+            await this.add(s, results.pois, r);
           } catch {
             s.upstreamFailure = true;
             s.warnings.add(
@@ -340,6 +368,62 @@ export class QueryService {
     };
     c.reason = ruleReason(c, r.language);
     return c;
+  }
+  private refreshBatch(s: Session, b: Batch, r: SearchRequest) {
+    const canonical = new Map<string, Candidate>();
+    const facts = (value: Candidate | Toilet) =>
+      JSON.stringify([
+        value.nameZh,
+        value.addressZh,
+        value.district,
+        value.position
+          ? [value.position.lng, value.position.lat, value.position.crs]
+          : null,
+        value.facilities,
+        value.sources,
+        value.openingHoursRaw,
+        value.accessCondition,
+        value.accessNote,
+        value.seatConflict ?? false,
+      ]);
+    for (const snapshot of b.candidates) {
+      const current = this.catalog.get(snapshot.toiletId);
+      if (!current || !eligible(current, r, this.now())) continue;
+      let candidate = snapshot;
+      if (
+        snapshot.toiletId !== current.id ||
+        facts(snapshot) !== facts(current)
+      ) {
+        candidate = this.candidate(current, r);
+        // A canonical association normally keeps the same POI position. Reuse
+        // only routes to that exact destination; never relabel an old route.
+        if (
+          snapshot.position?.lng === current.position?.lng &&
+          snapshot.position?.lat === current.position?.lat &&
+          snapshot.position?.crs === current.position?.crs
+        ) {
+          candidate.routeStatus = snapshot.routeStatus;
+          candidate.walkSeconds = snapshot.walkSeconds;
+          candidate.walkMeters = snapshot.walkMeters;
+        } else {
+          candidate.routeStatus = "provider_error";
+          candidate.walkSeconds = null;
+          candidate.walkMeters = null;
+        }
+        candidate.reason = ruleReason(candidate, r.language);
+        if (b.analysisStatus === "complete") b.analysisStatus = "fallback";
+      }
+      s.used.add(current.id);
+      if (current.poiId) s.usedPois.add(current.poiId);
+      const previous = canonical.get(current.id);
+      if (
+        !previous ||
+        (previous.routeStatus !== "success" &&
+          candidate.routeStatus === "success")
+      )
+        canonical.set(current.id, candidate);
+    }
+    b.candidates = [...canonical.values()];
   }
   private group(c: Candidate, r: SearchRequest): GroupName | null {
     if (c.routeStatus === "unreachable") return null;
@@ -454,6 +538,7 @@ export class QueryService {
       b.preparing = false;
       await Promise.all(routeJobs);
       if (!active()) return;
+      this.refreshBatch(s, b, r);
       if (this.analyzer && b.candidates.length) {
         try {
           const originals = new Map(b.candidates.map((c) => [c.toiletId, c]));
@@ -491,9 +576,12 @@ export class QueryService {
               b.candidates.push(c);
           b.analysisStatus = result.analysisStatus;
         } catch {
+          if (!active()) return;
           b.analysisStatus = "fallback";
         }
       }
+      if (!active()) return;
+      this.refreshBatch(s, b, r);
     })().catch(() => {
       s.upstreamFailure = true;
     });
@@ -579,6 +667,7 @@ export class QueryService {
         503,
         true,
       );
+    if (b.done) this.refreshBatch(s, b, r);
     const groups = emptyGroups();
     for (const original of b.candidates) {
       const c = { ...original };

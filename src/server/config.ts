@@ -1,6 +1,8 @@
 import { resolve } from "node:path";
 export const limits = {
   providerTimeoutMs: 5000,
+  aiParseTimeoutMs: 12000,
+  aiAnalysisTimeoutMs: 20000,
   batchTimeoutMs: 120000,
   providerQueueTimeoutMs: 90000,
   firstResponseWaitMs: 150,
@@ -17,6 +19,11 @@ export interface AppConfig {
   matchCachePath: string | null;
   amapKey: string;
   amapBaseUrl: string;
+  qwenKey: string;
+  qwenBaseUrl: string;
+  qwenModel: string;
+  aiTimeoutMs: number;
+  aiAnalysisTimeoutMs: number;
   port: number;
   clientPath: string;
 }
@@ -33,6 +40,13 @@ export function getConfig(): AppConfig {
           ),
     amapKey: process.env.AMAP_KEY || process.env.AMAP_WEBSERVICE_KEY || "",
     amapBaseUrl: "https://restapi.amap.com",
+    qwenKey: process.env.DASHSCOPE_API_KEY || "",
+    qwenBaseUrl:
+      process.env.QWEN_BASE_URL ||
+      "https://dashscope.aliyuncs.com/compatible-mode/v1",
+    qwenModel: process.env.QWEN_MODEL || "",
+    aiTimeoutMs: limits.aiParseTimeoutMs,
+    aiAnalysisTimeoutMs: limits.aiAnalysisTimeoutMs,
     port: Number(process.env.PORT || 3001),
     clientPath: resolve("dist/client"),
   };

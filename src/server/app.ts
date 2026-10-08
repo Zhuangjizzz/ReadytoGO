@@ -1,4 +1,7 @@
 import express from "express";
+import { AiService } from "./ai/service.js";
+import { QwenModel, type JsonModel } from "./providers/qwen.js";
+import { assistRouter } from "./routes/assist.js";
 import { readFile } from "node:fs/promises";
 import { randomUUID } from "node:crypto";
 import { getConfig, type AppConfig } from "./config.js";
@@ -21,6 +24,7 @@ export interface RequestLog {
 }
 export interface ApplicationOptions extends Partial<AppConfig> {
   provider?: AmapProvider;
+  model?: JsonModel;
   logger?: (entry: RequestLog) => void;
   now?: () => Date;
   queryOptions?: QueryOptions;
@@ -42,7 +46,25 @@ export async function createApplication(options: ApplicationOptions = {}) {
     options.now,
     options.queryOptions,
   );
-  const services = { catalog, provider, query };
+  const ai = new AiService(
+    options.model ??
+      new QwenModel({
+        key: config.qwenKey,
+        baseUrl: config.qwenBaseUrl,
+        model: config.qwenModel,
+        timeoutMs: Math.max(config.aiTimeoutMs, config.aiAnalysisTimeoutMs),
+      }),
+    config.aiTimeoutMs,
+    config.aiAnalysisTimeoutMs,
+  );
+  query.setCandidateAnalyzer((candidates, request) =>
+    ai.analyzeCandidates(candidates, request),
+  );
+  if (options.model || (config.qwenKey && config.qwenModel)) {
+    catalog.setMatchAssistant((poi, records) => ai.matchRecord(poi, records));
+  }
+  const services = { catalog, provider, query, ai };
+
   const app = express();
   app.disable("x-powered-by");
   app.use((req, res, next) => {
@@ -75,6 +97,7 @@ export async function createApplication(options: ApplicationOptions = {}) {
   app.use("/api/v1", coreRouter(services));
   app.use("/api/v1", navigationRouter(services));
   app.use("/api/v1", mapsRouter(config));
+  app.use("/api/v1", assistRouter(ai));
   options.registerRoutes?.(app, services);
   app.use("/api", (_req, _res, next) =>
     next(new AppError("NOT_FOUND", "This endpoint was not found.", 404)),
