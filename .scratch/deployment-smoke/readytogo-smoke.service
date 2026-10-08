@@ -1,0 +1,23 @@
+[Unit]
+Description=ReadytoGo deployment smoke page
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/readytogo-smoke
+ExecStart=/usr/bin/node /opt/readytogo-smoke/server.mjs
+Environment=HOST=0.0.0.0
+Environment=PORT=3000
+DynamicUser=yes
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectSystem=strict
+ProtectHome=yes
+CapabilityBoundingSet=
+Restart=on-failure
+RestartSec=3
+MemoryMax=128M
+TasksMax=32
+
+[Install]
+WantedBy=multi-user.target

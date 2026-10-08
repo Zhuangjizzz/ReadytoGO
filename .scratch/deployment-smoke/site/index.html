@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex, nofollow">
+    <title>ReadytoGo · 部署验证</title>
+    <link rel="icon" href="data:,">
+    <link rel="stylesheet" href="/style.css">
+    <script src="/app.js" defer></script>
+  </head>
+  <body>
+    <header><strong>ReadytoGo<span aria-hidden="true"> ↗</span></strong><span class="badge">部署验证</span></header>
+    <main>
+      <p class="eyebrow">从本机，到云端</p>
+      <h1>第一步，<br>让网页被看见。</h1>
+      <p class="intro">这是 ReadytoGo 的部署验证页，用于检查页面加载与后端连接。产品功能正在准备中。</p>
+      <section class="status-card" aria-labelledby="status-title">
+        <h2 id="status-title">连接状态</h2>
+        <dl>
+          <div><dt>网页</dt><dd>已载入</dd></div>
+          <div><dt>后端服务</dt><dd id="server-state" role="status">检查中…</dd></div>
+          <div><dt>访问方式</dt><dd id="connection-type">等待检查</dd></div>
+        </dl>
+        <button type="button" id="check-button">重新检查连接 <span aria-hidden="true">↗</span></button>
+        <p id="check-detail" class="detail" aria-live="polite">正在向服务器发送检查请求。</p>
+        <noscript><p class="detail">请启用 JavaScript，或直接打开 /healthz 检查后端响应。</p></noscript>
+      </section>
+      <p class="next-step">接下来：绑定产品域名，完成 HTTPS 访问验证。</p>
+    </main>
+    <footer>ReadytoGo <span>Deployment check · 01</span></footer>
+  </body>
+</html>

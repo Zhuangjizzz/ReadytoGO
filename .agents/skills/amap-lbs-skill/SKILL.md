@@ -8,14 +8,14 @@ compatibility: Node.js 22+；使用内置 fetch，读取项目 .env 的 AMAP_KEY
 
 基于高德官方分发的 amap-lbs-skill 裁剪。来源和本项目改动见 UPSTREAM.md。
 
-当前准备阶段按用户要求，只验证 Key 可用、关键词和周边搜索能返回真实地点。下方的 PRD 口径在后续开发产品时应用，不作为基础搜索的前置条件。
+脚本用于 Web 服务联调；产品地图、范围、数据匹配及回退按 [Demo 数据细则](../../../docs/prd/data-and-api.md)执行。
 
 ## 配置与运行
 
 从项目根目录运行 `node --env-file=.env <本技能绝对路径>/scripts/query.mjs --help`。
 
 - `AMAP_KEY`：用户的 Web 服务 Key；兼容 `AMAP_WEBSERVICE_KEY`。值只存在服务端环境/被忽略的 `.env`。
-- 不需要 JS Key、securityJsCode、OpenClaw、ClawHub CLI 或高德 CLI。
+- 此 Web 服务脚本使用上述配置即可；产品嵌入地图另按 JS API 的接入要求配置。
 - 只读查询命令为 `query.mjs <操作> '<JSON参数>'`。先看 help，再使用下面对应操作；stdout 是含操作、取数时间和高德原始数据的 JSON。
 
 | 操作 | 用途 | API/默认关键字段 |
@@ -31,9 +31,9 @@ compatibility: Node.js 22+；使用内置 fetch，读取项目 .env 的 AMAP_KEY
 
 - 请求失败返回非零退出码与简短错误码；不输出带 Key 的 URL。脚本单次超时 10 秒，不自动重试。
 - 高德 `status=1` 后仍需检查 POI 和路线是否存在。`count` 不用作完整覆盖的证明，按当前官方分页规则和实际页返回继续处理。
-- 按实际返回 `typecode` 精确过滤，排除母婴室；名称包含“无障碍”不能提升坐便证据。
+- 使用实际返回类型筛选厕所；设施解释和 AI 推断按 [推荐规则](../../../docs/prd/rules.md)。
 - 步行分钟只来自算路耗时；失败回退地图距离，禁止自行按步速换算。
-- 政府坐标先确认坐标系，保留原始坐标；高德坐标不能重复转换。脚本不猜测源坐标系。
+- 优先使用高德返回的位置；调用转换时显式传源坐标系，高德位置不重复转换。原表位置问题可通过产品自动匹配处理。
 - 本技能用于开发联调。政府公厕 JSON、合并去重、分区排序和数据降级由产品服务端实现。
 - 不把营业字段称为实时开放，不把无障碍设施当作路线无障碍保证。
 
@@ -44,4 +44,4 @@ compatibility: Node.js 22+；使用内置 fetch，读取项目 .env 的 AMAP_KEY
 - [坐标转换](https://lbs.amap.com/api/webservice/guide/api/convert)
 - [网页导航 URI](https://lbs.amap.com/api/uri-api/guide/travel/route)：`mode=walk&callnative=0`，无需 Key。
 
-仅在后续决定嵌入交互地图时再安装 JS API skill 并申请对应 Key。
+Demo 包含嵌入地图；实现时配置对应 JS API Key，加载失败保留列表和导航链接。当前脚本不承担地图 UI。

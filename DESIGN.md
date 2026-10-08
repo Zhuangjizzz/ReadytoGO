@@ -1,318 +1,286 @@
 ---
 version: alpha
-name: Uber-Inspired-design-analysis
-description: An inspired interpretation of Uber's design language — a transportation-and-delivery super-app brand whose web surface is a black-and-white duet, framed by a custom geometric display sans, accented by a single signature pill shape (radius 999px) on every interactive element, and decorated only by editorial 4:3 illustrations of riders, drivers, and city objects.
+name: Wise-Inspired-design-analysis
+description: An inspired interpretation of Wise's design language — a global money-transfer brand whose surface combines an unusually heavy near-black display sans (weight 900 at 64–126 px) with a vivid lime-green brand accent, sage-tinted surface neutrals, and rounded white cards on a pale green-tinted canvas; the whole system reads more like a Scandinavian fintech magazine than a bank.
 
 colors:
-  primary: "#000000"
-  on-primary: "#ffffff"
-  ink: "#000000"
-  body: "#5e5e5e"
-  mute: "#afafaf"
-  hairline-mid: "#4b4b4b"
+  primary: "#9fe870"
+  on-primary: "#0e0f0c"
+  primary-active: "#cdffad"
+  primary-neutral: "#c5edab"
+  primary-pale: "#e2f6d5"
+  ink: "#0e0f0c"
+  ink-deep: "#163300"
+  body: "#454745"
+  mute: "#868685"
   canvas: "#ffffff"
-  canvas-soft: "#efefef"
-  canvas-softer: "#f3f3f3"
-  surface-pressed: "#e2e2e2"
-  link: "#0000ee"
-  on-dark: "#ffffff"
-  black-elevated: "#282828"
+  canvas-soft: "#e8ebe6"
+  positive: "#2ead4b"
+  positive-deep: "#054d28"
+  warning: "#ffd11a"
+  warning-deep: "#b86700"
+  warning-content: "#4a3b1c"
+  negative: "#d03238"
+  negative-deep: "#a72027"
+  negative-darkest: "#a7000d"
+  negative-bg: "#320707"
+  accent-orange: "#ffc091"
+  accent-cyan: "#38c8ff"
 
 typography:
+  display-mega:
+    fontFamily: Wise Sans, Inter, system-ui, -apple-system, sans-serif
+    fontSize: 126px
+    fontWeight: 900
+    lineHeight: 107.1px
   display-xxl:
-    fontFamily: UberMove, UberMoveText, system-ui, Helvetica Neue, Arial, sans-serif
-    fontSize: 52px
-    fontWeight: 700
-    lineHeight: 64px
+    fontFamily: Wise Sans, Inter, system-ui, sans-serif
+    fontSize: 96px
+    fontWeight: 900
+    lineHeight: 81.6px
   display-xl:
-    fontFamily: UberMove, UberMoveText, system-ui, Helvetica Neue, Arial, sans-serif
-    fontSize: 36px
-    fontWeight: 700
-    lineHeight: 44px
+    fontFamily: Wise Sans, Inter, system-ui, sans-serif
+    fontSize: 64px
+    fontWeight: 900
+    lineHeight: 54.4px
   display-lg:
-    fontFamily: UberMove, UberMoveText, system-ui, Helvetica Neue, Arial, sans-serif
-    fontSize: 32px
-    fontWeight: 700
-    lineHeight: 40px
+    fontFamily: Wise Sans, Inter, system-ui, sans-serif
+    fontSize: 47px
+    fontWeight: 400
+    lineHeight: 70.5px
+    letterSpacing: -0.108px
   display-md:
-    fontFamily: UberMove, UberMoveText, system-ui, Helvetica Neue, Arial, sans-serif
-    fontSize: 24px
-    fontWeight: 700
-    lineHeight: 32px
+    fontFamily: Wise Sans, Inter, system-ui, sans-serif
+    fontSize: 40px
+    fontWeight: 900
+    lineHeight: 34px
   display-sm:
-    fontFamily: UberMove, UberMoveText, system-ui, Helvetica Neue, Arial, sans-serif
-    fontSize: 20px
-    fontWeight: 700
-    lineHeight: 28px
+    fontFamily: Inter, system-ui, sans-serif
+    fontSize: 32px
+    fontWeight: 600
+    lineHeight: 38.4px
+    letterSpacing: -0.96px
+  display-xs:
+    fontFamily: Inter, system-ui, sans-serif
+    fontSize: 24px
+    fontWeight: 600
+    lineHeight: 31.2px
+    letterSpacing: -0.48px
   body-lg:
-    fontFamily: UberMoveText, system-ui, Helvetica Neue, Arial, sans-serif
-    fontSize: 18px
-    fontWeight: 500
-    lineHeight: 24px
+    fontFamily: Inter, system-ui, sans-serif
+    fontSize: 20px
+    fontWeight: 400
+    lineHeight: 30px
   body-md:
-    fontFamily: UberMoveText, system-ui, Helvetica Neue, Arial, sans-serif
+    fontFamily: Inter, system-ui, sans-serif
     fontSize: 16px
     fontWeight: 400
     lineHeight: 24px
   body-md-strong:
-    fontFamily: UberMoveText, system-ui, Helvetica Neue, Arial, sans-serif
+    fontFamily: Inter, system-ui, sans-serif
     fontSize: 16px
-    fontWeight: 500
-    lineHeight: 20px
+    fontWeight: 600
+    lineHeight: 24px
   body-sm:
-    fontFamily: UberMoveText, system-ui, Helvetica Neue, Arial, sans-serif
+    fontFamily: Inter, system-ui, sans-serif
     fontSize: 14px
     fontWeight: 400
     lineHeight: 20px
   body-sm-strong:
-    fontFamily: UberMoveText, system-ui, Helvetica Neue, Arial, sans-serif
+    fontFamily: Inter, system-ui, sans-serif
     fontSize: 14px
-    fontWeight: 500
-    lineHeight: 16px
+    fontWeight: 600
+    lineHeight: 20px
   caption:
-    fontFamily: UberMoveText, system-ui, Helvetica Neue, Arial, sans-serif
+    fontFamily: Inter, system-ui, sans-serif
     fontSize: 12px
     fontWeight: 400
-    lineHeight: 20px
-  button-large:
-    fontFamily: UberMoveText, system-ui, Helvetica Neue, Arial, sans-serif
-    fontSize: 18px
-    fontWeight: 500
-    lineHeight: 24px
+    lineHeight: 16px
   button-md:
-    fontFamily: UberMoveText, system-ui, Helvetica Neue, Arial, sans-serif
+    fontFamily: Inter, system-ui, sans-serif
     fontSize: 16px
-    fontWeight: 500
-    lineHeight: 20px
+    fontWeight: 600
+    lineHeight: 24px
 
 rounded:
   none: 0px
-  md: 8px
-  lg: 12px
-  xl: 16px
-  pill: 999px
-  pill-tab: 36px
-  full: 9999px
-
-spacing:
-  xxs: 4px
-  xs: 6px
   sm: 8px
   md: 12px
   lg: 16px
-  xl: 20px
-  2xl: 24px
-  3xl: 32px
+  xl: 24px
+  pill: 9999px
+  full: 9999px
+
+spacing:
+  xxs: 2px
+  xs: 4px
+  sm: 8px
+  md: 12px
+  lg: 16px
+  xl: 24px
+  2xl: 32px
+  3xl: 48px
 
 components:
   nav-bar:
     backgroundColor: "{colors.canvas}"
     textColor: "{colors.ink}"
-    typography: "{typography.body-md-strong}"
-    padding: "{spacing.lg} {spacing.3xl}"
+    typography: "{typography.body-sm-strong}"
+    padding: "{spacing.md} {spacing.xl}"
   nav-link:
     textColor: "{colors.ink}"
-    typography: "{typography.body-md-strong}"
+    typography: "{typography.body-sm-strong}"
   button-primary:
     backgroundColor: "{colors.primary}"
     textColor: "{colors.on-primary}"
     typography: "{typography.button-md}"
-    rounded: "{rounded.pill}"
-    padding: "{spacing.md} {spacing.md}"
-  button-secondary:
-    backgroundColor: "{colors.canvas}"
-    textColor: "{colors.ink}"
-    typography: "{typography.button-md}"
-    rounded: "{rounded.pill}"
-    padding: "{spacing.md} {spacing.md}"
-  button-subtle:
-    backgroundColor: "{colors.canvas-soft}"
-    textColor: "{colors.ink}"
-    typography: "{typography.button-md}"
-    rounded: "{rounded.pill}"
-    padding: "{spacing.md} {spacing.lg}"
-  button-floating:
-    backgroundColor: "{colors.canvas}"
-    textColor: "{colors.ink}"
-    typography: "{typography.button-md}"
-    rounded: "{rounded.pill}"
-    padding: "{spacing.md}"
-  button-large-rounded:
-    backgroundColor: "{colors.primary}"
-    textColor: "{colors.on-primary}"
-    typography: "{typography.button-large}"
     rounded: "{rounded.xl}"
-    padding: "{spacing.lg} {spacing.xl}"
-  button-tab-translucent:
-    backgroundColor: "{colors.canvas}"
-    textColor: "{colors.ink}"
-    typography: "{typography.body-md-strong}"
-    rounded: "{rounded.pill-tab}"
-  text-input:
+    padding: "{spacing.md} {spacing.xl}"
+  button-secondary:
     backgroundColor: "{colors.canvas-soft}"
     textColor: "{colors.ink}"
-    typography: "{typography.body-md}"
-    rounded: "{rounded.none}"
-    padding: "{spacing.lg}"
-  text-input-on-soft:
-    backgroundColor: "{colors.canvas-softer}"
+    typography: "{typography.button-md}"
+    rounded: "{rounded.xl}"
+    padding: "{spacing.md} {spacing.xl}"
+  button-tertiary:
+    backgroundColor: "{colors.canvas}"
     textColor: "{colors.ink}"
+    borderColor: "{colors.ink}"
+    typography: "{typography.button-md}"
+    rounded: "{rounded.xl}"
+    padding: "{spacing.md} {spacing.xl}"
+  button-icon-circular:
+    backgroundColor: "{colors.canvas}"
+    textColor: "{colors.ink}"
+    rounded: "{rounded.full}"
+    padding: "{spacing.sm}"
+  text-input:
+    backgroundColor: "{colors.canvas}"
+    textColor: "{colors.ink}"
+    borderColor: "{colors.ink}"
     typography: "{typography.body-md}"
-    rounded: "{rounded.none}"
-    padding: "{spacing.lg}"
+    rounded: "{rounded.md}"
+    padding: "{spacing.md} {spacing.lg}"
   card-content:
     backgroundColor: "{colors.canvas}"
     textColor: "{colors.ink}"
     typography: "{typography.body-md}"
     rounded: "{rounded.xl}"
-    padding: "{spacing.2xl}"
-  card-elevated:
-    backgroundColor: "{colors.canvas}"
-    textColor: "{colors.ink}"
-    typography: "{typography.body-md}"
-    rounded: "{rounded.xl}"
-    padding: "{spacing.2xl}"
-  card-soft-tinted:
+    padding: "{spacing.xl}"
+  card-feature-sage:
     backgroundColor: "{colors.canvas-soft}"
     textColor: "{colors.ink}"
     typography: "{typography.body-md}"
     rounded: "{rounded.xl}"
-    padding: "{spacing.2xl}"
-  promo-card-illustrated:
-    backgroundColor: "{colors.canvas}"
+    padding: "{spacing.xl}"
+  card-feature-green:
+    backgroundColor: "{colors.primary-pale}"
     textColor: "{colors.ink}"
-    typography: "{typography.display-md}"
+    typography: "{typography.body-md}"
     rounded: "{rounded.xl}"
-    padding: "{spacing.2xl}"
-  promo-card-on-dark:
+    padding: "{spacing.xl}"
+  card-feature-dark:
     backgroundColor: "{colors.ink}"
-    textColor: "{colors.on-dark}"
-    typography: "{typography.display-md}"
-    rounded: "{rounded.xl}"
-    padding: "{spacing.2xl}"
-  request-form-card:
-    backgroundColor: "{colors.canvas}"
-    textColor: "{colors.ink}"
+    textColor: "{colors.primary}"
     typography: "{typography.body-md}"
     rounded: "{rounded.xl}"
-    padding: "{spacing.lg}"
-  request-form-input-row:
+    padding: "{spacing.xl}"
+  hero-band:
     backgroundColor: "{colors.canvas-soft}"
     textColor: "{colors.ink}"
-    typography: "{typography.body-md}"
-    rounded: "{rounded.none}"
-    padding: "{spacing.lg}"
-  category-button:
-    backgroundColor: "{colors.canvas-soft}"
-    textColor: "{colors.ink}"
-    typography: "{typography.body-sm-strong}"
-    rounded: "{rounded.pill}"
-    padding: "{spacing.sm} {spacing.lg}"
-  faq-row:
-    backgroundColor: "{colors.canvas}"
-    textColor: "{colors.ink}"
-    typography: "{typography.body-md-strong}"
-    padding: "{spacing.lg} 0"
-  app-download-pill:
-    backgroundColor: "{colors.ink}"
-    textColor: "{colors.on-dark}"
-    typography: "{typography.body-md-strong}"
-    rounded: "{rounded.pill}"
-    padding: "{spacing.md} {spacing.xl}"
-  hero-band-light:
-    backgroundColor: "{colors.canvas}"
-    textColor: "{colors.ink}"
-    typography: "{typography.display-xxl}"
-    padding: "{spacing.3xl} {spacing.3xl}"
+    typography: "{typography.display-mega}"
+    padding: "{spacing.3xl} {spacing.xl}"
   hero-band-dark:
     backgroundColor: "{colors.ink}"
-    textColor: "{colors.on-dark}"
-    typography: "{typography.display-xxl}"
-    padding: "{spacing.3xl} {spacing.3xl}"
-  showcase-image-card:
-    backgroundColor: "{colors.ink}"
-    textColor: "{colors.on-dark}"
-    typography: "{typography.display-xxl}"
-    rounded: "{rounded.xl}"
-    padding: "{spacing.3xl}"
-  link-blue:
-    textColor: "{colors.link}"
-    typography: "{typography.body-md}"
-  link-on-dark:
-    textColor: "{colors.on-dark}"
-    typography: "{typography.body-md}"
-  link-mute:
-    textColor: "{colors.hairline-mid}"
-    typography: "{typography.body-md}"
-  link-mute-soft:
-    textColor: "{colors.mute}"
-    typography: "{typography.body-md}"
-  icon-button-circular:
-    backgroundColor: "{colors.canvas-soft}"
+    textColor: "{colors.primary}"
+    typography: "{typography.display-mega}"
+    padding: "{spacing.3xl} {spacing.xl}"
+  content-band:
+    backgroundColor: "{colors.canvas}"
     textColor: "{colors.ink}"
-    rounded: "{rounded.full}"
+    typography: "{typography.display-md}"
+    padding: "{spacing.3xl} {spacing.xl}"
+  currency-converter-card:
+    backgroundColor: "{colors.canvas}"
+    textColor: "{colors.ink}"
+    borderColor: "{colors.ink}"
+    typography: "{typography.body-md}"
+    rounded: "{rounded.xl}"
+    padding: "{spacing.xl}"
+  badge-positive:
+    backgroundColor: "{colors.primary-pale}"
+    textColor: "{colors.positive-deep}"
+    typography: "{typography.body-sm-strong}"
+    rounded: "{rounded.pill}"
+    padding: "{spacing.xs} {spacing.md}"
+  badge-negative:
+    backgroundColor: "{colors.negative-bg}"
+    textColor: "{colors.on-primary}"
+    typography: "{typography.body-sm-strong}"
+    rounded: "{rounded.pill}"
+    padding: "{spacing.xs} {spacing.md}"
   footer:
-    backgroundColor: "{colors.primary}"
-    textColor: "{colors.on-dark}"
+    backgroundColor: "{colors.ink}"
+    textColor: "{colors.canvas-soft}"
     typography: "{typography.body-sm}"
-    padding: "{spacing.3xl} {spacing.3xl}"
+    padding: "{spacing.3xl} {spacing.xl}"
 
   # ─── Examples (illustrative) — auto-derived; resolve any TO_FILL markers below ───
   ex-pricing-tier:
-    description: "Default tier card. Mirrors card-content chrome with canvas-soft surface and a faint border."
+    description: "Default Pricing tier card. Re-uses feature-card chrome with brand canvas-soft surface."
     backgroundColor: "{colors.canvas-soft}"
     textColor: "{colors.ink}"
-    borderColor: "{colors.surface-pressed}"
+    borderColor: "{colors.mute}"
     rounded: "{rounded.xl}"
-    padding: "{spacing.2xl}"
+    padding: "{spacing.xl}"
   ex-pricing-tier-featured:
-    description: "Featured tier — polarity-flipped to ink with white text."
+    description: "Featured/highlighted tier — polarity-flipped surface (dark fill + light text in light mode, light fill + dark text in dark mode)."
     backgroundColor: "{colors.ink}"
     textColor: "{colors.on-primary}"
     rounded: "{rounded.xl}"
-    padding: "{spacing.2xl}"
+    padding: "{spacing.xl}"
   ex-product-selector:
-    description: "Plan picker — re-purposed for the brand's Ride / Eats / Reserve tier picker. Uses category-button pills inside the frame."
+    description: "What's Included summary card — re-purposed for SaaS / B2B verticals (NOT a literal product gallery)."
     backgroundColor: "{colors.canvas-soft}"
-    rounded: "{rounded.none}"
-    padding: "{spacing.2xl}"
+    rounded: "{rounded.xl}"
+    padding: "{spacing.xl}"
   ex-cart-drawer:
-    description: "Subscription summary — line items per add-on (NOT a literal e-commerce cart)."
+    description: "Subscription summary — re-purposed for SaaS / B2B (line items per add-on, not literal cart)."
     backgroundColor: "{colors.canvas}"
     rounded: "{rounded.xl}"
-    padding: "{spacing.2xl}"
-    item-divider: "{colors.surface-pressed}"
+    padding: "{spacing.xl}"
+    item-divider: "{colors.canvas-soft}"
   ex-app-shell-row:
-    description: "Sidebar nav row. Active state uses brand primary as a left-edge indicator bar."
+    description: "Sidebar nav row inside the App Shell example. Active state uses brand primary as the indicator."
     backgroundColor: "{colors.canvas}"
     activeIndicator: "{colors.primary}"
-    rounded: "{rounded.md}"
+    rounded: "{rounded.sm}"
     padding: "{spacing.md} {spacing.lg}"
   ex-data-table-cell:
-    description: "Default data-table th + td chrome. Header uses body-sm-strong 500 weight; body uses body-sm."
+    description: "Default data-table th + td chrome. Header uses mono-caps eyebrow typography; body uses body-sm."
     headerBackground: "{colors.canvas-soft}"
-    headerTypography: "{typography.body-sm-strong}"
+    headerTypography: "{typography.caption}"
     bodyTypography: "{typography.body-sm}"
     cellPadding: "{spacing.md} {spacing.lg}"
-    rowBorder: "{colors.surface-pressed}"
+    rowBorder: "{colors.canvas-soft}"
   ex-auth-form-card:
-    description: "Sign-in / sign-up card. Mirrors card-content chrome with text-input primitives inside."
+    description: "Sign-in / sign-up card. Re-uses feature-card chrome with text-input primitives inside."
     backgroundColor: "{colors.canvas-soft}"
     rounded: "{rounded.xl}"
-    padding: "{spacing.2xl}"
+    padding: "{spacing.xl}"
   ex-modal-card:
-    description: "Modal dialog surface — same chrome as card-content with Level 2 drop shadow."
+    description: "Modal dialog surface — same chrome as feature-card with elevated shadow."
     backgroundColor: "{colors.canvas}"
     rounded: "{rounded.xl}"
-    padding: "{spacing.2xl}"
+    padding: "{spacing.xl}"
   ex-empty-state-card:
-    description: "Empty-state illustration frame. Generous padding on canvas-soft surface."
+    description: "Empty-state illustration frame."
     backgroundColor: "{colors.canvas-soft}"
     rounded: "{rounded.xl}"
     padding: "{spacing.3xl}"
     captionTypography: "{typography.body-md}"
   ex-toast:
-    description: "Toast notification surface — flat-cornered card-content chrome with Level 2 drop shadow."
+    description: "Toast notification surface — feature-card shape + medium shadow."
     backgroundColor: "{colors.canvas}"
     rounded: "{rounded.xl}"
     padding: "{spacing.md} {spacing.lg}"
@@ -320,120 +288,111 @@ components:
 
 ---
 
-# ReadytoGo 临时设计参考：Uber
 
-- 状态：开发起步参考，最终视觉方向由设计人员确认或替换。
-- 选取日期：2026-10-08。
-- 来源：[awesome-design-md / Uber](awesome-design-md/design-md/uber/DESIGN.md)，上游项目为 VoltAgent/awesome-design-md。原模板的设计参数与正文保留在本文件中，许可见文末。
-- 产品依据：[ReadytoGo PRD v2.0（北京版）](docs/ReadytoGo-PRD-v2.0-Beijing.md)。业务流程、信息口径和功能优先级以 PRD 为准；本节约定优先于下方 Uber 模板。
+## ReadytoGo 使用约定
 
-## 本项目的使用约定
+本文件提供 ReadytoGo 的视觉与组件参考，最终视觉方向由设计人员确认。
 
-1. 借用黑白基础色、清晰的文字层级、大尺寸主按钮、圆角卡片、偏好标签和地点输入框，支持“一键急需 → 比较候选 → 步行导航”。Uber 的营销、登录、订阅和叫车示例只作为组件样式参考。
-2. 先适配手机网页：首页突出 `I need a restroom NOW`，结果页按 PRD 展示 1 张首选大卡片与 2 张备选；地图和导航服务于这个流程。后续小程序可复用颜色、间距与组件层级，交互布局按平台调整。
-3. PRD 的证据状态保留语义颜色：绿色勾表示有数据依据，灰色问号表示未知，并配文字标签。这些状态色优先于模板的纯黑白限制；有依据仍须保留“未现场核实”的含义，设施星级只表示 Facility level。
-4. 英文、日文、韩文及中文地点原名、地址均须易读；按钮和标签允许随翻译长度换行。初版采用 `system-ui` 及对应语言的系统字体回退，UberMove / UberMoveText 仅作为上游字体参考。
-5. 结果卡按 PRD 保留证据、开放信息、来源和降级状态；详情折叠、多语询问卡及主操作入口遵循 PRD 第 5 节。具体色值、字体和视觉装饰留给后续设计评审。
+[UI Demo](docs/ui/index.html) 是依据本文件制作的可交互界面，可在浏览器中打开。开发对应页面时，参考其中的附近搜索、行程规划和询问卡，查看布局、组件组合、桌面与手机适配及交互反馈，再按需阅读下方组件章节；具体实现见[样式](docs/ui/styles.css)与[交互脚本](docs/ui/app.js)。
 
----
-
+Demo 的地点、路线和 AI 回复均为模拟，部分文案与筛选逻辑沿用早期需求。后续开发的业务流程、信息口径和验收以当前 [Demo PRD](docs/prd/README.md) 及其细则为准，复用界面时同步调整这些内容。
 
 ## Overview
 
-Uber is a transportation-and-delivery super-app — ride, eats, freight, the whole urban logistics layer — and the brand's web surface signals that scale through restraint: no third colour, no accent palette, no illustration that fights the headline. The page is structurally a black-and-white duet, where black `{colors.primary}` is the conversion anchor (every CTA pill, every nav login button, the footer fill) and `{colors.canvas}` white carries everything else. The only consistent decoration is a body of editorial 4:3 illustrations — riders, drivers, parking lots, cars-on-highway — that ground the marketing without leaking accent colour into the system.
+Wise — the global money-transfer brand — wears its identity in a single signature pairing: a vivid lime-green `{colors.primary}` (`#9fe870`) used as the CTA pill and brand accent, set against a pale sage-tinted canvas `{colors.canvas-soft}` (`#e8ebe6`) that runs across the hero band, and a near-black ink `{colors.ink}` (`#0e0f0c`) with a hint of warmth from the brand's underlying olive cast. The brand reads more like a calm Scandinavian magazine than a bank — generous whitespace, large rounded cards, and an unusually heavy display sans set at weight 900 carrying every hero headline.
 
-Type is the second decisive voice. Two custom faces carry every page: `UberMove` at weight 700 for headlines (32 – 52 px display sizes with tight 1.22 – 1.25 line-height, never letter-spaced), and `UberMoveText` at weights 400 / 500 for body, button, and link. The pairing reads as engineering-grade — no italic, no decorative weight, no tracking flourish. Headlines are sentence-case; eyebrows are uppercase only when used as the section eyebrow ("WHY BECOME"); buttons are sentence-case.
+Display typography is the second decisive voice. The proprietary `Wise Sans` family carries hero displays at weight 900 in scales from 64 px up to 126 px on the largest hero. The brand pairs Wise Sans 900 with Inter at weight 600 for sub-displays — the contrast between the chunky proprietary face and Inter's neutrality creates a particular hierarchy: Wise Sans for the brand moment, Inter for everything else.
 
-The single shape signature is the pill. Every interactive element rounds to `{rounded.pill}` 999 px — primary CTA, secondary CTA, subtle gray pill, white floating pill, category chip, app-download badge. Cards and surfaces round to `{rounded.xl}` 16 px; the larger "Go Get 2026" annual-showcase card uses the same 16 px shape, just at scale. The tab-toggle on the hero ride-request form uses an off-shape `{rounded.pill-tab}` 36 px — barely-pill, deliberately tighter than the canonical 999 px pill.
+Cards are universally pill-rounded — `{rounded.xl}` 24 px is the brand's signature card radius. Buttons take the same 24 px pill-rectangle shape. The brand never uses sharp corners on UI elements; the visual softness is part of the friendly fintech voice.
 
 **Key Characteristics:**
-- A two-colour CTA hierarchy: black `{colors.primary}` pill for primary conversion targets; white `{colors.canvas}` pill (sometimes with a soft drop shadow) for secondary; subtle gray `{colors.canvas-soft}` pill for tertiary or chip variants.
-- The pill is the single signature shape — `{rounded.pill}` 999 px on every interactive element except the tab-toggle (`{rounded.pill-tab}` 36 px) and the larger product cards (`{rounded.xl}` 16 px).
-- Every headline is sentence-case in `{typography.display-xl}` / `{typography.display-xxl}` weight 700; no all-caps display.
-- Editorial 4:3 illustrations of riders / drivers / cars are the only consistent decorative system; no gradients, no atmospheric backdrops, no shadows that aren't card-elevation hints.
-- A signature alternating-band rhythm: white feature card → black promo card (with white text and white CTA) → white feature card → black footer. The black bands are NOT hero-only; they appear mid-page as promo callouts.
-- A signature ride-request form card on the hero: pickup pin input + destination input + date/time chip + black "See prices" pill, all stacked inside a `{rounded.xl}` shadowed card.
+- A single lime-green CTA accent `{colors.primary}` (`#9fe870`) — the brand's universal primary action color. No second accent.
+- Two-face display typography — Wise Sans (proprietary, weight 900, hero scale) + Inter (weight 600, sub-display scale). The contrast is the brand's typographic story.
+- `{rounded.xl}` 24 px is the canonical card and button radius. Generous, friendly.
+- Sage-tinted canvas `{colors.canvas-soft}` (`#e8ebe6`) is the brand's hero surface; white `{colors.canvas}` is reserved for cards within the sage band.
+- A full semantic palette: positive green family, warning yellow family, negative red family — each documented with content / hover / active variants for in-product use.
+- Currency-converter card on the hero — the brand's signature interactive component, hosting from/to amount inputs.
 
 ## Colors
 
 ### Brand & Accent
-- **Ink Black** (`{colors.primary}` — `#000000`): The brand's only conversion colour. Every primary CTA pill, the footer fill, every dark promo band, every nav login button. The system has no secondary accent.
-- **Surface Pressed** (`{colors.surface-pressed}` — `#e2e2e2`): The pressed-state fill for white pills — a soft grey that's used only in active / pressed states.
-- **Black Elevated** (`{colors.black-elevated}` — `#282828`): A near-black used on hover for the translucent white tab-toggle pill. Documented as a system colour because it appears on a recurring brand control.
+- **Wise Green** (`{colors.primary}` — `#9fe870`): The brand's universal CTA color. Every primary button, every "Send money" pill, the brand's logo accent.
+- **Wise Green Hover** (`{colors.primary-active}` — `#cdffad`): The lighter green for active state.
+- **Wise Green Neutral** (`{colors.primary-neutral}` — `#c5edab`): A mid-saturation green used as a neutral active fill.
+- **Wise Green Pale** (`{colors.primary-pale}` — `#e2f6d5`): The lightest green for soft surface tints / badge backgrounds.
 
 ### Surface
-- **Canvas** (`{colors.canvas}` — `#ffffff`): The default page background.
-- **Canvas Soft** (`{colors.canvas-soft}` — `#efefef`): The soft gray fill for category chips, form-input rows inside the ride-request card, and subtle pill buttons.
-- **Canvas Softer** (`{colors.canvas-softer}` — `#f3f3f3`): A slightly lighter gray used as a nested-input fill on white surfaces.
+- **Canvas** (`{colors.canvas}` — `#ffffff`): Pure white for card interiors.
+- **Canvas Soft** (`{colors.canvas-soft}` — `#e8ebe6`): The sage-tinted page background. Defining mood of the brand.
 
 ### Text
-- **Ink** (`{colors.ink}` — `#000000`): Every heading and body paragraph on light surfaces.
-- **Body** (`{colors.body}` — `#5e5e5e`): Secondary text — captions, sub-headings, supporting copy.
-- **Hairline Mid** (`{colors.hairline-mid}` — `#4b4b4b`): A mid-gray used for muted link text inside footer columns and breadcrumb-style nav.
-- **Mute** (`{colors.mute}` — `#afafaf`): The lightest text role — placeholder text, fine print, low-priority metadata.
-- **On Dark** (`{colors.on-dark}` — `#ffffff`): All text on `{colors.ink}` surfaces (footer, dark promo bands).
+- **Ink** (`{colors.ink}` — `#0e0f0c`): Near-black with a hint of olive warmth — the brand's default text and headings color.
+- **Ink Deep** (`{colors.ink-deep}` — `#163300`): A deep forest-green ink used on positive-state surfaces.
+- **Body** (`{colors.body}` — `#454745`): Secondary body text.
+- **Mute** (`{colors.mute}` — `#868685`): Lowest-priority text — captions, placeholder, fine print.
 
 ### Semantic
-The brand does not maintain a separate error / success / warning palette in its public marketing surface. Validation cues come from the primary black or from the brand's editorial illustrations. The `#0000ee` link colour is the system's only chromatic — it's the browser-default link blue, appearing in body-copy inline links inside legal / footer text.
+- **Positive** (`{colors.positive}` — `#2ead4b`): Success indicator.
+- **Positive Deep** (`{colors.positive-deep}` — `#054d28`): Pressed positive state.
+- **Warning** (`{colors.warning}` — `#ffd11a`): Caution indicator.
+- **Warning Deep** (`{colors.warning-deep}` — `#b86700`): Pressed warning.
+- **Warning Content** (`{colors.warning-content}` — `#4a3b1c`): Text on warning surfaces.
+- **Negative** (`{colors.negative}` — `#d03238`): Destructive / error red.
+- **Negative Deep** (`{colors.negative-deep}` — `#a72027`): Pressed destructive.
+- **Negative Darkest** (`{colors.negative-darkest}` — `#a7000d`): Highest-emphasis destructive text.
+- **Negative Bg** (`{colors.negative-bg}` — `#320707`): Dark maroon for destructive callout backgrounds.
+
+### Brand Accent — Tertiary
+- **Accent Orange** (`{colors.accent-orange}` — `#ffc091`): Bright peach used inside illustrative content / pricing cards.
+- **Accent Cyan** (`{colors.accent-cyan}` — `#38c8ff`): Bright sky-blue used as a tertiary illustration accent.
 
 ## Typography
 
 ### Font Family
-Two custom faces carry the entire system:
-
-1. **A custom geometric display sans** (extracted as `UberMove`) for every headline. Weight 700 only; no italic; no tracking variation. Sizes range from `display-sm` 20 px up to `display-xxl` 52 px on the hero. Line-heights tighten to 1.22 – 1.25 at display sizes for a poured-on-the-page look.
-2. **A custom text sans** (extracted as `UberMoveText`) for body, button, link, and small headings. Weights 400 and 500 are the working pair. Used at 12 – 18 px; 24 px maximum for ride-request form labels. Tracking is always neutral.
-
-The two faces share a family DNA but never overlap roles — the display face never carries a body paragraph; the text face never carries a hero headline.
+Two faces ladder the system:
+1. **Wise Sans** — proprietary geometric sans with an unusually heavy weight 900 used for all hero displays. The face is the brand's typographic signature. Always at weight 900, never lighter on the marketing surface.
+2. **Inter** — used for sub-displays (weight 600), all body, and form labels. Loaded with `font-feature-settings: "calt"` for contextual alternates.
 
 ### Hierarchy
 
-| Token | Size | Weight | Line Height | Use |
-|---|---|---|---|---|
-| `{typography.display-xxl}` | 52px | 700 | 64px | Hero headline ("Go anywhere with Uber", "Drive when you want"). |
-| `{typography.display-xl}` | 36px | 700 | 44px | Page section headlines ("Plan for later", "Safety, simplified"). |
-| `{typography.display-lg}` | 32px | 700 | 40px | Promo-card headlines. |
-| `{typography.display-md}` | 24px | 700 | 32px | Card titles, illustrated-promo headlines. |
-| `{typography.display-sm}` | 20px | 700 | 28px | Sub-card headings. |
-| `{typography.body-lg}` | 18px | 500 | 24px | Lead paragraphs and larger body. |
-| `{typography.body-md}` | 16px | 400 | 24px | Default paragraph body. |
-| `{typography.body-md-strong}` | 16px | 500 | 20px | Bolded inline body and most button labels. |
-| `{typography.body-sm}` | 14px | 400 | 20px | Captions, secondary metadata. |
-| `{typography.body-sm-strong}` | 14px | 500 | 16px | Bold caption / chip labels. |
-| `{typography.caption}` | 12px | 400 | 20px | Fine print, footer secondary lines. |
-| `{typography.button-large}` | 18px | 500 | 24px | Large rounded buttons inside the ride-request form. |
-| `{typography.button-md}` | 16px | 500 | 20px | Default button label. |
+| Token | Size | Weight | Line Height | Letter Spacing | Use |
+|---|---|---|---|---|---|
+| `{typography.display-mega}` | 126px | 900 | 107.1px | 0 | Hero stencil at maximum scale. |
+| `{typography.display-xxl}` | 96px | 900 | 81.6px | 0 | Sub-hero scale. |
+| `{typography.display-xl}` | 64px | 900 | 54.4px | 0 | Standard hero headline. |
+| `{typography.display-lg}` | 47px | 400 | 70.5px | -0.108px | Lighter sub-display. |
+| `{typography.display-md}` | 40px | 900 | 34px | 0 | Section / card headlines. |
+| `{typography.display-sm}` | 32px | 600 | 38.4px | -0.96px | Inter-rendered section headings. |
+| `{typography.display-xs}` | 24px | 600 | 31.2px | -0.48px | Sub-section displays. |
+| `{typography.body-lg}` | 20px | 400 | 30px | 0 | Lead paragraphs. |
+| `{typography.body-md}` | 16px | 400 | 24px | 0 | Default body. |
+| `{typography.body-md-strong}` | 16px | 600 | 24px | 0 | Bold inline body. |
+| `{typography.body-sm}` | 14px | 400 | 20px | 0 | Secondary body. |
+| `{typography.body-sm-strong}` | 14px | 600 | 20px | 0 | Bold caption / nav-link. |
+| `{typography.caption}` | 12px | 400 | 16px | 0 | Fine print. |
+| `{typography.button-md}` | 16px | 600 | 24px | 0 | Button label. |
 
 ### Principles
-- **Sentence-case is the voice.** No all-caps headlines. Eyebrow tags ("WHY BECOME") are the rare exception.
-- **Weight 700 is for headlines; weight 500 is for buttons and emphasis.** Don't promote button labels to 700.
-- **No tracking flourish.** The display face is never letter-spaced, positive or negative.
-- **Two faces, two roles.** UberMove for display; UberMoveText for everything else. Never cross the streams.
+- **Weight 900 for hero, weight 600 for everything else.** The brand's display ceiling is full-black weight; everything below is semibold.
+- **Wise Sans for the brand voice, Inter for utility.** Strict role separation.
 
 ### Note on Font Substitutes
-The two faces are proprietary. Open-source substitutes:
-- **Display sans** — *Inter* weight 700 with `font-feature-settings: "ss01"` enabled comes closest. *Geist* weight 700 is the second-best option.
-- **Text sans** — *Inter* weights 400 / 500 match the geometric width and x-height. *Plus Jakarta Sans* is a softer alternative if the brand wants a less neutral feel.
+Wise Sans is proprietary. Open-source substitutes:
+- **Display** — *Inter* at weight 900 or *Manrope* at weight 800 / 900 captures the geometric heaviness. *Geist* weight 800 is a passable second choice.
+- **Sub-display + body** — *Inter* is the brand's actual second face.
 
 ## Layout
 
 ### Spacing System
-- **Base unit**: 4 px. Most captured values are multiples of 4 with a few 6-px sub-multiples (10, 14) inside button padding.
-- **Tokens**: `{spacing.xxs}` 4 px · `{spacing.xs}` 6 px · `{spacing.sm}` 8 px · `{spacing.md}` 12 px · `{spacing.lg}` 16 px · `{spacing.xl}` 20 px · `{spacing.2xl}` 24 px · `{spacing.3xl}` 32 px.
-- **Section padding**: marketing bands sit at `{spacing.3xl}` 32 px top/bottom on tighter pages and `{spacing.3xl} {spacing.3xl}` for hero bands; promo cards inset at `{spacing.2xl}` 24 px.
-- **Card interior padding**: content cards sit at `{spacing.2xl}` 24 px; the ride-request form uses `{spacing.lg}` 16 px to keep the form compact.
-- **Inline gap**: button rows, category chip rows, app-store pill rows use `{spacing.md}` 12 px between siblings.
+- **Base unit**: 4 px.
+- **Tokens**: `{spacing.xxs}` 2 px · `{spacing.xs}` 4 px · `{spacing.sm}` 8 px · `{spacing.md}` 12 px · `{spacing.lg}` 16 px · `{spacing.xl}` 24 px · `{spacing.2xl}` 32 px · `{spacing.3xl}` 48 px.
+- **Section padding**: bands use `{spacing.3xl}` 48 px top/bottom on desktop.
+- **Card interior**: cards at `{spacing.xl}` 24 px.
 
 ### Grid & Container
-- **Max width**: ~1200 px container; centred with horizontal gutters of `{spacing.3xl}` 32 px on desktop, `{spacing.lg}` 16 px on mobile.
-- **Column patterns**:
-  - Promo-card rows: 2-up at desktop (image left + content right, alternating sides), 1-up at mobile.
-  - Category chips: horizontal flex with wrap.
-  - FAQ rows: full-width single-column.
-  - App-download pills: 2-up at desktop (Rider + Driver), 1-up at mobile.
-
-### Whitespace Philosophy
-Card-to-card spacing carries the rhythm — between two stacked promo cards there's roughly a full `{spacing.3xl}` 32 px gutter; inside a card the headline / paragraph / CTA stack is tight (`{spacing.sm}` 8 px between siblings). The black promo bands and the footer have no internal hairlines — content sits on flat ink with white text.
+- Marketing container centres at ~1200 px.
+- Hero: split layout (headline left, currency-converter card right) at desktop; stacked at mobile.
+- Feature grids: 2-up / 3-up at desktop.
 
 ### Responsive Strategy
 
@@ -441,40 +400,25 @@ Card-to-card spacing carries the rhythm — between two stacked promo cards ther
 
 | Name | Width | Key Changes |
 |---|---|---|
-| Mobile | < 600px | Nav collapses to hamburger; promo cards stack; ride-request form becomes full-width. |
-| Mobile-Large | 600–767px | Same as Mobile; chip rows enable horizontal scroll. |
-| Tablet | 768–1119px | 2-up promo grid at upper widths; nav stays horizontal until ≥ 1120 px. |
-| Desktop | 1120–1135px | Full nav row visible; promo cards 2-up. |
-| Desktop-Large | ≥ 1136px | Container caps at ~1200 px; bands stay edge-to-edge while content centres. |
+| Mobile | < 768px | Hero stacks; converter card full-width below headline; grids 1-up. |
+| Tablet | 768–1023px | Grids 2-up. |
+| Desktop | ≥ 1024px | Hero split; full grids. |
 
 #### Touch Targets
-The pill `button-primary` renders at ~44 px tall (10 px vertical padding + 24 px label line-height); the larger `button-large-rounded` at ~56 px. Both meet WCAG AAA at all breakpoints. Category chips inflate to ≥ 44 px tall through extra padding on touch viewports.
-
-#### Collapsing Strategy
-- **Nav**: full link row + Help / Log in / Sign up pills at desktop. Collapses to logo + hamburger at mobile; menu overlays full-screen with the same link list stacked.
-- **Ride-request form card**: at desktop, the form sits inside a max-490-px `{rounded.xl}` card with shadow. At mobile, full-width with edge-to-edge.
-- **Promo cards**: at desktop, image-left + content-right (or alternating). At mobile, image always above content.
-- **Annual showcase card**: scales from a 2:3 desktop frame to a 4:3 mobile frame; date text resizes proportionally.
+Buttons render ~48 px tall (12 vertical padding + 24 line). WCAG AAA at all widths.
 
 #### Image Behavior
-- **Editorial illustrations**: 4:3 or 16:9 hard-edge rectangles; never cropped to a circle, never tilted. Aspect preserved.
-- **Photography**: same — square or landscape; framed inside `{rounded.xl}` card chrome.
-- **Maps in ride-request flow**: full-bleed inside a card; rounded corners follow the parent card.
-- **Logo bar**: SVG vector, monochrome, consistent height.
+Photography is sparse; the brand prefers illustrative SVGs and product mockups inside cards. Country flag thumbnails appear inside currency rows.
 
 ## Elevation & Depth
 
 | Level | Treatment | Use |
 |---|---|---|
-| Level 0 — Flat | No shadow, no border. | Default — most cards and surfaces lean on hairline-of-canvas contrast. |
-| Level 1 — Subtle Drop | `rgba(0, 0, 0, 0.12) 0px 4px 16px 0px` | Card-elevated frames around promo cards on light bands. |
-| Level 2 — Card Drop | `rgba(0, 0, 0, 0.16) 0px 4px 16px 0px` | The ride-request form card on the hero; large content cards with embedded forms. |
-| Level 3 — Pill Float | `rgba(0, 0, 0, 0.16) 0px 2px 8px 0px` | The floating white pill button (the one that floats over hero photography). |
+| Level 0 — Flat | No shadow, no border. | Default. |
+| Level 1 — Hairline on Dark | 1 px solid `{colors.ink}` border. | Tertiary outline buttons, form inputs. |
+| Level 2 — Soft Card | Implicit Level 0 white card sitting on sage canvas — the surface contrast IS the elevation. | Cards on the sage hero band. |
 
-### Decorative Depth
-- **Black bands as polarity-flip depth**: the brand uses pure black `{colors.primary}` mid-page bands to break the white-on-white rhythm. The polarity shift IS the depth cue.
-- **Editorial illustrations as in-card depth**: every promo card has a single 4:3 illustration as its left or right column. The illustration's visual weight is part of the card's elevation read.
-- **Pill geometry as micro-depth**: `{rounded.pill}` 999 px applied at varying button heights creates a stack of nested pills that reads as visual hierarchy.
+The brand uses surface contrast (`{colors.canvas-soft}` background vs `{colors.canvas}` cards) as the primary elevation cue.
 
 ## Shapes
 
@@ -482,121 +426,79 @@ The pill `button-primary` renders at ~44 px tall (10 px vertical padding + 24 px
 
 | Token | Value | Use |
 |---|---|---|
-| `{rounded.none}` | 0px | Full-bleed hero bands, footer fill, raw image edges. |
-| `{rounded.md}` | 8px | Form-input fields inside the ride-request card. |
-| `{rounded.lg}` | 12px | Smaller secondary card chrome. |
-| `{rounded.xl}` | 16px | Canonical card radius — promo cards, content cards, ride-request form card, annual-showcase card, large rounded buttons. |
-| `{rounded.pill}` | 999px | The brand's signature interactive shape — every pill button, category chip, app-download pill, icon button. |
-| `{rounded.pill-tab}` | 36px | The translucent-white tab-toggle pill on the hero (Ride / Drive). |
-| `{rounded.full}` | 9999px | Identical effect to `{rounded.pill}` for circular icon containers. |
-
-### Photography Geometry
-- **Editorial illustrations**: 4:3 landscape inside promo cards; 16:9 for full-width showcase frames.
-- **Driver / rider portraits**: 4:5 portrait crop; framed by `{rounded.xl}` 16 px card chrome.
-- **Annual showcase image**: 2:3 portrait at desktop, scaling to 4:3 at mobile. The image fills the card; the headline overlays the bottom.
-- **Logo bar**: monochrome SVG vectors at consistent ~24 px height.
-- **Avatars** (where used): square or `{rounded.full}` circle, never `{rounded.lg}` rounded-square.
+| `{rounded.none}` | 0px | Full-bleed bands. |
+| `{rounded.sm}` | 8px | Inline pills, small badges. |
+| `{rounded.md}` | 12px | Form inputs, smaller chrome. |
+| `{rounded.lg}` | 16px | Mid-size cards. |
+| `{rounded.xl}` | 24px | The brand's canonical button + card radius. |
+| `{rounded.pill}` | 9999px | Status pills and full-radius accents. |
+| `{rounded.full}` | 9999px | Circular icon containers. |
 
 ## Components
 
 ### Buttons
 
-**`button-primary`** — the canonical black pill, the brand's conversion target.
-- Background `{colors.primary}`, text `{colors.on-primary}`, label set in `{typography.button-md}`, padding `{spacing.md} {spacing.md}`, shape `{rounded.pill}` 999 px.
+**`button-primary`** — the lime-green CTA pill.
+- Background `{colors.primary}`, text `{colors.on-primary}`, label `{typography.button-md}`, padding `{spacing.md} {spacing.xl}`, shape `{rounded.xl}` 24 px.
 
-**`button-secondary`** — the white pill paired with the black primary.
-- Background `{colors.canvas}`, text `{colors.ink}`, same label and padding as `button-primary`, shape `{rounded.pill}`.
+**`button-secondary`** — the sage-tinted secondary.
+- Background `{colors.canvas-soft}`, text `{colors.ink}`, same typography / padding / shape.
 
-**`button-subtle`** — the gray secondary pill used for tertiary actions inside cards (e.g., "Learn more" / "Use Reserve").
-- Background `{colors.canvas-soft}` (`#efefef`), text `{colors.ink}`, label in `{typography.button-md}`, padding `{spacing.md} {spacing.lg}`, shape `{rounded.pill}`.
+**`button-tertiary`** — the white outline tertiary.
+- Background `{colors.canvas}`, text `{colors.ink}`, 1 px solid `{colors.ink}` border, same typography / padding / shape.
 
-**`button-floating`** — the white pill with a subtle drop-shadow that floats over a dark or photographic surface.
-- Background `{colors.canvas}`, text `{colors.ink}`, padding `{spacing.md}`, shape `{rounded.pill}`. Carries a Level 3 pill-float shadow.
-
-**`button-large-rounded`** — the bigger black call-to-action used inside the ride-request flow ("Yes, help me").
-- Background `{colors.primary}`, text `{colors.on-primary}`, label in `{typography.button-large}`, padding `{spacing.lg} {spacing.xl}`, shape `{rounded.xl}` 16 px (not pill — the only black CTA that breaks the pill rule, used in the larger form context).
-
-**`button-tab-translucent`** — the tab-toggle on the hero ride-request form (Ride / Drive).
-- Background `{colors.canvas}`, text `{colors.ink}`, label in `{typography.body-md-strong}`, shape `{rounded.pill-tab}` 36 px (off-shape, deliberately tighter than the canonical 999 px pill).
+**`button-icon-circular`** — the circular icon button.
+- Background `{colors.canvas}`, ink icon, shape `{rounded.full}`.
 
 ### Cards & Containers
 
-**`card-content`** — the canonical content card.
-- Background `{colors.canvas}`, text `{colors.ink}`, padding `{spacing.2xl}`, shape `{rounded.xl}` 16 px. No shadow on the default state.
+**`card-content`** — the default white card.
+- Background `{colors.canvas}`, text `{colors.ink}`, padding `{spacing.xl}`, shape `{rounded.xl}`. No border, sits on sage canvas.
 
-**`card-elevated`** — the content card with Level 1 subtle drop.
-- Background `{colors.canvas}`, text `{colors.ink}`, same padding + shape as `card-content`. Shadow at Level 1.
+**`card-feature-sage`** — the sage-tinted feature card.
+- Background `{colors.canvas-soft}`, text `{colors.ink}`, padding `{spacing.xl}`, shape `{rounded.xl}`.
 
-**`card-soft-tinted`** — the gray-tinted card used as a sub-region inside the page (e.g., "Plan for later" callout).
-- Background `{colors.canvas-soft}`, text `{colors.ink}`, padding `{spacing.2xl}`, shape `{rounded.xl}`.
+**`card-feature-green`** — the soft-green feature card.
+- Background `{colors.primary-pale}`, text `{colors.ink}`, padding `{spacing.xl}`, shape `{rounded.xl}`.
 
-**`promo-card-illustrated`** — the 2-column promo card with illustration on one side and copy on the other.
-- Background `{colors.canvas}`, text `{colors.ink}`, padding `{spacing.2xl}`, shape `{rounded.xl}`. Headline in `{typography.display-md}` or larger.
+**`card-feature-dark`** — the polarity-flipped dark card with green text.
+- Background `{colors.ink}`, text `{colors.primary}` (Wise green!), padding `{spacing.xl}`, shape `{rounded.xl}`. Used for promotional moments.
 
-**`promo-card-on-dark`** — the polarity-flipped promo card in black.
-- Background `{colors.ink}`, text `{colors.on-dark}`, padding `{spacing.2xl}`, shape `{rounded.xl}`. Used for the "Drive with Uber" mid-page band.
-
-**`request-form-card`** — the hero ride-request form chrome.
-- Background `{colors.canvas}`, text `{colors.ink}`, padding `{spacing.lg}`, shape `{rounded.xl}`. Carries Level 2 card drop shadow.
-
-**`request-form-input-row`** — the per-field row inside the request-form card.
-- Background `{colors.canvas-soft}`, text `{colors.ink}`, padding `{spacing.lg}`, shape `{rounded.md}` 8 px. Hosts an icon + label + value.
-
-**`showcase-image-card`** — the giant "GO•GET 2026" annual showcase card.
-- Background `{colors.ink}`, text `{colors.on-dark}` overlay, padding `{spacing.3xl}`, shape `{rounded.xl}`. Display-xxl headline overlays the bottom of the image.
+**`currency-converter-card`** — the brand's signature interactive widget.
+- Background `{colors.canvas}`, text `{colors.ink}`, 1 px solid `{colors.ink}` border, padding `{spacing.xl}`, shape `{rounded.xl}`. Hosts from/to amount inputs + currency selectors.
 
 ### Inputs & Forms
 
 **`text-input`** — the canonical text input.
-- Background `{colors.canvas-soft}`, text `{colors.ink}`, body in `{typography.body-md}`, padding `{spacing.lg}`, shape `{rounded.md}` 8 px.
-
-**`text-input-on-soft`** — the nested input on a white card (slightly lighter fill).
-- Background `{colors.canvas-softer}`, otherwise identical to `text-input`.
+- Background `{colors.canvas}`, text `{colors.ink}`, 1 px solid `{colors.ink}` border, body in `{typography.body-md}`, padding `{spacing.md} {spacing.lg}`, shape `{rounded.md}`.
 
 ### Navigation
 
 **`nav-bar`** — the sticky top nav.
-- Background `{colors.canvas}` on light pages, switches to `{colors.ink}` on the rare dark page (e.g., Uber Eats hero). Padding `{spacing.lg} {spacing.3xl}`.
+- Background `{colors.canvas}`, text `{colors.ink}`, padding `{spacing.md} {spacing.xl}`.
 
-**`nav-link`** — the link row inside `nav-bar`.
-- Text `{colors.ink}`, set in `{typography.body-md-strong}` 500 weight.
+**`nav-link`** — link items inside nav.
+- Text `{colors.ink}`, set in `{typography.body-sm-strong}`.
 
-**`footer`** — the deep-black footer band.
-- Background `{colors.primary}` (the brand's only true black surface), text `{colors.on-dark}`, padding `{spacing.3xl} {spacing.3xl}`. Body in `{typography.body-sm}`; column eyebrows in `{typography.body-md-strong}`.
+**`footer`** — the dark footer band.
+- Background `{colors.ink}`, text `{colors.canvas-soft}`, padding `{spacing.3xl} {spacing.xl}`. Body in `{typography.body-sm}`.
 
 ### Signature Components
 
-**`hero-band-light`** — the white hero with the ride-request card.
-- Background `{colors.canvas}`, text `{colors.ink}`, padding `{spacing.3xl} {spacing.3xl}`. Headline in `{typography.display-xxl}` (52 px / 700) on the left; `request-form-card` on the right.
+**`hero-band`** — the sage-canvas hero band.
+- Background `{colors.canvas-soft}`, text `{colors.ink}`, padding `{spacing.3xl} {spacing.xl}`. Headline in `{typography.display-mega}` (Wise Sans weight 900).
 
-**`hero-band-dark`** — the rare black hero (used on Uber Eats and Drive landing).
-- Background `{colors.ink}`, text `{colors.on-dark}`, padding `{spacing.3xl} {spacing.3xl}`. Same display-xxl headline scale; CTA inverts to `button-secondary` white pill.
+**`hero-band-dark`** — the polarity-flipped dark hero.
+- Background `{colors.ink}`, text `{colors.primary}` (Wise green headline on near-black!), same padding / scale.
 
-**`category-button`** — the horizontal-scroll category row ("Reserve / Rentals / Teens / Group rides").
-- Background `{colors.canvas-soft}`, text `{colors.ink}`, label in `{typography.body-sm-strong}`, padding `{spacing.sm} {spacing.lg}`, shape `{rounded.pill}`. An icon precedes the label.
+**`content-band`** — the white content band that follows hero.
+- Background `{colors.canvas}`, text `{colors.ink}`, padding `{spacing.3xl} {spacing.xl}`. Section headline in `{typography.display-md}`.
 
-**`faq-row`** — the FAQ accordion item.
-- Background `{colors.canvas}`, text `{colors.ink}`, question in `{typography.body-md-strong}`, padding `{spacing.lg}` 0. No card chrome — hairline dividers between rows.
+**`badge-positive`** — the positive status pill.
+- Background `{colors.primary-pale}`, text `{colors.positive-deep}`, body in `{typography.body-sm-strong}`, padding `{spacing.xs} {spacing.md}`, shape `{rounded.pill}`.
 
-**`app-download-pill`** — the "Download the Rider app" / "Download the Driver app" pill.
-- Background `{colors.ink}`, text `{colors.on-dark}`, label in `{typography.body-md-strong}`, padding `{spacing.md} {spacing.xl}`, shape `{rounded.pill}`.
-
-**`icon-button-circular`** — the round icon container used in the nav and inside the ride-request card.
-- Background `{colors.canvas-soft}`, dark icon, shape `{rounded.full}`. No label.
-
-### Links
-
-**`link-blue`** — the system-default browser-blue link inside legal / footer fine print.
-- Text `{colors.link}` (`#0000ee`), body in `{typography.body-md}`.
-
-**`link-on-dark`** — the white link inside dark bands.
-- Text `{colors.on-dark}`, body in `{typography.body-md}`.
-
-**`link-mute`** — the muted gray link inside footer columns.
-- Text `{colors.hairline-mid}`, body in `{typography.body-md}`.
-
-**`link-mute-soft`** — the lightest gray link, used for low-priority secondary text on dark surfaces.
-- Text `{colors.mute}`, body in `{typography.body-md}`.
+**`badge-negative`** — the negative status pill.
+- Background `{colors.negative-bg}`, text white, body in `{typography.body-sm-strong}`, padding `{spacing.xs} {spacing.md}`, shape `{rounded.pill}`.
 
 ### Examples (illustrative)
 
@@ -636,47 +538,15 @@ The pill `button-primary` renders at ~44 px tall (10 px vertical padding + 24 px
 ## Do's and Don'ts
 
 ### Do
-- Reserve `{colors.primary}` (`#000000`) for every primary CTA pill. One black pill per visible viewport is the brand's whole conversion story.
-- Use `{rounded.pill}` 999 px on every interactive element (buttons, chips, app pills). The pill IS the brand's geometric signature.
-- Render cards in `{rounded.xl}` 16 px — promo cards, content cards, the ride-request form card, the annual-showcase card all share this radius.
-- Set every headline in `{typography.display-*}` weight 700 in sentence-case. The display face never carries body copy.
-- Use polarity-flipped black promo bands mid-page to break up white-on-white rhythm. The polarity shift IS the depth cue.
-- Anchor every promo card with a 4:3 editorial illustration; never use generic stock imagery.
+- Reserve `{colors.primary}` Wise green for every primary CTA. The lime-green pill IS the brand's conversion signature.
+- Set hero headlines in `{typography.display-mega}` / `{typography.display-xl}` Wise Sans weight 900. Never lighter.
+- Use `{rounded.xl}` 24 px for buttons and cards. The generous radius is the brand's friendliness signature.
+- Cycle page surfaces in `{colors.canvas-soft}` sage canvas → `{colors.canvas}` white cards. Surface contrast carries elevation.
+- Use the full semantic palette (positive / warning / negative) for in-product status — never repurpose Wise green as success indicator since it IS the brand CTA.
 
 ### Don't
-- Don't introduce a second brand accent colour (orange, blue, green). The brand's entire UI is black-and-white plus grayscale; new accents flatten the system.
-- Don't render the primary CTA as a `{rounded.xl}` rectangle except inside the larger ride-request flow (where `button-large-rounded` is the documented exception).
-- Don't use all-caps display headlines. Sentence-case is the voice; uppercase is restricted to rare eyebrow tags.
-- Don't drop a soft drop-shadow on every card. The brand uses Level 0 flat as the default; shadow is reserved for the floating pill and the ride-request form.
-- Don't reduce the brand to its illustration system alone. The pill geometry + black/white duet carries the brand even without illustrations.
-- Don't tighten or loosen letter-spacing on the display face. The brand never letter-spaces; default tracking is part of the voice.
-- Don't use `{rounded.full}` 9999 px for square cards — the pill 999 px and full 9999 px effects are identical for interactive elements, but cards stay at `{rounded.xl}` 16 px.
-
-
-## Upstream license
-
-来源：`awesome-design-md/LICENSE`。以下许可随复制的设计文档保留。
-
-```text
-MIT License
-
-Copyright (c) 2026 VoltAgent
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-```
+- Don't introduce a second brand accent. Wise green is the sole identity colour.
+- Don't render the hero in weight 700 or lighter. The brand's display weight is 900.
+- Don't render CTAs as sharp rectangles. The 24 px pill geometry is non-negotiable.
+- Don't pair the green CTA with a green background. The brand always sits Wise green on neutral surfaces (sage / white / ink).
+- Don't replace Wise Sans with a generic geometric sans for hero typography — the proprietary face IS the brand's voice.

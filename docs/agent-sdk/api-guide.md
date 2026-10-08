@@ -1,18 +1,18 @@
 # Qwen Text Chat — API Supplementary Guide
 
-> **Content validity**: 2026-08 | **Sources**: [OpenAI compatibility](https://platform.qianwenai.com/docs/api-reference/preparation/install-sdk) · [Qwen API](https://platform.qianwenai.com/docs/api-reference/chat/dashscope) · [Function calling](https://platform.qianwenai.com/docs/developer-guides/text-generation/function-calling) · [Models](https://www.qianwenai.com/models)
+> **Source snapshot**: 2026-08; local SDK/tool-loop corrections: 2026-10-09. For product Agent work, read [agent-development.md](agent-development.md). **Sources**: [OpenAI SDK](https://platform.qianwenai.com/docs/api-reference/preparation/install-sdk) · [Qwen API](https://platform.qianwenai.com/docs/api-reference/chat/dashscope) · [Function calling](https://platform.qianwenai.com/docs/developer-guides/tool-calling/function-calling) · [Models](https://www.qianwenai.com/models)
 
 ---
 
 ## Definition
 
-Qwen text generation models accessed through an **OpenAI-compatible** interface. Migrate existing OpenAI code by updating three values: `base_url`, `api_key`, and `model`. Supports text generation, multi-turn conversations, code writing, reasoning, and function calling.
+Qwen text generation models are accessible through an **OpenAI-compatible** interface. Configure `base_url`, `api_key`, and `model` for the selected provider, then verify its supported endpoint and parameters. Chat Completions examples do not establish compatibility with every OpenAI API. Keep the project's configured endpoint and model rather than replacing them with example values below.
 
 ---
 
 ## Use Cases
 
-Fetch and read the current [Qwen text model catalog](https://alioth.alicdn.com/skills-info/models/references/qianwen-text-models.md) for model recommendations, defaults, and basic model information. If CDN access fails, use the [local fallback](../cdn/references/qianwen-text-models.md).
+Fetch and read the current [Qwen text model catalog](https://alioth.alicdn.com/skills-info/models/references/qianwen-text-models.md) for model recommendations, defaults, and basic model information. If CDN access fails, use the [local fallback](../../.agents/skills/qianwen-text/cdn/references/qianwen-text-models.md).
 
 ---
 
@@ -82,10 +82,13 @@ resp = client.chat.completions.create(
     tools=tools,
 )
 # resp.choices[0].message.tool_calls contains function name and arguments
-# Execute the function, then send result back with role="tool"
+# Append the assistant message with its complete tool_calls.
+# Execute every call, then append one role="tool" message per call,
+# with tool_call_id matching that call's id and content holding the result.
+# Call the model again with the updated history; repeat within run limits.
 ```
 
-For the current function-calling model list, fetch and read the CDN model catalog linked above.
+For a complete multi-turn flow and project validation boundaries, read [Agent development](agent-development.md). For the current function-calling model list and parameter restrictions, read the official function-calling guide linked above.
 
 ### Thinking Mode
 
@@ -116,7 +119,7 @@ resp = client.chat.completions.create(
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `model` | string | **Required.** Model ID. |
-| `messages` | array | **Required.** Conversation history. Format: `{"role": "...", "content": "..."}`. Roles: `system`, `user`, `assistant`. `system` can only appear at `messages[0]`. Last element must have `user` role. |
+| `messages` | array | **Required.** Conversation history. Roles include `system`, `user`, `assistant`, and `tool`. Keep the assistant's `tool_calls`, followed by a matching tool result for every call. A tool continuation can end with `role: "tool"`; follow the selected model's message contract. |
 | `temperature` | float | Controls randomness. Range: [0, 2). Higher values produce more diverse output. |
 | `top_p` | float | Nucleus sampling threshold. Range: (0, 1.0]. |
 | `max_tokens` | int | Maximum number of output tokens. |
@@ -137,12 +140,12 @@ resp = client.chat.completions.create(
 
 ## Important Notes
 
-1. **Prefer streaming.** Non-streaming blocks until the full response is generated (10–60s+ for long outputs). Always use `stream=True` for interactive scenarios.
+1. **Choose streaming deliberately.** Aggregate complete tool arguments before execution. Only render product result cards after structure and fact validation; measure actual latency for the selected model.
 2. **API keys are region-specific.** Use the `cn-beijing` (Beijing) endpoint with your API key.
-3. **openai SDK version:** Requires ≥1.55.0. Older versions conflict with httpx ≥0.28, causing a `proxies` TypeError.
+3. **SDK versions:** Inspect the installed version and dependency lockfile before adapting examples. Historical SDK/httpx compatibility notes are not a current installation baseline.
 4. **Thinking mode varies by model.** Fetch the CDN model catalog linked above for current defaults and only override them deliberately.
-5. **Function calling constraints.** `tools` works with `stream=True` on current models (the tool name arrives in the first chunk and arguments accumulate across subsequent chunks). Still incompatible with `n > 1`.
-6. **messages format.** `system` role can only appear at `messages[0]`. The last message must have the `user` role.
+5. **Function calling constraints.** Check the selected model's support for streaming, thinking mode, `tool_choice`, parallel calls, and strict schemas in the current official guide. SDK parameter availability alone is not evidence of provider support.
+6. **Tool history.** Preserve the assistant tool-call message and all matching `tool_call_id` results before requesting the next model response. Do not insert a synthetic user message after a tool result.
 7. **Regional availability is model-specific.** Check the CDN model catalog for the documented regions before choosing a model.
 
 ---
@@ -150,7 +153,7 @@ resp = client.chat.completions.create(
 ## FAQ
 
 **Q: How do I migrate from OpenAI?**
-A: Change three values: `api_key` to your DASHSCOPE_API_KEY, `base_url` to the corresponding regional endpoint, and `model` to a Qwen model name. All other code remains compatible.
+A: Configure `api_key`, `base_url`, and `model` for Qwen, then verify each API and parameter your application uses. See the official compatibility and function-calling references; compatibility is endpoint- and model-specific.
 
 **Q: When should I use streaming vs. non-streaming?**
 A: Use streaming for interactive scenarios (chat, real-time output). Use non-streaming for batch processing or when you need the complete JSON response at once. With streaming, set `stream_options={"include_usage": True}` to receive token usage in the last chunk.
