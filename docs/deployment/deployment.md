@@ -1,93 +1,115 @@
-# 部署到远程服务器
+# 发布、运行与回滚
 
-本流程用于从本地发布代码、更新服务和验证公网访问。当前已跑通测试站点，使用公网 IP＋端口；域名与 HTTPS 按用户决定暂缓。
+ReadytoGo 以独立 Node 服务运行在既有公网端口 3000。域名与 HTTPS 按当前范围暂缓。实际已执行的版本、时间、健康/API、端口和回滚证据见[发布记录](../delivery/deployment-record.md)，此文定义可重复步骤。
 
-## 当前部署位置
+## 位置与运行约定
 
-| 项目 | 值 |
-| --- | --- |
-| SSH | `root@47.85.138.198:22` |
-| 本机私钥 | `~/.ssh/readytogo_47_85_138_198_ed25519`，保存在仓库外 |
-| 公网地址 | `http://47.85.138.198:3000/` |
-| 远程目录 | `/opt/readytogo-smoke` |
-| systemd 服务 | `readytogo-smoke.service`，已启用开机启动 |
-| 示例源码与服务配置 | [测试站点](../../.scratch/deployment-smoke/site/)、[systemd unit](../../.scratch/deployment-smoke/readytogo-smoke.service) |
+| 项目                | 值                                                                              |
+| ------------------- | ------------------------------------------------------------------------------- |
+| SSH                 | `root@47.85.138.198:22`                                                         |
+| 本机私钥            | `~/.ssh/readytogo_47_85_138_198_ed25519`，仓库外                                |
+| 公网入口            | `http://47.85.138.198:3000/`                                                    |
+| 版本目录 / 当前链接 | `/opt/readytogo/releases/<完整提交SHA>` / `/opt/readytogo/current`              |
+| 正式服务            | `readytogo.service`；[unit 模板](readytogo.service)                             |
+| 配置                | `/etc/readytogo/readytogo.env`，root:root，0600                                 |
+| 正式状态            | `StateDirectory=readytogo`，`/var/lib/readytogo/catalog.json` 和 `matches.json` |
+| 原 smoke            | `/opt/readytogo-smoke`、`readytogo-smoke.service`，保留作为首次发布回滚目标     |
 
-以下命令更新当前测试站点。正式应用落地后，按实际构建产物、启动命令和健康检查同步更新本文。服务器的 80、8080 端口已有其他项目使用；新增服务先检查端口，并使用独立目录和服务名。
+80 属于 forme-footwear 服务，8080 属于 sub2api 容器，不修改其服务、目录、代理、端口或安全组。3000 已有公网 IPv4 放行。公开 HTTP 通常不能使用浏览器定位，界面必须保留手选；不能把 HTTP 健康检查当成 HTTPS/定位已实现。
 
-## 1. 连接并检查目标
+## 1. 冻结代码并打包
 
-在项目根目录的 Bash 会话中执行，后续步骤沿用这些变量：
+在本次受检工作树完成 `npm ci`、`npm test`、`npm run check`、`npm run build`，先提交运行代码，记录完整 SHA。之后整理允许清单：`package.json`、`package-lock.json`、完整 `dist/`、原 `data/BJ-ToiletInfo.csv`。归档排除 `.env`、私钥、本机 node_modules、`.scratch`、日志及 generated 缓存。
 
 ```bash
-RTG_HOST=root@47.85.138.198
+RTG_SHA=$(git rev-parse HEAD)
+RTG_ARCHIVE=/tmp/readytogo-$RTG_SHA.tgz
+COPYFILE_DISABLE=1 tar -czf "$RTG_ARCHIVE" package.json package-lock.json dist data/BJ-ToiletInfo.csv
+shasum -a 256 "$RTG_ARCHIVE"
+```
+
+服务器 Node 需满足 `package.json` 的 >=22.12；实际验证 Node24.15.0/npm11.12.1。服务器 bundle 仍引用外部 npm 包，因此在每个新 Linux release 内运行 `npm ci --omit=dev --no-audit --no-fund`，不传 macOS 依赖。主服务缺 catalogue 时自动导入CSV，生产不运行依赖 tsx 的 `npm run import:data`。
+
+## 2. 连接、备份和上传
+
+```bash
+RTG_TARGET=root@47.85.138.198
 RTG_KEY="$HOME/.ssh/readytogo_47_85_138_198_ed25519"
-RTG_SSH=(ssh -i "$RTG_KEY" -o IdentitiesOnly=yes -o BatchMode=yes -o StrictHostKeyChecking=yes "$RTG_HOST")
-"${RTG_SSH[@]}" 'id -un; node --version; df -h /; ss -ltnp'
-"${RTG_SSH[@]}" 'systemctl status readytogo-smoke.service --no-pager'
+RTG_SSH=(ssh -i "$RTG_KEY" -o IdentitiesOnly=yes -o BatchMode=yes -o StrictHostKeyChecking=yes "$RTG_TARGET")
+"${RTG_SSH[@]}" 'id -un'
+"${RTG_SSH[@]}" 'node --version'
+"${RTG_SSH[@]}" 'df -h /'
+"${RTG_SSH[@]}" 'ss -ltnp'
 ```
 
-完成条件：连接到预期实例，返回 `root`，确认磁盘空间、监听端口和目标服务状态。换电脑时，先配置该电脑的 SSH 公钥并核实服务器主机指纹；连接建立后再继续上传。
+检查当前3000的服务归属，以及待用回环端口（本次33001）无监听。首次替换smoke前备份其目录和unit，保留原文件。后续发布记录 `current` 的旧目标，备份旧unit、root-only环境文件及必要状态；新release必须此前不存在，不能原地覆盖运行版本。
 
-## 2. 准备发布内容与配置
+上传归档到 `/opt/readytogo/uploads/`，核对远程SHA256一致，解包到新release后安装生产依赖。代码、node_modules和原CSV归root所有、服务可读；所有运行写入走 StateDirectory。
 
-- 按项目实际的运行脚本和锁文件完成构建及必要检查；只整理运行所需的代码、产物、配置模板与数据。
-- 当前测试站点使用 Node 内置模块，上传 `site/` 中的四个文件即可；可先用 `node --check` 检查 `server.mjs` 和 `app.js`。
-- 应用引入依赖后，在 Linux 环境按锁文件安装或构建依赖，上传清单排除本机 `node_modules`。
-- API 密钥单独配置在服务器，例如 `/etc/readytogo/readytogo.env`，权限设为 `0600`，由 systemd 的 `EnvironmentFile=` 加载。变量定义见 [.env.example](../../.env.example)；发布包排除 `.env`、SSH 私钥和本地日志。
+配置只需四项：`AMAP_KEY`、`DASHSCOPE_API_KEY`、`QWEN_BASE_URL`、`QWEN_MODEL`。从本机已有忽略的`.env`解析白名单，在内存中编码后通过 **SSH stdin** 写入远程同目录临时文件，再rename为目标，设置root:root和0600。不得echo、shell trace、放入命令行参数、Git或归档。更新已有配置前先保存0600备份。
 
-完成条件：本地检查通过，上传清单明确；需要 API 的业务服务已有独立的服务端凭据配置。当前静态验证页不需要 API 凭据。
+EnvironmentFile会覆盖unit中同名Environment项，因此该凭据文件不放PORT/HOST/状态路径。systemd在启动进程前读取root-only文件，DynamicUser无需直接读取该文件。AI缓存目前在内存，没有AI_CACHE_PATH。
 
-## 3. 备份并上传
+## 3. 回环预发布
 
-更新现有服务前，记录本次代码版本和备份路径。当前测试站点的更新示例：
+正式与stage使用同一受检release和四项凭据。stage使用独立StateDirectory，HOST=127.0.0.1、PORT=33001，避免暴露或与正在运行的正式服务共写cache。远程Bash示例：
 
 ```bash
-RTG_BACKUP="/opt/readytogo-smoke-backup-$(date +%Y%m%d-%H%M%S)"
-"${RTG_SSH[@]}" "test ! -e '$RTG_BACKUP' && cp -a /opt/readytogo-smoke '$RTG_BACKUP'"
-scp -i "$RTG_KEY" -o IdentitiesOnly=yes -o BatchMode=yes -o StrictHostKeyChecking=yes \
-  .scratch/deployment-smoke/site/{server.mjs,index.html,style.css,app.js} \
-  "$RTG_HOST:/opt/readytogo-smoke/"
+RTG_RELEASE=/opt/readytogo/releases/$RTG_SHA
+RTG_STAGE=readytogo-stage-${RTG_SHA:0:12}
+systemd-run --unit="$RTG_STAGE" --collect \
+  --property=Type=exec --property=DynamicUser=yes \
+  --property="WorkingDirectory=$RTG_RELEASE" \
+  --property="StateDirectory=$RTG_STAGE" --property=StateDirectoryMode=0750 \
+  --property=EnvironmentFile=/etc/readytogo/readytogo.env \
+  --property=NoNewPrivileges=yes --property=ProtectSystem=strict --property=ProtectHome=yes \
+  --setenv=NODE_ENV=production --setenv=TZ=Asia/Shanghai \
+  --setenv=HOST=127.0.0.1 --setenv=PORT=33001 \
+  --setenv="CATALOG_PATH=/var/lib/$RTG_STAGE/catalog.json" \
+  --setenv="MATCH_CACHE_PATH=/var/lib/$RTG_STAGE/matches.json" \
+  /usr/bin/node "$RTG_RELEASE/dist/server/main.js"
+ss -ltnp 'sport = :33001'
+curl --fail --max-time 10 http://127.0.0.1:33001/health
+curl --fail --max-time 10 http://127.0.0.1:33001/api/v1/data/summary
 ```
 
-完成条件：备份存在，清单中的文件全部上传成功。任一步失败时先处理失败，再进入启动步骤。若修改 systemd unit 或服务端配置，同时保留它们的备份。
+必须实际看到127.0.0.1监听；Type=exec只确认进程启动，不等于业务健康。首次导入期间做有界短间隔健康等待。
 
-## 4. 启动或更新服务
+验证 `/health` 的 `status=ok/service=readytogo`、导入统计、首页及实际JS/CSS资源、一次真实地点→单站预览、当前模型parse、详情/导航、静态地图PNG。有`pendingWork`时用`batchCursor`读取当前批次，只有用户式加载下一页才用`nextCursor`。记录complete/fallback/partial和实际范围，不把首次200当作结果完成，不为变绿重复实模请求。
 
-当前服务在启动时读取网页文件，更新文件后重启目标服务：
+初始导入为13,124实体；运行时独立高德候选可能增加health里的catalogCount，正式导入基线以data/summary为准。测试结束后停止stage，保留无凭据证据，stage缓存不复制到正式状态。
+
+## 4. 切换与公网验证
+
+把unit模板安装到 `/etc/systemd/system/readytogo.service`。先保存旧current目标，然后创建临时symlink并用`mv -T`原子切换到已通过stage的新release；unit中的WorkingDirectory保证静态网页和CSV的相对路径正确。运行 `systemd-analyze verify /etc/systemd/system/readytogo.service`、`systemctl daemon-reload`。
+
+首次切换：先stop smoke，再start readytogo；后续版本只restart readytogo。若启动或后续检查失败，立即走回滚。
 
 ```bash
-"${RTG_SSH[@]}" 'systemctl restart readytogo-smoke.service'
-"${RTG_SSH[@]}" 'systemctl is-active readytogo-smoke.service'
+systemctl stop readytogo-smoke.service
+systemctl start readytogo.service
+systemctl is-active readytogo.service
+curl --fail --max-time 10 http://127.0.0.1:3000/health
 ```
 
-首次部署新服务时：创建独立远程目录，上传代码；参考现有 unit 设置工作目录、启动命令、端口和运行用户，安装到 `/etc/systemd/system/`。使用 `systemd-analyze verify` 检查 unit 后，执行 `systemctl daemon-reload` 和 `systemctl enable --now <服务名>`。修改已有 unit 时，也先校验并重新加载，再重启对应服务。
+本机再检查公网 `/health`、首页资产与有限业务API。验证新服务MainPID的`/proc/<pid>/cwd`等于release，服务器bundle与本机产物SHA一致。旧smoke使用`/healthz`和`service=readytogo-smoke`，不作为新应用成功证据。
 
-完成条件：目标服务处于 `active`，启动命令、端口及配置文件与本次发布一致。开机启动是否启用用 `systemctl is-enabled <服务名>` 检查。
+全部成功后enable readytogo；首次发布disable smoke。保留smoke文件，记录新服务active/enabled、smoke inactive/disabled、80/8080仍归原服务、实际release和产物摘要。当前验收不执行被工具拒绝的实际应用浏览器，不绕过拒绝；真实手机条件单独记录为未满足。
 
-## 5. 验证访问
+## 5. 回滚与排查
 
-先从服务器内部检查，再从本机直接访问公网：
+首次发布退回smoke：
 
 ```bash
-"${RTG_SSH[@]}" 'curl --fail --max-time 10 http://127.0.0.1:3000/healthz'
-curl --fail --connect-timeout 5 --max-time 10 http://47.85.138.198:3000/healthz
+systemctl disable --now readytogo.service
+systemctl enable --now readytogo-smoke.service
+curl --fail --max-time 10 http://127.0.0.1:3000/healthz
 ```
 
-完成条件：两次请求均返回 HTTP 200 和预期健康检查内容；浏览器打开公网地址后，页面及其后端请求均正常。当前站点应显示“连接正常”，接口应返回 `service=readytogo-smoke`、`ok=true`。
+本机也检查公网 `/healthz` 必须为 `service=readytogo-smoke/ok=true`。如果曾修改smoke文件或unit，则恢复记录的备份并daemon-reload再启动。保留失败release和日志，不删除证据。
 
-内网正常而公网超时时，检查进程是否监听 `0.0.0.0`、系统防火墙及阿里云安全组。当前 TCP 3000 已对公网 IPv4 放行；改变端口时，重新核对对应规则。需要验证 API 时，从服务器发出小规模真实请求，并核对业务结果及错误码。
+后续正式版本回滚：stop readytogo，恢复previous current、旧unit和必要配置/状态，daemon-reload并启动，重新验证新应用`/health`及业务API。不要把首次smoke回滚步骤当作所有后续发布的默认。
 
-完成后将版本、部署目录、备份路径和验证结果写入本次任务记录。首次连通证据见 [部署验证记录](../../.scratch/deployment-smoke/spec.md)。
+日志使用 `journalctl -u readytogo.service`；现有HTTP日志仅含请求ID、路由模板、耗时和错误码。不要输出进程环境或原始供应商请求。服务健康但高德/千问失败时，检查配置键的存在性、供应商安全错误码及权限/配额；不要对外暴露key。
 
-## 失败与回滚
-
-服务启动或健康检查失败时，先看目标服务日志：
-
-```bash
-"${RTG_SSH[@]}" 'journalctl -u readytogo-smoke.service -n 50 --no-pager'
-```
-
-需要回滚时，将失败的代码目录改名保留，把步骤 3 记录的完整备份恢复到 `/opt/readytogo-smoke`。若改过 unit 或配置，一并恢复并重新加载 systemd；随后重启目标服务，重复步骤 5。公网检查重新通过才算回滚完成。
-
-后续启用浏览器自动定位时，再补齐 HTTPS；公网 HTTP 验证通过只说明当前部署和访问链路可用。
+回滚文档已准备不等于回滚演练通过，实际执行结果必须写入发布记录。域名、TLS、防火墙和其他服务不在本次变更范围。

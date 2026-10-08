@@ -1,0 +1,535 @@
+{
+  "schema": "readytogo.delivery-evidence.v1",
+  "compiledLocalDate": "2026-10-09",
+  "timezone": "Asia/Shanghai",
+  "scope": {
+    "purpose": "只读整理工单07既有联调与验收证据，供永久交付文档摘录",
+    "newProviderCalls": 0,
+    "newBrowserSessions": 0,
+    "repositoryFilesModified": false,
+    "newTestsExecuted": false,
+    "retainedContent": "保留两个专门编写的验证输入和三个公共候选摘要；不复制原始POI清单、凭据、精确坐标或分页游标",
+    "dateSemantics": "generatedAt 为源记录生成时间，不能当作每次请求开始时间；只按源记录保留已知调用/轮询耗时。"
+  },
+  "sourceFiles": {
+    "realParse": "real-parse-holdout-results.json",
+    "realPreview": "real-plan-probe-results.json",
+    "fallbackDiagnostic": "shichahai-ai-diagnostic-results.json",
+    "fallbackInterpretation": "shichahai-ai-diagnostic.md",
+    "postChangeCheck": "repair-feedback-live-results.json",
+    "repoReplay": "tests/fixtures/recorded-ai-itinerary.json",
+    "repoAcceptance": "docs/prd/acceptance.md",
+    "repoSpec": ".scratch/demo-development/spec.md",
+    "repoExecution": ".scratch/demo-development/execution.md",
+    "repoStage4": ".scratch/demo-development/reviews/stage4.md"
+  },
+  "realParse": {
+    "generatedAt": "2026-10-08T19:19:25.386Z",
+    "generatedAtLocal": "2026-10-09T03:19:25.386000+08:00",
+    "codeRevision": null,
+    "revisionNote": "源JSON未记录代码版本，不补写推测版本",
+    "route": "/api/v1/assist/parse",
+    "providerEvidence": "既有真实千问调用记录；专门编写的验证输入，不是用户真实行程",
+    "complete": 6,
+    "fallback": 0,
+    "httpDurationRangeMs": [2003, 2742],
+    "fullInputExamples": [
+      {
+        "case": 1,
+        "input": "Start at the National Museum, then Shichahai, and finish at Beijing Zoo. I would prefer a seated toilet."
+      },
+      {
+        "case": 2,
+        "input": "先去首都博物馆，再去北京天文馆，最后逛三里屯。我不需要坐便。"
+      }
+    ],
+    "cases": [
+      {
+        "case": 1,
+        "inputSummary": "英文三站，明确希望成人坐便",
+        "initialPreference": "any",
+        "expectedPreference": "seated_required",
+        "actualProposedPreference": "seated_required",
+        "orderedPlaceQueries": [
+          {
+            "order": 1,
+            "originalText": "National Museum",
+            "queryZh": "中国国家博物馆",
+            "note": null
+          },
+          {
+            "order": 2,
+            "originalText": "Shichahai",
+            "queryZh": "什刹海",
+            "note": null
+          },
+          {
+            "order": 3,
+            "originalText": "Beijing Zoo",
+            "queryZh": "北京动物园",
+            "note": null
+          }
+        ],
+        "unsupportedNeeds": [],
+        "warnings": [],
+        "httpStatus": 200,
+        "parseStatus": "complete",
+        "elapsedHttpMs": 2531,
+        "sourcePass": true
+      },
+      {
+        "case": 2,
+        "inputSummary": "中文三站，明确不需要坐便；原选择为需要坐便",
+        "initialPreference": "seated_required",
+        "expectedPreference": "any",
+        "actualProposedPreference": "any",
+        "orderedPlaceQueries": [
+          {
+            "order": 1,
+            "originalText": "首都博物馆",
+            "queryZh": "首都博物馆",
+            "note": null
+          },
+          {
+            "order": 2,
+            "originalText": "北京天文馆",
+            "queryZh": "北京天文馆",
+            "note": null
+          },
+          {
+            "order": 3,
+            "originalText": "三里屯",
+            "queryZh": "三里屯",
+            "note": null
+          }
+        ],
+        "unsupportedNeeds": [],
+        "warnings": [],
+        "httpStatus": 200,
+        "parseStatus": "complete",
+        "elapsedHttpMs": 2742,
+        "sourcePass": true
+      },
+      {
+        "case": 3,
+        "inputSummary": "英文两站，额外提出轮椅友好路线，未表达坐便需求",
+        "initialPreference": "any",
+        "expectedPreference": null,
+        "actualProposedPreference": null,
+        "orderedPlaceQueries": [
+          {
+            "order": 1,
+            "originalText": "Yonghe Temple",
+            "queryZh": "雍和宫",
+            "note": null
+          },
+          {
+            "order": 2,
+            "originalText": "798 Art Zone",
+            "queryZh": "798艺术区",
+            "note": null
+          }
+        ],
+        "unsupportedNeeds": ["wheelchair-friendly routes"],
+        "warnings": [],
+        "httpStatus": 200,
+        "parseStatus": "complete",
+        "elapsedHttpMs": 2361,
+        "sourcePass": true
+      },
+      {
+        "case": 4,
+        "inputSummary": "中文两站，带下午/饭后备注，未表达需求；原选择为需要坐便",
+        "initialPreference": "seated_required",
+        "expectedPreference": null,
+        "actualProposedPreference": null,
+        "orderedPlaceQueries": [
+          {
+            "order": 1,
+            "originalText": "陶然亭公园",
+            "queryZh": "陶然亭公园",
+            "note": "下午去"
+          },
+          {
+            "order": 2,
+            "originalText": "前门",
+            "queryZh": "前门",
+            "note": "吃完饭再去"
+          }
+        ],
+        "unsupportedNeeds": [],
+        "warnings": [],
+        "httpStatus": 200,
+        "parseStatus": "complete",
+        "elapsedHttpMs": 2556,
+        "sourcePass": true
+      },
+      {
+        "case": 5,
+        "inputSummary": "英文重复游览同一地点，第二次为午饭后",
+        "initialPreference": "any",
+        "expectedPreference": null,
+        "actualProposedPreference": null,
+        "orderedPlaceQueries": [
+          {
+            "order": 1,
+            "originalText": "Beijing Zoo",
+            "queryZh": "北京动物园",
+            "note": null
+          },
+          {
+            "order": 2,
+            "originalText": "Beijing Zoo",
+            "queryZh": "北京动物园",
+            "note": "after lunch"
+          }
+        ],
+        "unsupportedNeeds": [],
+        "warnings": [],
+        "httpStatus": 200,
+        "parseStatus": "complete",
+        "elapsedHttpMs": 2003,
+        "sourcePass": true
+      },
+      {
+        "case": 6,
+        "inputSummary": "英文两站，上午/下午备注，明确无特殊厕所要求",
+        "initialPreference": "seated_required",
+        "expectedPreference": "any",
+        "actualProposedPreference": "any",
+        "orderedPlaceQueries": [
+          {
+            "order": 1,
+            "originalText": "Temple of Heaven",
+            "queryZh": "天坛公园",
+            "note": "Morning"
+          },
+          {
+            "order": 2,
+            "originalText": "Beihai Park",
+            "queryZh": "北海公园",
+            "note": "afternoon"
+          }
+        ],
+        "unsupportedNeeds": [],
+        "warnings": [],
+        "httpStatus": 200,
+        "parseStatus": "complete",
+        "elapsedHttpMs": 2015,
+        "sourcePass": true
+      }
+    ]
+  },
+  "realThreeStopPreview": {
+    "generatedAt": "2026-10-08T19:45:44.811Z",
+    "generatedAtLocal": "2026-10-09T03:45:44.811000+08:00",
+    "codeRevision": null,
+    "revisionNote": "源JSON未记录代码版本",
+    "kind": "real-provider HTTP contract probe; no actual browser or user plan changed",
+    "sourceParseCase": 1,
+    "displayOrder": "按确认的景点顺序整理；原JSON results按完成顺序写入",
+    "queryCompleteStops": 3,
+    "aiCompleteStops": 2,
+    "aiFallbackStops": 1,
+    "returnedCandidates": 23,
+    "returnedSuccessfulRoutes": 23,
+    "recordScope": "真实高德地点/路线与本地设施资料的首批有限结果；三站 hasMore=true，没有声称已穷尽全部候选或完成用户加载更多操作。",
+    "durationScope": "各站从开始到轮询取得终态批次的耗时；不是纯模型耗时，不累加并发站点为总耗时。",
+    "stops": [
+      {
+        "order": 1,
+        "placeNameZh": "中国国家博物馆",
+        "elapsedToTerminalBatchMs": 30588,
+        "queryStatus": "complete",
+        "analysisStatus": "complete",
+        "pendingWork": false,
+        "stopError": null,
+        "groupCounts": {
+          "matched": 1,
+          "farther": 4,
+          "otherNearby": 1,
+          "conditionalAccess": 0,
+          "routeUnknown": 0
+        },
+        "hasMore": true,
+        "returnedRouteStatusCounts": {
+          "success": 6
+        },
+        "initialAlternativeCount": 2,
+        "publicCandidateExample": {
+          "toiletId": "bj_2c9b9264dadd3a272a76",
+          "nameZh": "菖蒲河公园公厕",
+          "seatStatus": "inferred",
+          "adultSeatedSourceValue": null,
+          "accessibleRoom": true,
+          "accessibleStalls": 2,
+          "thirdRestroom": 0,
+          "walkSeconds": 480,
+          "walkMeters": 600,
+          "reason": "Accessible room and stalls suggest seated facilities may be available. Walking about 8 min.",
+          "reasonOrigin": "validated_model_qualitative_reason_plus_server_route",
+          "sources": ["amap", "beijing_csv"]
+        }
+      },
+      {
+        "order": 2,
+        "placeNameZh": "什刹海",
+        "elapsedToTerminalBatchMs": 33913,
+        "queryStatus": "complete",
+        "analysisStatus": "fallback",
+        "pendingWork": false,
+        "stopError": null,
+        "groupCounts": {
+          "matched": 3,
+          "farther": 2,
+          "otherNearby": 2,
+          "conditionalAccess": 0,
+          "routeUnknown": 0
+        },
+        "hasMore": true,
+        "returnedRouteStatusCounts": {
+          "success": 7
+        },
+        "initialAlternativeCount": 2,
+        "publicCandidateExample": {
+          "toiletId": "bj_fdd100d2652d106def56",
+          "nameZh": "后海南沿1号旁",
+          "seatStatus": "inferred",
+          "adultSeatedSourceValue": null,
+          "accessibleRoom": false,
+          "accessibleStalls": 2,
+          "thirdRestroom": 0,
+          "walkSeconds": 249,
+          "walkMeters": 311,
+          "reason": "Facility records suggest an adult seated toilet may be available.",
+          "reasonOrigin": "source_based_rule_fallback",
+          "sources": ["amap", "beijing_csv"]
+        }
+      },
+      {
+        "order": 3,
+        "placeNameZh": "北京动物园",
+        "elapsedToTerminalBatchMs": 33203,
+        "queryStatus": "complete",
+        "analysisStatus": "complete",
+        "pendingWork": false,
+        "stopError": null,
+        "groupCounts": {
+          "matched": 1,
+          "farther": 2,
+          "otherNearby": 7,
+          "conditionalAccess": 0,
+          "routeUnknown": 0
+        },
+        "hasMore": true,
+        "returnedRouteStatusCounts": {
+          "success": 10
+        },
+        "initialAlternativeCount": 2,
+        "publicCandidateExample": {
+          "toiletId": "bj_a2e8f1e6dd58453c9bc1",
+          "nameZh": "海洋馆北门（内）",
+          "seatStatus": "inferred",
+          "adultSeatedSourceValue": null,
+          "accessibleRoom": true,
+          "accessibleStalls": 2,
+          "thirdRestroom": 0,
+          "walkSeconds": 419,
+          "walkMeters": 524,
+          "reason": "Accessible room and stalls suggest seated toilet availability. Walking about 7 min.",
+          "reasonOrigin": "validated_model_qualitative_reason_plus_server_route",
+          "sources": ["amap", "beijing_csv"]
+        }
+      }
+    ]
+  },
+  "fallbackDiagnostic": {
+    "generatedAt": "2026-10-08T19:50:57.114Z",
+    "generatedAtLocal": "2026-10-09T03:50:57.114000+08:00",
+    "codeRevision": "edcd310f7c30dd38b8f76415aafaac4d54b701a6",
+    "kind": "one bounded public-place HTTP preview diagnostic; no browser, no production edits, no prompt changes",
+    "targetSummary": "同一既有什刹海公共地点的单站有界HTTP诊断",
+    "elapsedHttpMs": 28559,
+    "analysisBudgetMs": 20000,
+    "operations": [
+      {
+        "operation": "record_match",
+        "repair": false,
+        "startedAfterMs": 2833,
+        "durationMs": 1078,
+        "success": true
+      },
+      {
+        "operation": "candidate_analysis",
+        "repair": false,
+        "startedAfterMs": 8527,
+        "durationMs": 10669,
+        "success": true,
+        "validationDiagnostics": {
+          "jsonValid": true,
+          "itemsArray": true,
+          "inputCount": 10,
+          "outputCount": 10,
+          "uniqueIds": 10,
+          "foreignIds": 0,
+          "missingBasisFields": 8,
+          "nullBasisFields": 0,
+          "illegalEnum": 0,
+          "protectedSeatViolation": 0,
+          "unsupportedInference": 5,
+          "routeQuantitiesInReason": 0,
+          "oversizedReason": 0,
+          "extraFields": 0
+        }
+      },
+      {
+        "operation": "candidate_analysis",
+        "repair": true,
+        "startedAfterMs": 19199,
+        "durationMs": 9340,
+        "success": false,
+        "category": "operation_aborted"
+      }
+    ],
+    "result": {
+      "httpStatus": 200,
+      "status": "complete",
+      "analysisStatus": "fallback",
+      "pendingWork": false,
+      "errorCode": null,
+      "counts": {
+        "matched": 3,
+        "farther": 2,
+        "otherNearby": 2,
+        "conditionalAccess": 0,
+        "routeUnknown": 0
+      }
+    },
+    "interpretation": "初轮请求收到模型响应，但业务依据字段校验未通过：8个basisFields引用不属于输入设施对象，5项推断没有可接受的正面依据。唯一修复在剩余共享20秒时限内中止，最终采用规则说明，真实候选和路线保留。",
+    "causalLimit": "该诊断建立本次复现的原因，不足以断言更早未加诊断的三站fallback一定具有同一原因。",
+    "passClaim": "安全拒绝不受支持的推断并保持业务结果的降级路径被真实观察到；不记为模型分析成功。"
+  },
+  "postChangeRealCheck": {
+    "generatedAt": "2026-10-08T20:01:49.153Z",
+    "generatedAtLocal": "2026-10-09T04:01:49.153000+08:00",
+    "codeRevision": "7b7680df00dbe9cbfaa29d99149596f1f87045af",
+    "kind": "one bounded public-place HTTP preview after generic structured repair feedback change; no browser or place-specific behavior",
+    "elapsedHttpMs": 20543,
+    "analysisBudgetMs": 20000,
+    "operations": [
+      {
+        "operation": "record_match",
+        "repair": false,
+        "startedAfterMs": 2872,
+        "durationMs": 1176,
+        "success": true
+      },
+      {
+        "operation": "candidate_analysis",
+        "repair": false,
+        "startedAfterMs": 8646,
+        "durationMs": 11491,
+        "success": true,
+        "validationDiagnostics": {
+          "jsonValid": true,
+          "itemsArray": true,
+          "inputCount": 10,
+          "outputCount": 10,
+          "uniqueIds": 10,
+          "foreignIds": 0,
+          "missingBasisFields": 0,
+          "nullBasisFields": 0,
+          "illegalEnum": 0,
+          "protectedSeatViolation": 0,
+          "unsupportedInference": 0,
+          "routeQuantitiesInReason": 0,
+          "oversizedReason": 0,
+          "extraFields": 0
+        }
+      }
+    ],
+    "result": {
+      "httpStatus": 200,
+      "status": "complete",
+      "analysisStatus": "complete",
+      "pendingWork": false,
+      "errorCode": null,
+      "counts": {
+        "matched": 3,
+        "farther": 2,
+        "otherNearby": 2,
+        "conditionalAccess": 0,
+        "routeUnknown": 0
+      }
+    },
+    "implementedGenericChange": "Facilities键使用有限枚举，唯一修复接收有界结构化校验问题和拒绝的JSON；原ID/来源/正面依据校验、20秒分析预算及最多一次修复不变。",
+    "evidenceClaim": "10项首轮分析11,491ms，整次HTTP20,543ms；首轮通过业务校验，analysisStatus=complete。",
+    "notProven": "本次没有触发repair；真实供应商修复重试成功率、消除所有fallback、固定延迟和任意输入均成功均未由该单次复验证明。",
+    "repairVerification": "真实修复调用曾在前次诊断超时；改进后的修复成功/再次无效/共享时限路径由既有HTTP供应商边界测试验证。"
+  },
+  "offlineReplay": {
+    "path": "tests/fixtures/recorded-ai-itinerary.json",
+    "provenance": {
+      "kind": "Offline display replay of recorded real Qwen/Amap responses; not a new provider call or a production example",
+      "parseRecordedAt": "2026-10-08T19:19:25.386Z",
+      "previewRecordedAt": "2026-10-08T19:45:44.811Z",
+      "excerpt": "Only initial displayed candidates retained; pagination tokens and raw source columns omitted. Candidate identities, facility values, routes and reasons are unchanged."
+    },
+    "retainedCards": 9,
+    "stations": 3,
+    "comparisonPerformedDuringThisSummary": {
+      "type": "只读JSON比对，未运行应用",
+      "fields": [
+        "toiletId",
+        "nameZh",
+        "nameEn",
+        "addressZh",
+        "district",
+        "seatStatus",
+        "seatBasis",
+        "facilities",
+        "openingStatus",
+        "openingHoursRaw",
+        "accessCondition",
+        "accessNote",
+        "routeStatus",
+        "walkSeconds",
+        "walkMeters",
+        "reason"
+      ],
+      "results": [
+        {
+          "placeNameZh": "中国国家博物馆",
+          "retainedCards": 3,
+          "analysisStatusPreserved": true,
+          "primaryIdentityPreserved": true,
+          "keyFieldMismatches": []
+        },
+        {
+          "placeNameZh": "什刹海",
+          "retainedCards": 3,
+          "analysisStatusPreserved": true,
+          "primaryIdentityPreserved": true,
+          "keyFieldMismatches": []
+        },
+        {
+          "placeNameZh": "北京动物园",
+          "retainedCards": 3,
+          "analysisStatusPreserved": true,
+          "primaryIdentityPreserved": true,
+          "keyFieldMismatches": []
+        }
+      ]
+    },
+    "existingDomTest": "tests/dom/ai-plan.test.tsx:675",
+    "assertionScope": "3站草稿确认后保存的POI顺序、3张主推荐卡的候选ID/说明/首个来源名称。fixture包含9卡，但该测试没有逐张对9卡做同样断言。",
+    "limits": "所有HTTP被离线替身返回既有记录；页面状态和游标为有限回放构造。不是新的模型调用、实际应用浏览器验收、全部候选分页验收或真机验收。",
+    "productionSeparation": "记录只位于tests/fixtures；阶段4审查未发现固定景点、评测文本或fixture生产分支。"
+  },
+  "sourceRecordDigests": {
+    "real-parse-holdout-results.json": "5897c2cac3dd9c30891fe70c20ea2048244ac44b5e972fd4b611b2d99d3a45d4",
+    "real-plan-probe-results.json": "73c1c47154f23b1359527fa4c4c7ffbf49b1d41d9bc0f09d99c1dc2010db2cd1",
+    "repair-feedback-live-results.json": "fe87634778ade06beeb9fc9ea260aceb84c04cc46af441ec5147bbe3075808b0",
+    "shichahai-ai-diagnostic-results.json": "9ef1b176f2d56fe52492cf5ed5bc2ac7eb15064a31d133895b3a04b9947f19d4"
+  }
+}

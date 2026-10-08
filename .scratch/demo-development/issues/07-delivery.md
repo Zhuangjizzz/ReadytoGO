@@ -29,3 +29,7 @@ Parent: [开发规格](../spec.md)
 ## Comments
 
 功能依赖已合入 `fcec886`。从最新集成分支建立 `codex/demo-07-delivery`，使用已准备的 `demo-delivery` 工作树。发布预检及执行草稿在 `/private/tmp/readytogo-demo-notes/delivery-preflight.md`；仅使用既有独立服务与端口，补通用 HOST 配置以支持回环预发布。浏览器预览拒绝及未完成的真机验收须继续明确记录。
+
+- 2026-10-09：在基于 `5994096` 的 `codex/demo-07-delivery` 开始实施。测试边界按用户和规格已授权的进程启动及公开 HTTP：用隔离正式导入目录启动服务，验证 HOST 配置决定实际监听地址。凭据不进入测试。
+
+- 发布前运行检查：HOST启动进程+真实HTTP用例先因固定0.0.0.0失败，加入通用HOST后通过。当前92项默认测试、typecheck、生产build均通过；本机Node26.8.1，远程Node24.15.0。已保存有界真实AI摘要及未满足的真机验收；以下发布结果将另行追加。
