@@ -207,12 +207,13 @@ export class AmapHttpProvider implements AmapProvider {
       show_fields: "business,indoor",
       ...(options.toiletsOnly ? { types: "200300|200303" } : {}),
     });
-    const rows = pois(raw.pois).filter(
+    const rawRows = Array.isArray(raw.pois) ? raw.pois : [];
+    const rows = pois(rawRows).filter(
       (p) =>
         (p.city === "北京市" || p.city === "北京") &&
         (!options.toiletsOnly || /^20030[0-3]$/.test(p.typeCode)),
     );
-    return { pois: rows, hasMore: rows.length === limit };
+    return { pois: rows, hasMore: rawRows.length >= limit };
   }
   async nearbyToilets(origin: Position, radiusMeters: number, page = 1) {
     const raw = await this.request("/v5/place/around", {
@@ -224,12 +225,13 @@ export class AmapHttpProvider implements AmapProvider {
       page_num: page,
       show_fields: "business,indoor",
     });
-    const rows = pois(raw.pois).filter(
+    const rawRows = Array.isArray(raw.pois) ? raw.pois : [];
+    const rows = pois(rawRows).filter(
       (p) =>
         (p.city === "北京市" || p.city === "北京") &&
         /^20030[0-3]$/.test(p.typeCode),
     );
-    return { pois: rows, hasMore: rows.length === 25 };
+    return { pois: rows, hasMore: rawRows.length >= 25 };
   }
   async walking(origin: Position, destination: Position): Promise<Route> {
     const base = { origin, destination, walkSeconds: null, walkMeters: null };

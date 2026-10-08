@@ -170,7 +170,7 @@ export function availabilityFromStatements(
     for (const clause of text.split(/[，,；;。.!?！？\n]/)) {
       // Read state statements in order: a later reopening can supersede a past closure.
       const events = clause.matchAll(
-        /(?:尚|并)?未(?:被)?停用|没有(?:被)?停用|未停止使用|(?:尚|仍)?未(?:恢复|重新)(?:开放|使用|启用)|(?:已(?:经)?|现已)?(?:恢复|重新)(?:正常)?(?:开放|使用|启用)|永久关闭|(?:已)?撤销|(?:已)?拆除|停用|停止使用|暂停开放|临时关闭|维修中|装修中|permanently closed|temporarily closed|out of service|reopened/gi,
+        /(?:尚|并)?未(?:被)?停用|没有(?:被)?停用|未停止使用|(?:尚|仍)?未(?:恢复|重新)(?:开放|使用|启用)|(?:尚|仍|暂|还)?未(?:正式|对外)?(?:开放|启用)|(?:已(?:经)?|现已)?(?:恢复|重新)(?:正常)?(?:开放|使用|启用)|(?:现已|已经|已)(?:正式|正常|对外)?(?:开放|启用)|永久关闭|(?:已)?撤销|(?:已)?拆除|停用|停止使用|暂停开放|临时关闭|维修中|装修中|permanently closed|temporarily closed|out of service|not(?: yet)? (?:reopened|open(?:ed)?)|reopened/gi,
       );
       for (const event of events) {
         const prefix = clause.slice(0, event.index).trim();
@@ -179,6 +179,10 @@ export function availabilityFromStatements(
           !/恢复|重新|reopened/i.test(event[0])
         )
           continue;
+        if (/^not(?: yet)? (?:reopened|open(?:ed)?)$/i.test(event[0])) {
+          availability = "out_of_service";
+          continue;
+        }
         if (
           /^(?:尚|并)?未(?:被)?停用$|^没有(?:被)?停用$|^未停止使用$|reopened/i.test(
             event[0],
@@ -191,7 +195,11 @@ export function availabilityFromStatements(
           availability = "out_of_service";
           continue;
         }
-        if (/恢复|重新/.test(event[0])) {
+        if (
+          /恢复|重新|^(?:现已|已经|已)(?:正式|正常|对外)?(?:开放|启用)$/.test(
+            event[0],
+          )
+        ) {
           availability = "active";
           continue;
         }

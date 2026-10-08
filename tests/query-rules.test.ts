@@ -330,3 +330,36 @@ test("explicit out-of-service status is excluded in both contexts, with reopenin
     assert.equal(data.availability, "out_of_service");
   });
 });
+
+test("unopened source statements exclude candidates until a later explicit opening while historical and negated remarks stay distinct", async () => {
+  const notes = [
+    "未开放",
+    "尚未开放",
+    "暂未对外开放",
+    "未开放，现已恢复开放",
+    "原来未开放；现已正式开放",
+    "并非未开放",
+    "not yet open",
+    "历史上未开放",
+    "已开放，当前尚未开放",
+    "未停止使用",
+  ];
+  const rows = notes.map((notes, index) => {
+    const row = fixture(String(index + 1));
+    row.facilities.notes = notes;
+    return row;
+  });
+  await withApp(rows, {}, async (url) => {
+    for (const context of ["nearby", "plan_stop"] as const) {
+      const result = await query(url, { preference: "any", context });
+      assert.deepEqual(
+        new Set(ids(result.groups.matched)),
+        new Set(["4", "5", "6", "8", "10"]),
+      );
+    }
+    const reply = await fetch(url + "/api/v1/toilets/1");
+    const { data } = (await reply.json()) as ApiSuccess<Toilet>;
+    assert.equal(data.availability, "out_of_service");
+    assert.equal(data.facilities.notes, "未开放");
+  });
+});
