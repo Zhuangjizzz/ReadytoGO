@@ -9,6 +9,7 @@ import { placeOrigin, planRecommendations, sameToilet } from "../shared/plan";
 import type { LocalPlanController } from "./useLocalPlan";
 import type { usePlanResults } from "./usePlanResults";
 import { ToiletCard } from "./ToiletCard";
+import { PlanNote } from "./PlanNote";
 const labels: Record<keyof CandidateGroups, [string, string]> = {
   matched: ["Within your walking time", "所选步行范围内"],
   farther: ["Beyond your walking time", "超出所选步行范围"],
@@ -170,7 +171,11 @@ export function PlanResults({
                       ? "无特殊要求"
                       : "No preference"}
                 </p>
-                {stop.note && <p>{stop.note}</p>}
+                <PlanNote
+                  note={stop.note}
+                  noteKind={stop.noteKind}
+                  language={plan.language}
+                />
               </div>
             </div>
             {stop.skipped ? (
