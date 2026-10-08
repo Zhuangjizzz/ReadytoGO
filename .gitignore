@@ -6,3 +6,6 @@ node_modules/
 __pycache__/
 *.pyc
 output/
+
+dist/
+data/generated/
