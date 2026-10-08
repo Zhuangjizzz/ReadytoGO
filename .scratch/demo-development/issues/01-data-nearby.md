@@ -47,3 +47,7 @@ Red → green：缺少 app 实现 → 正式 CLI 导入与 HTTP 详情通过；�
 ### 阶段审查修复：门牌身份
 
 merger 发现旧地址包含判断可把 1 号误匹配到 10 号，并忽略坐标冲突。新增正式导入→HTTP 的通用数字边界回归，先观测 6 条失败，再按完整门牌号、完整道路名、同区县及已知位置相容性修复；同门牌的附加入口文字仍允许匹配。匹配规则版本 2 丢弃旧宽松关联缓存。`npm test` 的 15 个测试、`npm run check`、`npm run build` 均通过。
+
+## Resolution
+
+Integration: `307a2506c704f08c955627bbbf08ca83850113c3`. Independent review fixes verified; 15 tests, typecheck, build and formal import passed. Real provider checks and 390px browser evidence are recorded in `docs/data-processing.md`.
