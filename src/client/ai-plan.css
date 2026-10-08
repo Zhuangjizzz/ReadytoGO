@@ -70,6 +70,9 @@
   margin-top: 20px;
   min-width: 0;
 }
+.ai-draft-stop textarea {
+  min-height: 96px;
+}
 .ai-stop-heading {
   display: grid;
   grid-template-columns: 40px minmax(0, 1fr) auto;

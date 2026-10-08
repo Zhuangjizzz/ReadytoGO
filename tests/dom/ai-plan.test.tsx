@@ -789,3 +789,153 @@ test("recorded real AI and map responses retain their candidate identities and e
   );
   view.unmount();
 });
+
+test("long source context survives draft confirmation and refresh as a collapsed contextual note", async () => {
+  setup();
+  const source = "Morning garden, then a gallery visit. ".padEnd(2000, "x");
+  globalThis.fetch = async (url, options) =>
+    String(url).includes("/assist/parse")
+      ? respond({
+          ...parsed(source),
+          placeQueries: [
+            {
+              ...parsed().placeQueries[0],
+              note: source,
+              noteKind: "source_context",
+            },
+          ],
+        })
+      : String(url).includes("/places/search")
+        ? respond({ places: [places[0]], hasMore: false })
+        : respond(emptyPreview(JSON.parse(String(options?.body))));
+  const user = userEvent.setup();
+  let view = render(<App />);
+  fireEvent.change(screen.getByRole("textbox", { name: "Your itinerary" }), {
+    target: { value: source },
+  });
+  await user.click(
+    screen.getByRole("button", { name: "Use AI to fill stops" }),
+  );
+  const note = await screen.findByRole("textbox", { name: "Notes for stop 1" });
+  assert.equal(note.tagName, "TEXTAREA");
+  assert.equal((note as HTMLTextAreaElement).maxLength, 2000);
+  assert.equal((note as HTMLTextAreaElement).value, source);
+  await user.click(
+    await screen.findByRole("button", { name: /Use 植物园入口/ }),
+  );
+  await user.click(
+    screen.getByRole("button", { name: "Confirm and replace my plan" }),
+  );
+  await waitFor(() =>
+    assert.equal(saved().stops[0].noteKind, "source_context"),
+  );
+  assert.equal(saved().stops[0].note, source);
+  let summary = screen.getByText(
+    "Original context may cover multiple stops. Please check.",
+  );
+  assert.equal((summary.closest("details") as HTMLDetailsElement).open, false);
+  await user.click(summary);
+  assert.equal((summary.closest("details") as HTMLDetailsElement).open, true);
+  assert.equal(summary.closest("details")!.textContent?.includes(source), true);
+  view.unmount();
+  view = render(<App />);
+  summary = screen.getByText(
+    "Original context may cover multiple stops. Please check.",
+  );
+  assert.equal((summary.closest("details") as HTMLDetailsElement).open, false);
+  assert.equal(saved().stops[0].noteKind, "source_context");
+  await user.click(screen.getByRole("button", { name: "Edit stops" }));
+  assert.ok(
+    screen.getByText(
+      "Original context may cover multiple stops. Please check.",
+    ),
+  );
+  await user.click(screen.getByRole("button", { name: "Replace stop 1" }));
+  await user.type(screen.getByRole("textbox", { name: "Place name" }), "入口");
+  await user.click(screen.getByRole("button", { name: "Search" }));
+  await user.click(await screen.findByRole("button", { name: /植物园入口/ }));
+  assert.equal(saved().stops[0].noteKind, "source_context");
+  await user.click(screen.getByRole("button", { name: "中文" }));
+  assert.ok(screen.getByText("原文上下文，可能包含多站，请核对"));
+  assert.equal(saved().stops[0].note, source);
+  view.unmount();
+});
+
+test("editing a contextual draft note makes it an ordinary stop note without persisting the original textbox", async () => {
+  setup();
+  const source = "garden itinerary context ".repeat(30);
+  globalThis.fetch = async (url, options) =>
+    String(url).includes("/assist/parse")
+      ? respond({
+          ...parsed(source),
+          placeQueries: [
+            {
+              ...parsed().placeQueries[0],
+              note: source,
+              noteKind: "source_context",
+            },
+          ],
+        })
+      : String(url).includes("/places/search")
+        ? respond({ places: [places[0]], hasMore: false })
+        : respond(emptyPreview(JSON.parse(String(options?.body))));
+  const user = userEvent.setup();
+  const view = render(<App />);
+  fireEvent.change(screen.getByRole("textbox", { name: "Your itinerary" }), {
+    target: { value: source },
+  });
+  await user.click(
+    screen.getByRole("button", { name: "Use AI to fill stops" }),
+  );
+  const note = await screen.findByRole("textbox", { name: "Notes for stop 1" });
+  assert.ok(
+    screen.getByText(
+      "Original context may cover multiple stops. Please check.",
+    ),
+  );
+  fireEvent.change(note, {
+    target: { value: "Meet at this entrance after lunch." },
+  });
+  assert.equal(
+    !!screen.queryByText(
+      "Original context may cover multiple stops. Please check.",
+    ),
+    false,
+  );
+  await user.click(
+    await screen.findByRole("button", { name: /Use 植物园入口/ }),
+  );
+  await user.click(
+    screen.getByRole("button", { name: "Confirm and replace my plan" }),
+  );
+  await waitFor(() =>
+    assert.equal(saved().stops[0].note, "Meet at this entrance after lunch."),
+  );
+  assert.equal(saved().stops[0].noteKind, undefined);
+  assert.equal(localStorage.getItem("readytogo-plan")!.includes(source), false);
+  const resultNote = screen.getByText("Meet at this entrance after lunch.");
+  assert.equal(Boolean(resultNote.closest("details")), false);
+  view.unmount();
+});
+
+test("schema version one archives without noteKind keep their ordinary notes", async () => {
+  setup();
+  const previous = saved();
+  previous.stops[0].note = "Meet outside the main gate.";
+  localStorage.setItem("readytogo-plan", JSON.stringify(previous));
+  const user = userEvent.setup();
+  let view = render(<App />);
+  assert.equal(
+    Boolean(screen.getByText("Meet outside the main gate.").closest("details")),
+    false,
+  );
+  assert.equal(!!screen.queryByText(/could not be restored/), false);
+  await user.click(screen.getByRole("button", { name: "No preference" }));
+  assert.equal(saved().stops[0].note, "Meet outside the main gate.");
+  assert.equal(saved().stops[0].noteKind, undefined);
+  view.unmount();
+  view = render(<App />);
+  assert.ok(screen.getByText("Meet outside the main gate."));
+  assert.equal(saved().schemaVersion, 1);
+  view.unmount();
+});

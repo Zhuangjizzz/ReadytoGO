@@ -38,6 +38,7 @@ const schema = z.object({
         stopId: z.string().min(1),
         place,
         note: z.string().optional(),
+        noteKind: z.literal("source_context").optional(),
         selectedToiletId: z.string().nullable().optional(),
         skipped: z.boolean().optional(),
       }),
