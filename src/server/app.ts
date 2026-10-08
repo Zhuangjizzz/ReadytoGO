@@ -4,7 +4,7 @@ import { randomUUID } from "node:crypto";
 import { getConfig, type AppConfig } from "./config.js";
 import { AppError } from "./errors.js";
 import { Catalog } from "./data/catalog.js";
-import { QueryService } from "./query.js";
+import { QueryService, type QueryOptions } from "./query.js";
 import { AmapHttpProvider, type AmapProvider } from "./providers/amap.js";
 import { coreRouter, type CoreServices } from "./routes/core.js";
 import type { CatalogFile } from "../shared/contracts.js";
@@ -21,6 +21,7 @@ export interface ApplicationOptions extends Partial<AppConfig> {
   provider?: AmapProvider;
   logger?: (entry: RequestLog) => void;
   now?: () => Date;
+  queryOptions?: QueryOptions;
   registerRoutes?: (app: express.Express, services: CoreServices) => void;
 }
 export async function createApplication(options: ApplicationOptions = {}) {
@@ -33,7 +34,12 @@ export async function createApplication(options: ApplicationOptions = {}) {
   const provider =
     options.provider ??
     new AmapHttpProvider({ key: config.amapKey, baseUrl: config.amapBaseUrl });
-  const query = new QueryService(catalog, provider, options.now);
+  const query = new QueryService(
+    catalog,
+    provider,
+    options.now,
+    options.queryOptions,
+  );
   const services = { catalog, provider, query };
   const app = express();
   app.disable("x-powered-by");
@@ -96,24 +102,22 @@ export async function createApplication(options: ApplicationOptions = {}) {
         : jsonError
           ? "INVALID_JSON"
           : "INTERNAL_ERROR";
-      res
-        .status(known ? error.status : jsonError ? 400 : 500)
-        .json({
-          requestId: res.locals.requestId,
-          error: {
-            code: known
-              ? error.code
-              : jsonError
-                ? "INVALID_JSON"
-                : "INTERNAL_ERROR",
-            message: known
-              ? error.message
-              : jsonError
-                ? "The request body is not valid JSON."
-                : "The request could not be completed.",
-            retryable: known ? error.retryable : !jsonError,
-          },
-        });
+      res.status(known ? error.status : jsonError ? 400 : 500).json({
+        requestId: res.locals.requestId,
+        error: {
+          code: known
+            ? error.code
+            : jsonError
+              ? "INVALID_JSON"
+              : "INTERNAL_ERROR",
+          message: known
+            ? error.message
+            : jsonError
+              ? "The request body is not valid JSON."
+              : "The request could not be completed.",
+          retryable: known ? error.retryable : !jsonError,
+        },
+      });
     },
   );
   return { app, services, config };

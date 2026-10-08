@@ -3,6 +3,7 @@ import { basename, dirname } from "node:path";
 import { createHash } from "node:crypto";
 import { parse } from "csv-parse/sync";
 import iconv from "iconv-lite";
+import { availabilityFromStatements } from "../rules.js";
 import type {
   CatalogFile,
   Facilities,
@@ -218,11 +219,10 @@ export async function importCsv(
       report.mergedCount++;
       continue;
     }
-    const availability = /撤销|永久关闭|拆除|停用/.test(row[14] || "")
-      ? "permanently_closed"
-      : row[14]?.trim() === "现有"
-        ? "active"
-        : "unknown";
+    const availability = availabilityFromStatements(
+      [row[14] || ""],
+      row[14]?.trim() === "现有" ? "active" : "unknown",
+    );
     toilets.set(id, {
       id,
       nameZh: name,

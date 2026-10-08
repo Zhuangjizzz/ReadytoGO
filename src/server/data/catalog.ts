@@ -8,6 +8,7 @@ import type {
 } from "../../shared/contracts.js";
 import type { ProviderPoi } from "../providers/amap.js";
 import { emptyFacilities, initialSeat } from "./import.js";
+import { deriveToilet } from "../rules.js";
 
 export function distanceMeters(
   a: { lng: number; lat: number },
@@ -97,7 +98,7 @@ export class Catalog {
     private cachePath: string | null,
   ) {
     for (const t of file.toilets) {
-      this.toilets.set(t.id, t);
+      this.toilets.set(t.id, deriveToilet(t));
       if (t.poiId) this.poiIds.set(t.poiId, t.id);
     }
   }
@@ -161,7 +162,8 @@ export class Catalog {
     }
   }
   get(id: string): Toilet | undefined {
-    return this.toilets.get(id);
+    const t = this.toilets.get(id);
+    return t ? deriveToilet(t) : undefined;
   }
   nearby(origin: Position, radius: number): Toilet[] {
     return [...this.toilets.values()].filter(
@@ -175,6 +177,7 @@ export class Catalog {
           !t.position &&
           t.sourcePosition &&
           t.availability !== "permanently_closed" &&
+          t.availability !== "out_of_service" &&
           distanceMeters(origin, t.sourcePosition) <= radius + 800,
       )
       .sort(
@@ -293,7 +296,7 @@ export class Catalog {
         },
       });
     if (known && known.id !== t.id) this.toilets.delete(known.id);
-    this.toilets.set(t.id, t);
+    this.toilets.set(t.id, deriveToilet(t));
     this.poiIds.set(poi.id, t.id);
     return t;
   }
