@@ -1,0 +1,42 @@
+{
+  "verifiedAt": "2026-10-08T15:20:54.631Z",
+  "purpose": "Basic Amap availability and real content search only",
+  "place": {
+    "name": "南锣鼓巷",
+    "id": "B0FFFAH7I9",
+    "address": "交道口街道南大街(南锣鼓巷地铁站E西北口旁)"
+  },
+  "returnedCount": 5,
+  "results": [
+    {
+      "name": "南锣鼓巷-公共厕所",
+      "address": "沙井胡同3号附近",
+      "id": "B0FFFPI6LT",
+      "typecode": "200300"
+    },
+    {
+      "name": "南锣鼓巷-公共厕所",
+      "address": "沙井胡同13号旁",
+      "id": "B000A83K8N",
+      "typecode": "200300"
+    },
+    {
+      "name": "公共厕所",
+      "address": "南锣鼓巷84号旁",
+      "id": "B0FFIGDA4D",
+      "typecode": "200300"
+    },
+    {
+      "name": "达贝子府-公共厕所",
+      "address": "帽儿胡同8号旁",
+      "id": "B000A8360G",
+      "typecode": "200300"
+    },
+    {
+      "name": "洪承畴宅-公共厕所",
+      "address": "黑芝麻胡同6号旁",
+      "id": "B000A836E2",
+      "typecode": "200300"
+    }
+  ]
+}

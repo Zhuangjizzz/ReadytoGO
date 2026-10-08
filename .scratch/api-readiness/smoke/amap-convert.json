@@ -1,0 +1,10 @@
+{
+  "operation": "convert",
+  "fetchedAt": "2026-10-08T15:15:44.068Z",
+  "data": {
+    "status": "1",
+    "info": "ok",
+    "infocode": "10000",
+    "locations": "116.487585177952,39.991754014757"
+  }
+}

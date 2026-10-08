@@ -1,0 +1,20 @@
+{
+  "date": "2026-10-08",
+  "qianwen": {
+    "repo": "QianWen-AI/qianwen-ai",
+    "commit": "7a7a6ddaa6320361776e4d10540147fa1abdd797",
+    "skills": [
+      "qianwen-text",
+      "qianwen-model-selector",
+      "qianwen-ops-auth"
+    ]
+  },
+  "amap": {
+    "source": "https://a.amap.com/jsapi/static/openClaw/amap-lbs-skill.zip",
+    "sha256": "a15e295b93abe069ca59c7e3cb1d9580bcf8ca038e7503710e0d88a4d3a3a3da",
+    "upstream_package_version": "1.0.0",
+    "license_declared_by_package": "MIT"
+  },
+  "scope": "project-local",
+  "tailored": true
+}

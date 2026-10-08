@@ -1,0 +1,19 @@
+{
+  "service": "qianwen",
+  "model": "qwen3.8-flash",
+  "baseUrl": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+  "exitCode": 0,
+  "elapsedMs": 634,
+  "maxOutputTokens": 32,
+  "success": true,
+  "usage": {
+    "completion_tokens": 5,
+    "prompt_tokens": 38,
+    "prompt_tokens_details": {
+      "cached_tokens": 0,
+      "text_tokens": 38
+    },
+    "total_tokens": 43
+  },
+  "jsonValid": true
+}

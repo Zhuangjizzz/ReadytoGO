@@ -1,0 +1,85 @@
+{
+  "operation": "text",
+  "fetchedAt": "2026-10-08T15:15:09.023Z",
+  "data": {
+    "count": "3",
+    "infocode": "10000",
+    "pois": [
+      {
+        "parent": "B000A8UIN8",
+        "address": "景山前街4号北京故宫博物馆",
+        "business": {
+          "opentime_today": "08:30-16:30",
+          "keytag": "古建筑",
+          "rating": "4.3",
+          "tel": "010-85007421;010-85007938",
+          "rectag": "古建筑",
+          "opentime_week": "周一至周日 08:30-16:30"
+        },
+        "distance": "",
+        "pcode": "110000",
+        "adcode": "110101",
+        "pname": "北京市",
+        "cityname": "北京市",
+        "type": "风景名胜;风景名胜;国家级景点",
+        "typecode": "110202",
+        "adname": "东城区",
+        "citycode": "010",
+        "name": "故宫博物院-神武门",
+        "indoor": {
+          "indoor_map": "0"
+        },
+        "location": "116.396786,39.922305",
+        "id": "B000A9PISW"
+      },
+      {
+        "parent": "B000A8UIN8",
+        "address": "景山前街4号故宫博物院",
+        "business": {
+          "keytag": "风景名胜,风景名胜,观景点",
+          "rating": "0.0"
+        },
+        "distance": "",
+        "pcode": "110000",
+        "adcode": "110102",
+        "pname": "北京市",
+        "cityname": "北京市",
+        "type": "风景名胜;风景名胜;观景点",
+        "typecode": "110209",
+        "adname": "西城区",
+        "citycode": "010",
+        "name": "故宫神武门(打卡点)",
+        "indoor": {
+          "indoor_map": "0"
+        },
+        "location": "116.395765,39.923163",
+        "id": "B0M29MTEPT"
+      },
+      {
+        "parent": "",
+        "address": "(停运)观光3线;101路;103路;109路;124路;128路;58路;夜13路;观光2线;观光3线区间",
+        "business": {
+          "keytag": "公交站",
+          "rectag": "公交站"
+        },
+        "distance": "",
+        "pcode": "110000",
+        "adcode": "110102",
+        "pname": "北京市",
+        "cityname": "北京市",
+        "type": "交通设施服务;公交车站;公交车站相关",
+        "typecode": "150700",
+        "adname": "西城区",
+        "citycode": "010",
+        "name": "神武门(公交站)",
+        "indoor": {
+          "indoor_map": "0"
+        },
+        "location": "116.395646,39.923251",
+        "id": "BV11490154"
+      }
+    ],
+    "status": "1",
+    "info": "OK"
+  }
+}

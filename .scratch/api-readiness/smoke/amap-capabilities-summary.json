@@ -1,0 +1,40 @@
+[
+  {
+    "service": "amap",
+    "operation": "around",
+    "exitCode": 0,
+    "elapsedMs": 252,
+    "success": true,
+    "status": "1",
+    "pagePoiCount": 10,
+    "typecodes": [
+      "200300",
+      "200304"
+    ],
+    "fieldPresence": {
+      "business": 10,
+      "indoor": 10
+    }
+  },
+  {
+    "service": "amap",
+    "operation": "walking",
+    "exitCode": 0,
+    "elapsedMs": 169,
+    "success": true,
+    "status": "1",
+    "destinationPoiId": "B0L2RZLP9V",
+    "hasDuration": true,
+    "durationSeconds": "30"
+  },
+  {
+    "service": "amap",
+    "operation": "convert",
+    "exitCode": 0,
+    "elapsedMs": 190,
+    "success": true,
+    "status": "1",
+    "inputPurpose": "fixed_public_api_test_coordinate_not_user_location",
+    "hasConvertedLocation": true
+  }
+]

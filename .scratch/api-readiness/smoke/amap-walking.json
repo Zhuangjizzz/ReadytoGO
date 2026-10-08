@@ -1,0 +1,42 @@
+{
+  "operation": "walking",
+  "fetchedAt": "2026-10-08T15:15:43.866Z",
+  "data": {
+    "status": "1",
+    "info": "OK",
+    "infocode": "10000",
+    "count": "1",
+    "route": {
+      "origin": "116.396786,39.922305",
+      "destination": "116.397082,39.922472",
+      "paths": [
+        {
+          "distance": "38",
+          "cost": {
+            "duration": "30"
+          },
+          "steps": [
+            {
+              "instruction": "向北步行25米右转",
+              "orientation": "北",
+              "road_name": "",
+              "step_distance": "25",
+              "cost": {
+                "duration": "20"
+              }
+            },
+            {
+              "instruction": "向东步行13米到达目的地",
+              "orientation": "东",
+              "road_name": "",
+              "step_distance": "13",
+              "cost": {
+                "duration": "10"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

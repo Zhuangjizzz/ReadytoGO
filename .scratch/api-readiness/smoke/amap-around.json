@@ -1,0 +1,248 @@
+{
+  "operation": "around",
+  "fetchedAt": "2026-10-08T15:15:43.694Z",
+  "data": {
+    "count": "10",
+    "infocode": "10000",
+    "pois": [
+      {
+        "parent": "B000A8UIN8",
+        "address": "故宫文创馆铜器馆西侧130米",
+        "business": {
+          "opentime_today": "24小时营业",
+          "keytag": "公厕",
+          "rectag": "公厕",
+          "opentime_week": "周一至周日 00:00-24:00"
+        },
+        "distance": "31",
+        "pcode": "110000",
+        "adcode": "110101",
+        "pname": "北京市",
+        "cityname": "北京市",
+        "type": "公共设施;公共厕所;公共厕所",
+        "typecode": "200300",
+        "adname": "东城区",
+        "citycode": "010",
+        "name": "神武门外卫生间",
+        "indoor": {
+          "indoor_map": "0"
+        },
+        "location": "116.397082,39.922472",
+        "id": "B0L2RZLP9V"
+      },
+      {
+        "parent": "B000A8UIN8",
+        "address": "景山前街4号故宫博物院内(北侧)",
+        "business": {
+          "keytag": "公厕",
+          "rectag": "公厕"
+        },
+        "distance": "112",
+        "pcode": "110000",
+        "adcode": "110101",
+        "pname": "北京市",
+        "cityname": "北京市",
+        "type": "公共设施;公共厕所;公共厕所",
+        "typecode": "200300",
+        "adname": "东城区",
+        "citycode": "010",
+        "name": "御花园东卫生间",
+        "indoor": {
+          "indoor_map": "0"
+        },
+        "location": "116.397609,39.921516",
+        "id": "B0FFFVD0K7"
+      },
+      {
+        "parent": "B000A8UIN8",
+        "address": "故宫内",
+        "business": {
+          "keytag": "公厕",
+          "rectag": "公厕"
+        },
+        "distance": "126",
+        "pcode": "110000",
+        "adcode": "110101",
+        "pname": "北京市",
+        "cityname": "北京市",
+        "type": "公共设施;公共厕所;公共厕所",
+        "typecode": "200300",
+        "adname": "东城区",
+        "citycode": "010",
+        "name": "御花园西卫生间",
+        "indoor": {
+          "indoor_map": "0"
+        },
+        "location": "116.395866,39.921409",
+        "id": "B0FFFT7Y48"
+      },
+      {
+        "parent": "B000A8UIN8",
+        "address": "景山前街与景山东街交叉口南120米",
+        "business": {
+          "opentime_today": "08:00-17:00",
+          "keytag": "公厕",
+          "rectag": "公厕",
+          "opentime_week": "周二至周日 08:00-17:00"
+        },
+        "distance": "226",
+        "pcode": "110000",
+        "adcode": "110101",
+        "pname": "北京市",
+        "cityname": "北京市",
+        "type": "公共设施;公共厕所;公共厕所",
+        "typecode": "200300",
+        "adname": "东城区",
+        "citycode": "010",
+        "name": "神武门内卫生间",
+        "indoor": {
+          "indoor_map": "0"
+        },
+        "location": "116.399442,39.922239",
+        "id": "B0FFFT7T02"
+      },
+      {
+        "parent": "",
+        "address": "故宫内",
+        "business": {
+          "keytag": "公厕",
+          "rectag": "公厕"
+        },
+        "distance": "253",
+        "pcode": "110000",
+        "adcode": "110101",
+        "pname": "北京市",
+        "cityname": "北京市",
+        "type": "公共设施;公共厕所;公共厕所",
+        "typecode": "200300",
+        "adname": "东城区",
+        "citycode": "010",
+        "name": "东长房东卫生间",
+        "indoor": {
+          "indoor_map": "0"
+        },
+        "location": "116.399749,39.922166",
+        "id": "B0L33HAS62"
+      },
+      {
+        "parent": "B000A7I1OL",
+        "address": "景山西街44号景山公园东门(东南角卫生间旁边)",
+        "business": {
+          "keytag": "母婴室",
+          "rectag": "母婴室"
+        },
+        "distance": "253",
+        "pcode": "110000",
+        "adcode": "110102",
+        "pname": "北京市",
+        "cityname": "北京市",
+        "type": "公共设施;公共厕所;婴儿换洗间/哺乳室/母婴室",
+        "typecode": "200304",
+        "adname": "西城区",
+        "citycode": "010",
+        "name": "母婴室",
+        "indoor": {
+          "indoor_map": "0"
+        },
+        "location": "116.399132,39.923701",
+        "id": "B0FFJX6HZ7"
+      },
+      {
+        "parent": "B000A7I1OL",
+        "address": "景山西街44号景山公园内(东南角)",
+        "business": {
+          "keytag": "公厕",
+          "rectag": "旅游厕所"
+        },
+        "distance": "277",
+        "pcode": "110000",
+        "adcode": "110102",
+        "pname": "北京市",
+        "cityname": "北京市",
+        "type": "公共设施;公共厕所;公共厕所",
+        "typecode": "200300",
+        "adname": "西城区",
+        "citycode": "010",
+        "name": "景山公园-公共厕所",
+        "indoor": {
+          "indoor_map": "0"
+        },
+        "location": "116.399124,39.924035",
+        "id": "B000AAF3VE"
+      },
+      {
+        "parent": "B000A7I1OL",
+        "address": "景山西街44号(故宫后门对面)景山公园内(西南角)",
+        "business": {
+          "opentime_today": "24小时营业",
+          "keytag": "公厕",
+          "rectag": "旅游厕所",
+          "opentime_week": "周一至周日 00:00-24:00"
+        },
+        "distance": "287",
+        "pcode": "110000",
+        "adcode": "110102",
+        "pname": "北京市",
+        "cityname": "北京市",
+        "type": "公共设施;公共厕所;公共厕所",
+        "typecode": "200300",
+        "adname": "西城区",
+        "citycode": "010",
+        "name": "景山公园-公共厕所",
+        "indoor": {
+          "indoor_map": "0"
+        },
+        "location": "116.394388,39.924117",
+        "id": "B000AAF3VS"
+      },
+      {
+        "parent": "B000A8UIN8",
+        "address": "景山前街与景山西街交叉口东南480米",
+        "business": {
+          "keytag": "公厕",
+          "rectag": "公厕"
+        },
+        "distance": "341",
+        "pcode": "110000",
+        "adcode": "110101",
+        "pname": "北京市",
+        "cityname": "北京市",
+        "type": "公共设施;公共厕所;公共厕所",
+        "typecode": "200300",
+        "adname": "东城区",
+        "citycode": "010",
+        "name": "内西路公共厕所",
+        "indoor": {
+          "indoor_map": "0"
+        },
+        "location": "116.396263,39.919266",
+        "id": "B0L22C0VXW"
+      },
+      {
+        "parent": "B000A8UIN8",
+        "address": "北池子大街与骑河楼街交叉口西440米",
+        "business": {
+          "keytag": "公厕",
+          "rectag": "公厕"
+        },
+        "distance": "356",
+        "pcode": "110000",
+        "adcode": "110101",
+        "pname": "北京市",
+        "cityname": "北京市",
+        "type": "公共设施;公共厕所;公共厕所",
+        "typecode": "200300",
+        "adname": "东城区",
+        "citycode": "010",
+        "name": "内东路公共厕所",
+        "indoor": {
+          "indoor_map": "0"
+        },
+        "location": "116.397670,39.919178",
+        "id": "B0L3YGICL1"
+      }
+    ],
+    "status": "1",
+    "info": "OK"
+  }
+}

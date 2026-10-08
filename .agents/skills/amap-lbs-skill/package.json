@@ -1,0 +1,17 @@
+{
+  "name": "readytogo-amap-lbs-skill",
+  "version": "1.0.0",
+  "description": "Project-scoped Amap Web Service queries using native fetch",
+  "private": true,
+  "type": "module",
+  "main": "index.mjs",
+  "engines": { "node": ">=22" },
+  "keywords": [
+    "amap",
+    "webservice",
+    "poi",
+    "geocoding"
+  ],
+  "author": "",
+  "license": "MIT"
+}

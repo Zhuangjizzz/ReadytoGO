@@ -1,0 +1,14 @@
+{
+  "model": "qwen3.8-flash",
+  "messages": [
+    {
+      "role": "user",
+      "content": "Return only this JSON object: {\"ok\":true}"
+    }
+  ],
+  "max_tokens": 32,
+  "enable_thinking": false,
+  "response_format": {
+    "type": "json_object"
+  }
+}
