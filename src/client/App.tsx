@@ -13,30 +13,23 @@ import { PhrasesPage } from "./PhrasesPage";
 import { NavigationDialog } from "./NavigationDialog";
 import { LocateButton, locate, locationError } from "./LocateButton";
 import { usePageNavigation } from "./usePageNavigation";
+import { useLocalPlan } from "./useLocalPlan";
+import { PlanPage } from "./PlanPage";
 export { ToiletCard } from "./ToiletCard";
-function savedLanguage(): Language {
-  try {
-    return localStorage.getItem("readytogo-language") === "zh-CN"
-      ? "zh-CN"
-      : "en";
-  } catch {
-    return "en";
-  }
-}
-function savedPreference(): Preference {
-  try {
-    return localStorage.getItem("readytogo-preference") === "seated_required"
-      ? "seated_required"
-      : "any";
-  } catch {
-    return "any";
-  }
-}
 export default function App() {
-  const [language, setLanguage] = useState<Language>(savedLanguage);
-  const [preference, setPreference] = useState<Preference>(savedPreference);
+  const planController = useLocalPlan();
+  const { language, preference } = planController.plan;
+  const setLanguage = (language: Language) =>
+    planController.changeSettings({ language });
+  const setPreference = (preference: Preference) =>
+    planController.changeSettings({ preference });
   const [origin, setOrigin] = useState<Origin | null>(null);
   const { path, navigate } = usePageNavigation();
+  const lastPlanMode = useRef<"edit" | "results">(
+    path === "/plan/result" ? "results" : "edit",
+  );
+  if (path.startsWith("/plan"))
+    lastPlanMode.current = path === "/plan/result" ? "results" : "edit";
   const [nearbyVisited, setNearbyVisited] = useState(path === "/nearby");
   const [detail, setDetail] = useState<{
     candidate: Candidate;
@@ -108,15 +101,7 @@ export default function App() {
   }, [path]);
   useEffect(() => {
     document.documentElement.lang = language;
-    try {
-      localStorage.setItem("readytogo-language", language);
-    } catch {}
   }, [language]);
-  useEffect(() => {
-    try {
-      localStorage.setItem("readytogo-preference", preference);
-    } catch {}
-  }, [preference]);
   let detailId: string | null = null;
   if (path.startsWith("/toilets/")) {
     try {
@@ -172,6 +157,21 @@ export default function App() {
           {zh ? "English" : "中文"}
         </button>
       </header>
+      {planController.notice && (
+        <p className="notice storage-notice" role="status">
+          {planController.notice === "version"
+            ? zh
+              ? "保存的行程版本暂不支持，请重新建立行程。"
+              : "Your saved plan uses another version. Start a new plan to continue."
+            : planController.notice === "invalid"
+              ? zh
+                ? "无法恢复保存的行程，请重新建立。"
+                : "The saved plan could not be restored. Start a new plan."
+              : zh
+                ? "本机存储不可用，修改仅保留到关闭页面。"
+                : "Storage is unavailable. Changes will last for this visit only."}
+        </p>
+      )}
       {path === "/" && (
         <HomePage
           language={language}
@@ -209,6 +209,8 @@ export default function App() {
             onOriginChange={changeOrigin}
             preference={preference}
             onPreferenceChange={setPreference}
+            settings={planController.plan}
+            onSettingsChange={planController.changeSettings}
             active={path === "/nearby"}
             MapComponent={MapPanel}
             LocateComponent={LocateButton}
@@ -255,16 +257,21 @@ export default function App() {
           }
         />
       )}
-      {path.startsWith("/plan") && (
-        <main className="plan-placeholder">
-          <h1>{zh ? "规划景点停靠" : "Plan my stops"}</h1>
-          <p>
-            {zh
-              ? "按你的顺序添加北京景点，逐站安排附近的厕所。"
-              : "Add Beijing attractions in your own order for a comfort stop at each place."}
-          </p>
-        </main>
-      )}
+      <PlanPage
+        controller={planController}
+        active={path.startsWith("/plan")}
+        mode={lastPlanMode.current}
+        onResult={() => go("/plan/result")}
+        onEdit={() => go("/plan")}
+        onDetails={showDetails}
+        onNearby={startNearby}
+        onNavigate={(candidate, calculationOrigin) =>
+          setNavigation({
+            toiletId: candidate.toiletId,
+            origin: calculationOrigin,
+          })
+        }
+      />
       {navigation && (
         <NavigationDialog
           toiletId={navigation.toiletId}

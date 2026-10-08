@@ -2,6 +2,7 @@ import express from "express";
 import { AiService } from "./ai/service.js";
 import { QwenModel, type JsonModel } from "./providers/qwen.js";
 import { assistRouter } from "./routes/assist.js";
+import { plansRouter } from "./routes/plans.js";
 import { readFile } from "node:fs/promises";
 import { randomUUID } from "node:crypto";
 import { getConfig, type AppConfig } from "./config.js";
@@ -98,6 +99,7 @@ export async function createApplication(options: ApplicationOptions = {}) {
   app.use("/api/v1", navigationRouter(services));
   app.use("/api/v1", mapsRouter(config));
   app.use("/api/v1", assistRouter(ai));
+  app.use("/api/v1", plansRouter(services));
   options.registerRoutes?.(app, services);
   app.use("/api", (_req, _res, next) =>
     next(new AppError("NOT_FOUND", "This endpoint was not found.", 404)),

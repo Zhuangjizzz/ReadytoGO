@@ -8,11 +8,13 @@ export function PlacePicker({
   onSelect,
   onClose,
   initialPosition,
+  allowGeolocation = true,
 }: {
   language: Language;
   onSelect: (place: Place) => void;
   onClose: () => void;
   initialPosition?: Position;
+  allowGeolocation?: boolean;
 }) {
   const zh = language === "zh-CN";
   const [tab, setTab] = useState<"search" | "map">("search");
@@ -101,22 +103,24 @@ export function PlacePicker({
           ? "搜索景点、地铁站或具体入口。"
           : "Search an attraction, station or entrance in Beijing."}
       </p>
-      <LocateButton
-        language={language}
-        onSelect={(origin) =>
-          onSelect({
-            provider: "manual",
-            poiId: null,
-            nameZh: origin.label,
-            nameEn: null,
-            addressZh: "",
-            district: "",
-            city: "北京市",
-            position: origin,
-            originType: "geolocation",
-          })
-        }
-      />
+      {allowGeolocation && (
+        <LocateButton
+          language={language}
+          onSelect={(origin) =>
+            onSelect({
+              provider: "manual",
+              poiId: null,
+              nameZh: origin.label,
+              nameEn: null,
+              addressZh: "",
+              district: "",
+              city: "北京市",
+              position: origin,
+              originType: "geolocation",
+            })
+          }
+        />
+      )}
       <div className="segment picker-tabs">
         <button
           type="button"

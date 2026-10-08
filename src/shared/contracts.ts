@@ -164,6 +164,36 @@ export interface PlanLocal {
   stops: PlanStop[];
   updatedAt: string;
 }
+export type QuerySettings = Pick<
+  SearchRequest,
+  | "language"
+  | "preference"
+  | "includeConditionalAccess"
+  | "walkLimitMinutes"
+  | "extendedRadiusKm"
+>;
+export interface PlanPreviewRequest extends QuerySettings {
+  revision: number;
+  stops: {
+    stopId: string;
+    place: Place;
+    cursor?: string | null;
+    retry?: boolean;
+  }[];
+}
+export interface PlanStopPreview {
+  stopId: string;
+  result: SearchResult | null;
+  primary: Candidate | null;
+  alternatives: Candidate[];
+  error: ApiFailure["error"] | null;
+  warnings: string[];
+}
+export interface PlanPreviewResult {
+  revision: number;
+  status: "complete" | "partial";
+  stops: PlanStopPreview[];
+}
 export interface ImportReport {
   inputFile: string;
   inputRecords: number;

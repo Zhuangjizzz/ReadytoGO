@@ -14,6 +14,7 @@ import type {
   Preference,
   SearchRequest,
   SearchResult,
+  QuerySettings,
 } from "../shared/contracts";
 import { searchToilets } from "./api";
 import { PlacePicker } from "./PlacePicker";
@@ -48,6 +49,8 @@ export interface NearbyPageProps {
   preference: Preference;
   onPreferenceChange: (preference: Preference) => void;
   active?: boolean;
+  settings?: QuerySettings;
+  onSettingsChange?: (patch: Partial<QuerySettings>) => void;
   onDetails?: (candidate: Candidate, origin: Origin) => void;
   onNavigate?: (candidate: Candidate, origin: Origin) => void;
   MapComponent?: ComponentType<NearbyMapProps>;
@@ -114,6 +117,8 @@ export function NearbyPage({
   preference,
   onPreferenceChange,
   active = true,
+  settings,
+  onSettingsChange,
   onDetails,
   onNavigate,
   MapComponent,
@@ -121,9 +126,25 @@ export function NearbyPage({
 }: NearbyPageProps) {
   const zh = language === "zh-CN";
   const [picker, setPicker] = useState(false);
-  const [walkLimitMinutes, setWalkLimit] = useState<10 | 20>(10);
-  const [extendedRadiusKm, setRadius] = useState<5 | 10>(5);
-  const [includeConditionalAccess, setConditional] = useState(initialAccess);
+  const [localWalk, setLocalWalk] = useState<10 | 20>(10);
+  const [localRadius, setLocalRadius] = useState<5 | 10>(5);
+  const [localConditional, setLocalConditional] = useState(initialAccess);
+  const walkLimitMinutes = settings?.walkLimitMinutes ?? localWalk;
+  const extendedRadiusKm = settings?.extendedRadiusKm ?? localRadius;
+  const includeConditionalAccess =
+    settings?.includeConditionalAccess ?? localConditional;
+  const setWalkLimit = (walkLimitMinutes: 10 | 20) =>
+    onSettingsChange
+      ? onSettingsChange({ walkLimitMinutes })
+      : setLocalWalk(walkLimitMinutes);
+  const setRadius = (extendedRadiusKm: 5 | 10) =>
+    onSettingsChange
+      ? onSettingsChange({ extendedRadiusKm })
+      : setLocalRadius(extendedRadiusKm);
+  const setConditional = (includeConditionalAccess: boolean) =>
+    onSettingsChange
+      ? onSettingsChange({ includeConditionalAccess })
+      : setLocalConditional(includeConditionalAccess);
   const [result, setResult] = useState<SearchResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -259,13 +280,14 @@ export function NearbyPage({
     };
   }, [active]);
   useEffect(() => {
+    if (settings) return;
     try {
       localStorage.setItem(
         "readytogo-conditional",
         String(includeConditionalAccess),
       );
     } catch {}
-  }, [includeConditionalAccess]);
+  }, [includeConditionalAccess, settings]);
   function select(p: Place) {
     cancel();
     onOriginChange({
