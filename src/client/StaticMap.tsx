@@ -110,7 +110,7 @@ export function StaticMap({
           size.height / 2,
         zoom,
       );
-      if (inBeijing(p)) onPick(p);
+      onPick(p);
     }
   }
   return (

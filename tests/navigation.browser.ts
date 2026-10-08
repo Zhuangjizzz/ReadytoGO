@@ -3,7 +3,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { createServer } from "node:http";
 import { build } from "esbuild";
-import { chromium, type Page } from "@playwright/test";
+import { chromium, expect, type Page } from "@playwright/test";
 
 async function withFixture(
   body: string,
@@ -12,7 +12,7 @@ async function withFixture(
 ) {
   const built = await build({
     stdin: {
-      contents: `import React,{useState} from 'react';import{createRoot}from'react-dom/client';import{StaticMap}from'./src/client/StaticMap';import{Navigation}from'./src/client/Navigation';import{LocateButton}from'./src/client/LocateButton';import{PlacePicker}from'./src/client/PlacePicker';import{PhrasesPage}from'./src/client/PhrasesPage';import './src/client/styles.css';function Fixture(){${body}}createRoot(document.getElementById('root')).render(<Fixture/>);`,
+      contents: `import React,{useState} from 'react';import{createRoot}from'react-dom/client';import{StaticMap}from'./src/client/StaticMap';import{Navigation}from'./src/client/Navigation';import{LocateButton}from'./src/client/LocateButton';import{PlacePicker}from'./src/client/PlacePicker';import{PhrasesPage}from'./src/client/PhrasesPage';import{usePageNavigation}from'./src/client/usePageNavigation';import './src/client/styles.css';function Fixture(){${body}}createRoot(document.getElementById('root')).render(<Fixture/>);`,
       resolveDir: process.cwd(),
       loader: "tsx",
     },
@@ -279,12 +279,9 @@ test("pending map images disable pick actions so old artwork never supplies coor
     `const center={lng:116.397,lat:39.909,crs:'GCJ02'};const[picked,setPicked]=useState(null);return <div style={{width:640}}><StaticMap center={center} language="en" onPick={setPicked}/><output>{JSON.stringify(picked)}</output></div>;`,
     async (page) => {
       await page.getByRole("button", { name: "Choose map center" }).waitFor();
-      while (
-        await page
-          .getByRole("button", { name: "Choose map center" })
-          .isDisabled()
-      )
-        await page.waitForTimeout(20);
+      await expect(
+        page.getByRole("button", { name: "Choose map center" }),
+      ).toBeEnabled();
       await page.route("**/api/v1/maps/static?**", async (route) => {
         await new Promise((r) => setTimeout(r, 300));
         await route.abort();
@@ -304,5 +301,19 @@ test("pending map images disable pick actions so old artwork never supplies coor
         await page.getByRole("button", { name: "Retry map" }).isEnabled(),
         true,
       );
+    },
+  ));
+
+test("returning from details restores the preserved list scroll position", () =>
+  withFixture(
+    `const{path,navigate}=usePageNavigation();return <><section hidden={path!=='/'} style={{height:1800,paddingTop:700}}><button onClick={()=>navigate('/toilets/public-id')}>Read details</button><p>Preserved results</p></section>{path!=='/'&&<section style={{height:1000}}><button onClick={()=>navigate('/')}>Back to results</button><h1>Details</h1></section>}</>;`,
+    async (page) => {
+      await page.evaluate(() => window.scrollTo(0, 600));
+      await page.getByRole("button", { name: "Read details" }).click();
+      await page.getByRole("heading", { name: "Details" }).waitFor();
+      await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
+      await page.getByRole("button", { name: "Back to results" }).click();
+      await page.getByText("Preserved results", { exact: true }).waitFor();
+      await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(600);
     },
   ));
