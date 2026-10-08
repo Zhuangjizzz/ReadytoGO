@@ -56,6 +56,7 @@ interface Session {
   found: Map<string, Toilet>;
   used: Set<string>;
   usedPois: Set<string>;
+  assistedPois: Set<string>;
   streams: Stream[];
   batches: Batch[];
   warnings: Set<string>;
@@ -172,12 +173,32 @@ export class QueryService {
       ? r.extendedRadiusKm * 1000
       : limits.ordinaryRadiusMeters[r.walkLimitMinutes];
   }
-  private add(s: Session, pois: ProviderPoi[], r: SearchRequest) {
+  private async add(s: Session, pois: ProviderPoi[], r: SearchRequest) {
+    const assistance: Promise<void>[] = [];
     for (const poi of pois) {
       const t = this.catalog.integrate(poi);
       if (t.position && distanceMeters(r.origin, t.position) <= this.radius(r))
         s.found.set(t.id, t);
+      if (
+        t.id.startsWith("amap_") &&
+        this.catalog.canAssist(poi) &&
+        s.assistedPois.size < 2 &&
+        !s.assistedPois.has(poi.id)
+      ) {
+        s.assistedPois.add(poi.id);
+        assistance.push(
+          this.catalog.integrateWithAssistance(poi).then((matched) => {
+            if (matched.id !== t.id) s.found.delete(t.id);
+            if (
+              matched.position &&
+              distanceMeters(r.origin, matched.position) <= this.radius(r)
+            )
+              s.found.set(matched.id, matched);
+          }),
+        );
+      }
     }
+    await Promise.all(assistance);
   }
   private async fetchStream(s: Session, stream: Stream, r: SearchRequest) {
     if (!stream.more || stream.page > 8) return;
@@ -195,7 +216,7 @@ export class QueryService {
         .join("|");
       const repeated = stream.fingerprints.has(fingerprint);
       stream.fingerprints.add(fingerprint);
-      this.add(s, result.pois, r);
+      await this.add(s, result.pois, r);
       stream.page++;
       stream.more =
         result.hasMore &&
@@ -258,6 +279,7 @@ export class QueryService {
       ),
       used: new Set(),
       usedPois: new Set(),
+      assistedPois: new Set(),
       streams: (r.preference === "seated_required"
         ? [ordinary, this.radius(r)]
         : [ordinary]
@@ -295,7 +317,7 @@ export class QueryService {
               { toiletsOnly: true, limit: 5 },
             );
             s.upstreamSuccess = true;
-            this.add(s, results.pois, r);
+            await this.add(s, results.pois, r);
           } catch {
             s.upstreamFailure = true;
             s.warnings.add(

@@ -50,14 +50,15 @@ export async function createApplication(options: ApplicationOptions = {}) {
         key: config.qwenKey,
         baseUrl: config.qwenBaseUrl,
         model: config.qwenModel,
-        timeoutMs: config.aiTimeoutMs,
+        timeoutMs: Math.max(config.aiTimeoutMs, config.aiAnalysisTimeoutMs),
       }),
     config.aiTimeoutMs,
+    config.aiAnalysisTimeoutMs,
+  );
+  query.setCandidateAnalyzer((candidates, request) =>
+    ai.analyzeCandidates(candidates, request),
   );
   if (options.model || (config.qwenKey && config.qwenModel)) {
-    query.setCandidateAnalyzer((candidates, request) =>
-      ai.analyzeCandidates(candidates, request),
-    );
     catalog.setMatchAssistant((poi, records) => ai.matchRecord(poi, records));
   }
   const services = { catalog, provider, query, ai };

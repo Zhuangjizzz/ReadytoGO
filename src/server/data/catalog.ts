@@ -29,7 +29,7 @@ function normalize(s: string): string {
     .replace(/公共卫生间|公共厕所|公厕|卫生间|厕所/g, "");
 }
 
-const MATCH_RULE_VERSION = 3;
+const MATCH_RULE_VERSION = 2;
 export type RecordMatchAssistant = (
   poi: ProviderPoi,
   records: Toilet[],
@@ -193,9 +193,10 @@ export class Catalog {
           distanceMeters(origin, b.sourcePosition!),
       );
   }
-  async integrateWithAssistance(poi: ProviderPoi): Promise<Toilet> {
-    const current = this.integrate(poi);
-    if (!this.matchAssistant || !current.id.startsWith("amap_")) return current;
+  canAssist(poi: ProviderPoi): boolean {
+    return !!this.matchAssistant && this.matchCandidates(poi).length > 0;
+  }
+  private matchCandidates(poi: ProviderPoi): Toilet[] {
     const overlap = (left: string, right: string) => {
       const a = new Set(Array.from(normalize(left)));
       const b = new Set(Array.from(normalize(right)));
@@ -205,7 +206,7 @@ export class Catalog {
         Math.max(a.size, b.size)
       );
     };
-    const pool = [...this.toilets.values()]
+    return [...this.toilets.values()]
       .filter((t) => {
         if (
           t.poiId ||
@@ -237,6 +238,11 @@ export class Catalog {
           distanceMeters(b.position ?? b.sourcePosition!, poi.position),
       )
       .slice(0, 4);
+  }
+  async integrateWithAssistance(poi: ProviderPoi): Promise<Toilet> {
+    const current = this.integrate(poi);
+    if (!this.matchAssistant || !current.id.startsWith("amap_")) return current;
+    const pool = this.matchCandidates(poi);
     if (!pool.length) return current;
     try {
       const id = await this.matchAssistant(poi, pool);

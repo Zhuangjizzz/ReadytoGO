@@ -1,6 +1,8 @@
 import { resolve } from "node:path";
 export const limits = {
   providerTimeoutMs: 5000,
+  aiParseTimeoutMs: 12000,
+  aiAnalysisTimeoutMs: 20000,
   batchTimeoutMs: 120000,
   providerQueueTimeoutMs: 90000,
   firstResponseWaitMs: 150,
@@ -21,6 +23,7 @@ export interface AppConfig {
   qwenBaseUrl: string;
   qwenModel: string;
   aiTimeoutMs: number;
+  aiAnalysisTimeoutMs: number;
   port: number;
   clientPath: string;
 }
@@ -42,7 +45,8 @@ export function getConfig(): AppConfig {
       process.env.QWEN_BASE_URL ||
       "https://dashscope.aliyuncs.com/compatible-mode/v1",
     qwenModel: process.env.QWEN_MODEL || "",
-    aiTimeoutMs: 12000,
+    aiTimeoutMs: limits.aiParseTimeoutMs,
+    aiAnalysisTimeoutMs: limits.aiAnalysisTimeoutMs,
     port: Number(process.env.PORT || 3001),
     clientPath: resolve("dist/client"),
   };

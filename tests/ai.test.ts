@@ -350,14 +350,12 @@ test("candidate analysis changes facility grouping with supplied evidence and re
             basisFields: ["accessibility"],
             reason:
               "Accessibility facilities suggest an adult seated toilet may be available.",
-            nameEn: "Accessible Garden Restroom",
           },
           {
             toiletId: "no-seat",
             seatInference: null,
             basisFields: ["adultSeated"],
             reason: "A seated toilet may be available.",
-            nameEn: "Garden Restroom",
           },
         ],
       },
@@ -375,7 +373,7 @@ test("candidate analysis changes facility grouping with supplied evidence and re
     assert.ok(improved);
     assert.equal(improved.seatStatus, "inferred");
     assert.equal(improved.nameZh, "access公厕");
-    assert.equal(improved.nameEn, "Accessible Garden Restroom");
+    assert.equal(improved.nameEn, "Access · Public restroom");
     assert.equal(improved.walkSeconds, 301);
     assert.equal(improved.walkMeters, 421);
     assert.match(improved.reason, /6 min/);
@@ -399,6 +397,283 @@ test("rate limiting has no SDK retries and leaves the parse input editable", asy
     assert.equal(body.data.status, "fallback");
     assert.equal(body.data.originalText, "Meet at the park at noon");
     assert.equal(f.upstreamRequests(), 1);
+  } finally {
+    await f.close();
+  }
+});
+
+test("contradictory source statements stay unknown with a conflict explanation after AI enrichment", async () => {
+  const f = await fixture(
+    [
+      {
+        items: [
+          {
+            toiletId: "conflict",
+            seatInference: null,
+            basisFields: ["notes"],
+            reason: "An adult seated toilet may be available.",
+          },
+        ],
+      },
+    ],
+    { provider: mapProvider },
+    [
+      toilet("conflict", "unknown", {
+        adultSeated: true,
+        notes: "没有成人坐便。",
+        accessibility: true,
+      }),
+    ],
+  );
+  try {
+    const result = await f.search(searchRequest);
+    assert.equal(result.analysisStatus, "complete");
+    assert.equal(result.groups.matched.length, 0);
+    assert.equal(result.groups.otherNearby[0].seatStatus, "unknown");
+    assert.match(result.groups.otherNearby[0].reason, /conflict/i);
+  } finally {
+    await f.close();
+  }
+});
+
+test("ambiguous matching can select only a recalled local record and preserve its facility data", async () => {
+  const local = toilet("local-garden", "inferred", { accessibleRoom: 1 });
+  Object.assign(local, {
+    nameZh: "滨河公园东门卫生间",
+    addressZh: "公园东部",
+    position: null,
+    sourcePosition: { lng: 116.4001, lat: 39.9, crs: "unknown" },
+    poiId: null,
+    matchMethod: null,
+  });
+  const f = await fixture(
+    [
+      { recordId: "local-garden", basisFields: ["nameZh", "addressZh"] },
+      {
+        items: [
+          ...["parking", "south"].map((id) => ({
+            toiletId: `amap_${id}`,
+            seatInference: null,
+            basisFields: [],
+            reason: "Adult seating is unknown.",
+          })),
+          {
+            toiletId: "local-garden",
+            seatInference: null,
+            basisFields: ["accessibleRoom"],
+            reason:
+              "An accessible room suggests a seated toilet may be available.",
+          },
+        ],
+      },
+    ],
+    {
+      provider: {
+        ...mapProvider,
+        nearbyToilets: async () => ({
+          pois: [
+            ...["parking", "south"].map((id) => ({
+              id,
+              name: id,
+              address: "其他区域",
+              district: "东城区",
+              city: "北京市",
+              position: { lng: 116.4001, lat: 39.9, crs: "GCJ02" as const },
+              typeCode: "200300",
+              type: "公共厕所",
+              openingHours: null,
+            })),
+            {
+              id: "map-garden",
+              name: "滨河公园东入口公厕",
+              address: "公园东侧",
+              district: "东城区",
+              city: "北京市",
+              position: { lng: 116.4003, lat: 39.9, crs: "GCJ02" },
+              typeCode: "200300",
+              type: "公共厕所",
+              openingHours: null,
+            },
+          ],
+          hasMore: false,
+        }),
+      },
+    },
+    [local],
+  );
+  try {
+    const result = await f.search({ ...searchRequest, preference: "any" });
+    const all = Object.values(result.groups).flat();
+    assert.equal(all.length, 3);
+    const matched = all.find(
+      (candidate) => candidate.toiletId === "local-garden",
+    );
+    assert.ok(matched);
+    assert.equal(matched.facilities.accessibleRoom, 1);
+    assert.equal(matched.position?.lng, 116.4003);
+    assert.equal(result.analysisStatus, "complete");
+  } finally {
+    await f.close();
+  }
+});
+
+for (const scenario of [
+  { name: "a foreign candidate ID", change: { toiletId: "unrecalled-id" } },
+  {
+    name: "an unknown basis field",
+    change: { basisFields: ["verifiedSeating"] },
+  },
+  {
+    name: "a missing basis field value",
+    change: { basisFields: ["thirdRestroom"] },
+  },
+  {
+    name: "a zero facility count",
+    change: { basisFields: ["accessibleRoom"] },
+  },
+  {
+    name: "model-provided route numbers",
+    change: { reason: "A seated toilet is about 2 minutes away." },
+  },
+]) {
+  test(`candidate analysis rejects ${scenario.name} after one repair and retains usable results`, async () => {
+    const invalid = {
+      items: [
+        {
+          toiletId: "source",
+          seatInference: "inferred",
+          basisFields: ["accessibility"],
+          reason:
+            "Accessibility facilities suggest a seated toilet may be available.",
+
+          ...scenario.change,
+        },
+      ],
+    };
+    const f = await fixture([invalid, invalid], { provider: mapProvider }, [
+      toilet("source", "unknown", { accessibility: true, accessibleRoom: 0 }),
+    ]);
+    try {
+      const result = await f.search(searchRequest);
+      assert.equal(result.analysisStatus, "fallback");
+      assert.equal(result.groups.matched.length, 0);
+      assert.equal(result.groups.otherNearby[0].toiletId, "source");
+      assert.equal(result.groups.otherNearby[0].seatStatus, "unknown");
+      assert.equal(result.groups.otherNearby[0].walkSeconds, 301);
+      assert.equal(result.pendingWork, false);
+      assert.equal(f.upstreamRequests(), 2);
+    } finally {
+      await f.close();
+    }
+  });
+}
+
+test("an unreturned match ID cannot attach unrelated local facility records", async () => {
+  const local = toilet("local-courtyard", "inferred", { thirdRestroom: 1 });
+  Object.assign(local, {
+    nameZh: "花园庭院北门",
+    addressZh: "花园北部",
+    position: null,
+    sourcePosition: { lng: 116.4001, lat: 39.9, crs: "unknown" },
+    poiId: null,
+    matchMethod: null,
+  });
+  const invalidMatch = {
+    recordId: "unrecalled-record",
+    basisFields: ["nameZh"],
+  };
+  const f = await fixture(
+    [
+      invalidMatch,
+      invalidMatch,
+      {
+        items: [
+          {
+            toiletId: "amap_map-courtyard",
+            seatInference: "unknown",
+            basisFields: [],
+            reason: "Adult seating information is unavailable.",
+          },
+        ],
+      },
+    ],
+    {
+      provider: {
+        ...mapProvider,
+        nearbyToilets: async () => ({
+          pois: [
+            {
+              id: "map-courtyard",
+              name: "花园庭院北入口公厕",
+              address: "花园北侧",
+              district: "东城区",
+              city: "北京市",
+              position: { lng: 116.4003, lat: 39.9, crs: "GCJ02" },
+              typeCode: "200300",
+              type: "公共厕所",
+              openingHours: null,
+            },
+          ],
+          hasMore: false,
+        }),
+      },
+    },
+    [local],
+  );
+  try {
+    const result = await f.search({ ...searchRequest, preference: "any" });
+    const all = Object.values(result.groups).flat();
+    assert.equal(all.length, 1);
+    assert.equal(all[0].toiletId, "amap_map-courtyard");
+    assert.equal(all[0].facilities.thirdRestroom, null);
+    assert.equal(result.analysisStatus, "complete");
+  } finally {
+    await f.close();
+  }
+});
+
+test("cached analysis preserves query versions and a language change receives its own explanation", async () => {
+  const f = await fixture(
+    [
+      {
+        items: [
+          {
+            toiletId: "memo",
+            seatInference: "inferred",
+            basisFields: ["accessibility"],
+            reason:
+              "Accessibility features suggest a seated toilet may be available.",
+          },
+        ],
+      },
+      {
+        items: [
+          {
+            toiletId: "memo",
+            seatInference: "inferred",
+            basisFields: ["accessibility"],
+            reason: "无障碍设施提示可能有坐便。",
+          },
+        ],
+      },
+    ],
+    { provider: mapProvider },
+    [toilet("memo", "unknown", { accessibility: true })],
+  );
+  try {
+    await f.search(searchRequest);
+    const cached = await f.search({ ...searchRequest, queryVersion: 99 });
+    assert.equal(cached.queryVersion, 99);
+    assert.equal(cached.analysisStatus, "complete");
+    assert.equal(f.upstreamRequests(), 1);
+    const chinese = await f.search({
+      ...searchRequest,
+      language: "zh-CN",
+      queryVersion: 100,
+    });
+    assert.equal(chinese.queryVersion, 100);
+    assert.match(chinese.groups.matched[0].reason, /^无障碍设施/);
+    assert.equal(f.upstreamRequests(), 2);
   } finally {
     await f.close();
   }
