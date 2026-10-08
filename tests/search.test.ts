@@ -227,7 +227,7 @@ test("current imported facilities and closure state survive an older location ca
   old.positionSource = "amap";
   old.matchMethod = "name_address";
   await writeFile(path, JSON.stringify(current));
-  await writeFile(cache, JSON.stringify([old]));
+  await writeFile(cache, JSON.stringify([{ ...old, matchRuleVersion: 2 }]));
   const { app } = await createApplication({
     catalogPath: path,
     matchCachePath: cache,

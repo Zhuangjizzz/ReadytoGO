@@ -23,10 +23,49 @@ export function distanceMeters(
 }
 function normalize(s: string): string {
   return s
-    .replace(/[\s（）()·,，。号]/g, "")
+    .normalize("NFKC")
+    .replace(/[\s（）()·,，。]/g, "")
     .replace(/公共卫生间|公共厕所|公厕|卫生间|厕所/g, "");
 }
+
+const MATCH_RULE_VERSION = 2;
+interface AddressParts {
+  road: string;
+  number: string;
+}
+function addressParts(value: string, district: string): AddressParts | null {
+  const address = normalize(value).replace("北京市", "").replace(district, "");
+  const number =
+    /(?<![\dA-Za-z])([甲乙丙丁戊己庚辛壬癸]?\d+(?:-\d+)?[A-Za-z]?)(号(?:院)?|弄)/.exec(
+      address,
+    );
+  if (!number || number.index === 0) return null;
+  const prefix = address.slice(0, number.index);
+  // A preceding district or a second road may qualify the address. The final
+  // complete road name is compared exactly, never as a text suffix.
+  const roads = prefix.match(/.+?(?:大街|大道|胡同|街|路|巷)/g);
+  const road = roads?.at(-1) ?? prefix;
+  return {
+    road,
+    number: `${number[1]}${number[2].startsWith("号") ? "号" : "弄"}`,
+  };
+}
+
+function roadWithoutHouseNumber(
+  value: string,
+  district: string,
+): string | null {
+  return (
+    normalize(value)
+      .replace("北京市", "")
+      .replace(district, "")
+      .match(/.+?(?:大街|大道|胡同|街|路|巷)/g)
+      ?.at(-1) ?? null
+  );
+}
+
 interface MatchRow {
+  matchRuleVersion: number;
   id: string;
   nameZh: string;
   addressZh: string;
@@ -72,6 +111,7 @@ export class Catalog {
       for (const row of rows) {
         if (
           !row ||
+          row.matchRuleVersion !== MATCH_RULE_VERSION ||
           !validPosition(row.position) ||
           typeof row.poiId !== "string" ||
           !Array.isArray(row.sources)
@@ -152,24 +192,43 @@ export class Catalog {
     const candidates = [...this.toilets.values()]
       .filter((t) => !t.poiId && !t.id.startsWith("amap_"))
       .flatMap((t) => {
-        if (t.district && poi.district && t.district !== poi.district)
+        if (!t.district || !poi.district || t.district !== poi.district)
           return [];
+        const sourcePosition = t.position ?? t.sourcePosition;
+        const nearby = sourcePosition
+          ? distanceMeters(sourcePosition, poi.position) <= 800
+          : false;
+        if (sourcePosition && !nearby) return [];
         const n = normalize(t.nameZh);
         const a = normalize(t.addressZh);
         const sameName = name.length >= 2 && n === name;
-        const addressAgrees =
-          address.length >= 6 &&
-          a.length >= 6 &&
-          (address.includes(a) || a.includes(address));
-        const namedAddress = address.length >= 6 && n === address;
-        const preciseAddress =
-          (addressAgrees || namedAddress) &&
-          (/\d/.test(address) || (a === address && address.length >= 8));
-        const nearby = t.sourcePosition
-          ? distanceMeters(t.sourcePosition, poi.position) <= 800
-          : false;
-        if (!(sameName && (nearby || addressAgrees)) && !preciseAddress)
+        const localParts =
+          addressParts(t.addressZh, t.district) ??
+          addressParts(t.nameZh, t.district);
+        const providerParts = addressParts(poi.address, poi.district);
+        const localRoad =
+          localParts?.road ?? roadWithoutHouseNumber(t.addressZh, t.district);
+        const providerRoad =
+          providerParts?.road ??
+          roadWithoutHouseNumber(poi.address, poi.district);
+        if (localRoad && providerRoad && localRoad !== providerRoad) return [];
+        if (
+          localParts &&
+          providerParts &&
+          (localParts.number !== providerParts.number ||
+            localParts.road !== providerParts.road)
+        )
           return [];
+        const sameDoor =
+          !!localParts &&
+          !!providerParts &&
+          localParts.number === providerParts.number &&
+          localParts.road === providerParts.road;
+        const addressAgrees =
+          sameDoor || (address.length >= 8 && address === a);
+        const namedAddress = address.length >= 8 && n === address;
+        const preciseAddress = addressAgrees || namedAddress;
+        if (!(sameName && nearby) && !preciseAddress) return [];
         return [
           {
             toilet: t,
@@ -245,6 +304,7 @@ export class Catalog {
       t.poiId && t.position
         ? [
             {
+              matchRuleVersion: MATCH_RULE_VERSION,
               id: t.id,
               nameZh: t.nameZh,
               addressZh: t.addressZh,
