@@ -14,3 +14,9 @@ The code paths for raw-second grouping, ordinary-alternative visibility, cursor-
 ## Recommendation gate resolution
 
 The access-negation and out-of-service findings were fixed by `8b10a48` and independently reproduced as passing before merge `1cce442`. npm test 29/29, typecheck and build passed. Full stage 2 also requires ticket 03 integration.
+
+## Wayfinding and detail gate resolution
+
+Ticket 03 review found a P2 in detail display: loading source details discarded a validated candidate seating assessment and English helper name; changing language retained the previous-language explanation. The repair separates source facts from query analysis, associates explanations with their language, preserves explicit source negatives, and accepts canonical IDs returned for an older requested alias. Isolated DOM regressions and an independent reproduction passed.
+
+The final ticket commit `c335797` includes the AI service and was merged at `834de6f`. Its 59 default HTTP/DOM tests, six isolated component browser checks, typecheck and build passed. Real static-map projection and GPS conversion/administrative checks are documented in `docs/implementation/wayfinding.md`. Stage 2 software is integrated; there was no new actual-application browser preview and no actual-phone acceptance. Those limitations remain in the delivery gate.

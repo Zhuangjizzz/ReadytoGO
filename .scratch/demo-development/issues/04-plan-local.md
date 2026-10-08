@@ -1,6 +1,6 @@
 # 04: 手动逐站规划与本机恢复
 
-Status: ready-for-agent
+Status: claimed
 Type: task
 Stage: 3
 Blocked by: 02, 03
@@ -27,3 +27,5 @@ Parent: [开发规格](../spec.md)
 - 完成提交代码及测试记录，交由独立 merger 与阶段 review。
 
 ## Comments
+
+阶段 2 已合入 `834de6f`，依赖解除。实施交接位于 `/private/tmp/readytogo-demo-notes/plan-handoff.md`；使用既有独立工作树 `demo-plan-local`，从最新集成分支开始。
