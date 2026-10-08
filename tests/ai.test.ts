@@ -31,6 +31,8 @@ async function fixture(
     assert.equal(body.response_format.type, "json_object");
     assert.equal(body.enable_thinking, false);
     assert.equal(body.extra_body, undefined);
+    const nextReply = replies.shift();
+    const reply = typeof nextReply === "function" ? nextReply(body) : nextReply;
     res.setHeader("content-type", "application/json");
     res.end(
       JSON.stringify({
@@ -39,7 +41,7 @@ async function fixture(
             finish_reason: "stop",
             message: {
               role: "assistant",
-              content: JSON.stringify(replies.shift()),
+              content: JSON.stringify(reply),
             },
           },
         ],
@@ -674,6 +676,290 @@ test("cached analysis preserves query versions and a language change receives it
     assert.equal(chinese.queryVersion, 100);
     assert.match(chinese.groups.matched[0].reason, /^无障碍设施/);
     assert.equal(f.upstreamRequests(), 2);
+  } finally {
+    await f.close();
+  }
+});
+
+test("a rejected field reference can be repaired using its exact bounded feedback and previous JSON", async () => {
+  const invalid = {
+    items: [
+      {
+        toiletId: "feedback",
+        seatInference: "inferred",
+        basisFields: ["accessible facilities"],
+        reason: "Accessibility features suggest adult seating.",
+      },
+    ],
+  };
+  const corrected = {
+    items: [{ ...invalid.items[0], basisFields: ["accessibility"] }],
+  };
+  let suppliedConcreteFeedback = false;
+  const f = await fixture(
+    [
+      invalid,
+      (body: { messages: { role: string; content: string }[] }) => {
+        try {
+          const previous = JSON.parse(
+            body.messages.find((m) => m.role === "assistant")?.content ??
+              "null",
+          );
+          const feedback = JSON.parse(body.messages.at(-1)?.content ?? "null");
+          suppliedConcreteFeedback =
+            previous?.rejectedResponse === JSON.stringify(invalid) &&
+            previous.truncated === false &&
+            feedback.validationIssues.some(
+              (issue: {
+                path: unknown;
+                category: string;
+                allowedValues?: string[];
+              }) =>
+                JSON.stringify(issue.path) === '["items",0,"basisFields",0]' &&
+                issue.category === "invalid_enum" &&
+                issue.allowedValues?.includes("accessibility"),
+            ) &&
+            /untrusted/i.test(body.messages[0].content);
+        } catch {
+          suppliedConcreteFeedback = false;
+        }
+        return suppliedConcreteFeedback ? corrected : invalid;
+      },
+    ],
+    { provider: mapProvider },
+    [toilet("feedback", "unknown", { accessibility: true })],
+  );
+  try {
+    const result = await f.search(searchRequest);
+    assert.equal(result.analysisStatus, "complete");
+    assert.equal(suppliedConcreteFeedback, true);
+    assert.equal(f.upstreamRequests(), 2);
+    assert.equal(result.groups.matched[0].facilities.accessibility, true);
+    assert.equal(result.groups.matched[0].facilities.accessibleRoom, null);
+    assert.equal(result.groups.matched[0].walkSeconds, 301);
+    assert.equal(result.groups.matched[0].walkMeters, 421);
+  } finally {
+    await f.close();
+  }
+});
+
+test("repair feedback distinguishes an absent candidate field from a protected source fact", async () => {
+  for (const scenario of [
+    {
+      id: "absent",
+      facilities: { accessibility: true },
+      invalidInference: "inferred",
+      invalidBasis: ["accessibleRoom"],
+      expectedCategory: "missing_evidence",
+      expectedPath: '["items",0,"basisFields",0]',
+      validInference: "inferred",
+      validBasis: ["accessibility"],
+      expectedSeat: "inferred",
+    },
+    {
+      id: "denied",
+      facilities: { accessibility: true, adultSeated: false },
+      invalidInference: "inferred",
+      invalidBasis: ["accessibility"],
+      expectedCategory: "preserve_source",
+      expectedPath: '["items",0,"seatInference"]',
+      validInference: null,
+      validBasis: ["adultSeated"],
+      expectedSeat: "unavailable",
+    },
+  ]) {
+    const invalid = {
+      items: [
+        {
+          toiletId: scenario.id,
+          seatInference: scenario.invalidInference,
+          basisFields: scenario.invalidBasis,
+          reason: "Accessibility features suggest adult seating.",
+        },
+      ],
+    };
+    let contextualFeedback = false;
+    const f = await fixture(
+      [
+        invalid,
+        (body: { messages: { role: string; content: string }[] }) => {
+          try {
+            const feedback = JSON.parse(
+              body.messages.at(-1)?.content ?? "null",
+            );
+            contextualFeedback = feedback.validationIssues.some(
+              (issue: { path: unknown; category: string }) =>
+                JSON.stringify(issue.path) === scenario.expectedPath &&
+                issue.category === scenario.expectedCategory,
+            );
+          } catch {
+            contextualFeedback = false;
+          }
+          return contextualFeedback
+            ? {
+                items: [
+                  {
+                    ...invalid.items[0],
+                    seatInference: scenario.validInference,
+                    basisFields: scenario.validBasis,
+                  },
+                ],
+              }
+            : invalid;
+        },
+      ],
+      { provider: mapProvider },
+      [toilet(scenario.id, "unknown", scenario.facilities)],
+    );
+    try {
+      const result = await f.search(searchRequest);
+      assert.equal(result.analysisStatus, "complete");
+      assert.equal(contextualFeedback, true);
+      const candidate = Object.values(result.groups).flat()[0];
+      assert.equal(candidate.seatStatus, scenario.expectedSeat);
+      assert.equal(candidate.walkSeconds, 301);
+      assert.equal(candidate.walkMeters, 421);
+      assert.equal(
+        candidate.facilities.adultSeated,
+        scenario.facilities.adultSeated ?? null,
+      );
+    } finally {
+      await f.close();
+    }
+  }
+});
+
+test("a second invalid answer still falls back after concrete repair feedback", async () => {
+  const invalid = {
+    items: [
+      {
+        toiletId: "still-invalid",
+        seatInference: "inferred",
+        basisFields: ["nonexistentField"],
+        reason: "A seated toilet may be available.",
+      },
+    ],
+  };
+  let repairReceived = false;
+  const f = await fixture(
+    [
+      invalid,
+      (body: { messages: { role: string; content: string }[] }) => {
+        const feedback = JSON.parse(body.messages.at(-1)?.content ?? "null");
+        repairReceived = feedback.validationIssues.some(
+          (issue: { category: string }) => issue.category === "invalid_enum",
+        );
+        return invalid;
+      },
+      { items: [] },
+    ],
+    { provider: mapProvider },
+    [toilet("still-invalid", "unknown", { accessibility: true })],
+  );
+  try {
+    const result = await f.search(searchRequest);
+    assert.equal(repairReceived, true);
+    assert.equal(f.upstreamRequests(), 2);
+    assert.equal(result.analysisStatus, "fallback");
+    assert.equal(result.groups.matched.length, 0);
+    assert.equal(result.groups.otherNearby[0].seatStatus, "unknown");
+    assert.equal(result.groups.otherNearby[0].walkSeconds, 301);
+    assert.equal(result.groups.otherNearby[0].facilities.accessibility, true);
+  } finally {
+    await f.close();
+  }
+});
+
+test("repair context is bounded and rejected output stays quoted outside instructions and logs", async () => {
+  const marker = "UNTRUSTED_REJECTED_OUTPUT_MARKER";
+  const invalid = {
+    items: Array.from({ length: 30 }, (_, i) => ({
+      toiletId: `oversized-${i}`,
+      seatInference: "invalid",
+      basisFields: ["invalid"],
+      reason: marker.repeat(500),
+    })),
+  };
+  const corrected = {
+    items: [
+      {
+        toiletId: "bounded",
+        seatInference: null,
+        basisFields: [],
+        reason: "Adult seating information is unknown.",
+      },
+    ],
+  };
+  let bounded = false;
+  const logs: unknown[] = [];
+  const f = await fixture(
+    [
+      invalid,
+      (body: { messages: { role: string; content: string }[] }) => {
+        const previous = JSON.parse(
+          body.messages.find((m) => m.role === "assistant")?.content ?? "null",
+        );
+        const feedback = JSON.parse(body.messages.at(-1)?.content ?? "null");
+        bounded =
+          previous?.truncated === true &&
+          previous.rejectedResponse.length === 12000 &&
+          feedback.validationIssues.length === 16 &&
+          !body.messages[0].content.includes(marker) &&
+          !JSON.stringify(feedback).includes(marker);
+        return bounded ? corrected : invalid;
+      },
+    ],
+    { provider: mapProvider, logger: (entry) => logs.push(entry) },
+    [toilet("bounded", "unknown", {})],
+  );
+  try {
+    const result = await f.search(searchRequest);
+    assert.equal(result.analysisStatus, "complete");
+    assert.equal(bounded, true);
+    assert.equal(f.upstreamRequests(), 2);
+    assert.equal(JSON.stringify(logs).includes(marker), false);
+    assert.equal(result.groups.otherNearby[0].walkMeters, 421);
+  } finally {
+    await f.close();
+  }
+});
+
+test("the initial output and its repair still share one analysis deadline", async () => {
+  let calls = 0;
+  const invalid = {
+    items: [
+      {
+        toiletId: "deadline",
+        seatInference: "inferred",
+        basisFields: ["unknownField"],
+        reason: "A seated toilet may be available.",
+      },
+    ],
+  };
+  const corrected = {
+    items: [{ ...invalid.items[0], basisFields: ["accessibility"] }],
+  };
+  const f = await fixture(
+    [],
+    {
+      provider: mapProvider,
+      aiAnalysisTimeoutMs: 45,
+      model: {
+        complete: async (input) => {
+          calls++;
+          await new Promise((resolve) => setTimeout(resolve, 30));
+          return JSON.stringify(input.repair ? corrected : invalid);
+        },
+      },
+    },
+    [toilet("deadline", "unknown", { accessibility: true })],
+  );
+  try {
+    const result = await f.search(searchRequest);
+    assert.equal(calls, 2);
+    assert.equal(result.analysisStatus, "fallback");
+    assert.equal(result.pendingWork, false);
+    assert.equal(result.groups.otherNearby[0].walkSeconds, 301);
   } finally {
     await f.close();
   }
