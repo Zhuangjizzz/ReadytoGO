@@ -1,0 +1,35 @@
+{
+  "schema": "readytogo.release-assets.v1",
+  "checkedAt": "2026-10-08T21:28:28.665195+00:00",
+  "label": "final-review-public",
+  "expectedRevision": "2fafc9c14934cccbde188a8613cf7ac8b85435e2",
+  "transport": "ordinary HTTP only; no browser",
+  "health": {
+    "status": "ok",
+    "service": "readytogo",
+    "catalogCount": 13148
+  },
+  "assets": [
+    {
+      "path": "dist/client/index.html",
+      "status": 200,
+      "sha256": "517c0ff34a92697df5a5b6fe386e9dcfd6c1ec1df8fd4593b63581c6a59cfde3",
+      "matchesManifest": true
+    },
+    {
+      "path": "dist/client/assets/index-DPxUhsrL.js",
+      "status": 200,
+      "sha256": "81ef2031e96017e64ab1ee8543da31fc5b45d26354a22a6ff4252a18bcb281c3",
+      "matchesManifest": true
+    },
+    {
+      "path": "dist/client/assets/index-CrxEjtCT.css",
+      "status": 200,
+      "sha256": "081a58051f9c6a89da545ce76f37c989f3812de83fb09125fa9f2883914babfd",
+      "matchesManifest": true
+    }
+  ],
+  "newProviderCalls": 0,
+  "newModelCalls": 0,
+  "passed": true
+}

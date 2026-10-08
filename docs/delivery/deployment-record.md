@@ -1,8 +1,8 @@
 # 实际发布记录
 
-当前公网演示：[ReadytoGo](http://47.85.138.198:3000/)。正式服务 active/running/enabled，smoke inactive/disabled；以[服务状态证据](evidence/service-state.json)中的观测时间为准，不把有限检查当作持续可用承诺。
+当前公网演示：[ReadytoGo](http://47.85.138.198:3000/)。当前运行版本 **`2fafc9c14934cccbde188a8613cf7ac8b85435e2`**，正式服务active/running/enabled，smoke inactive/disabled。最终审查修复、第二次发布和业务版本回切见[最新发布记录](final-review-release.md)；以下保留首次发布历史。以对应证据中的观测时间为准，不把有限检查当作持续可用承诺。
 
-## 已发布版本
+## 首次发布版本（历史 c82770b）
 
 | 项目        | 实际值                                                                               |
 | ----------- | ------------------------------------------------------------------------------------ |
@@ -38,7 +38,7 @@
 
 证据分别见[修复后stage](evidence/stage-after-context-fix.json)、[公网HTTP](evidence/public-http.json)、[smoke回滚](evidence/rollback-smoke.json)、[恢复正式服务](evidence/restored-http.json)。请求ID和实际耗时保留，省略精确坐标及供应商原始资料。第一次启动health为13,124，恢复cache后为13,148，后者包含新增独立高德候选；正式CSV导入仍是13,124实体。
 
-这些是HTTP、进程、持久文件及部署检查。未执行实际应用浏览器预览或真实手机操作，规格第61项及阶段5真机退出条件仍未通过。最终整分支双轴review由集成流程继续完成。
+这些是HTTP、进程、持久文件及部署检查。未执行实际应用浏览器预览或真实手机操作，规格第61项及阶段5真机退出条件仍未通过。其后整分支双轴review及整改已完成，结果见[最新发布记录](final-review-release.md)；实际手机验收仍未通过。
 
 ## 首次预发布与发现
 

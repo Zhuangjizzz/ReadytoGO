@@ -80,7 +80,8 @@ try {
   if (option === "--skip-parse") {
     out.parse = {
       skipped: true,
-      reason: "Same-code stage parse evidence is reused; no new parse call.",
+      reason:
+        "Parsing intentionally skipped; use separately recorded evidence for the applicable parser revision.",
     };
   } else {
     const parseBegin = Date.now();

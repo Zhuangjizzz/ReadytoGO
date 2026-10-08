@@ -1,0 +1,8 @@
+{
+  "switchedAt": "2026-10-08T21:29:45.158538+00:00",
+  "release": "/opt/readytogo/releases/c82770b6be6d70e3da20a81cdd0d1f196841c008",
+  "pid": 3516384,
+  "unitAndCredentialsChanged": false,
+  "stateRestored": false,
+  "stateReason": "No storage schema change; preserved current compatible state."
+}
