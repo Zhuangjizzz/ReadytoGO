@@ -23,11 +23,11 @@
 
 **已知未完成验收：** 故事61（`spec.md:105`）及 `docs/prd/acceptance.md:53` 的“至少在一个实际手机浏览器完成主线演示”未完成，已由 `docs/delivery/acceptance.md:16` 如实记录；这是验收缺口，不是代码修复项。
 
-未发现新增范围膨胀。通用原文上下文保留符合已确认方向。未访问实际应用浏览器、未新增真实模型/地图调用。复现步骤与脚本见同目录 `final-spec-ui-evidence.md`、`spec-ui-probe.mjs` 及 `final-spec-data-probe.md/.mjs/.json`。
+未发现新增范围膨胀。通用原文上下文保留符合已确认方向。未访问实际应用浏览器、未新增真实模型/地图调用。复现步骤与脚本见 `/private/tmp/readytogo-demo-notes/` 中的 `final-spec-ui-evidence.md`、`spec-ui-probe.mjs` 及 `final-spec-data-probe.md/.mjs/.json`。
 
 ## 整改与复核
 
-状态：整改代码完成，等待独立复核及二次发布。上述四项 P2 与一项 P3 统一由同一个实施代理在 `codex/demo-final-fixes` 独立工作树修复；通过已授权的公开 HTTP / 正式导入 / 离线 DOM 复现并验证。实际手机与最终实际应用浏览器的验收缺口保持未完成，不用代码改动或自动化结果替代。
+状态：整改与独立复核完成，等待最终修复版本二次发布。上述四项 P2 与一项 P3 统一由同一个实施代理在 `codex/demo-final-fixes` 独立工作树修复；通过已授权的公开 HTTP / 正式导入 / 离线 DOM 复现并验证。实际手机与最终实际应用浏览器的验收缺口保持未完成，不用代码改动或自动化结果替代。
 
 原始审查和可复现实验暂存于 `/private/tmp/readytogo-demo-notes/final-standards-review.md`、`final-spec-review.md`、`final-spec-ui-evidence.md`、`spec-ui-probe.mjs`、`final-spec-data-probe.md`、`final-spec-data-probe.mjs` 与 `final-spec-data-probe.json`；修复后将保留对应的仓库回归入口。
 
@@ -35,7 +35,7 @@
 
 ### 实施修复与交付前验证
 
-同一实施分支 `codex/demo-final-fixes` 已完成全部五项整改，基于最新集成 `e3ed7f5`；等待独立merger复核及二次发布。
+同一实施分支 `codex/demo-final-fixes` 以 `76b29da` 完成全部五项整改，基于集成 `e3ed7f5`；独立复核后已合入 `2fafc9c`，等待二次发布。
 
 - 来源状态：正式导入与运行时共同识别未开放、尚未启用及明确重新开放，保留历史/否定和周期营业边界。`tests/query-rules.test.ts` 新增公开HTTP回归先失败后通过，`tests/import.test.ts` 补正式CLI导入至公开详情验证。原CSV审查对象复验不再进入推荐，详情为 `out_of_service`，原备注保留。
 - 供应商分页：依据过滤前的原始页规模判断剩余页；全页被过滤不代表原始结果耗尽。`tests/provider.test.ts` 两项HTTP回归先失败后通过，分别覆盖24个北京+1个外地后的第二页，以及连续全过滤页后的有效结果与8页上限。原审查探针现在请求第1、2页并返回25个有效候选。
@@ -46,3 +46,17 @@
 验证：完整 `npm test` **119/119**，`npm run check`、`npm run build`、`git diff --check` 全部通过。数据审查探针复验记录另存于 `/private/tmp/readytogo-demo-notes/final-spec-data-recheck.mjs` 与 `.json`，原失败证据未覆盖。本轮没有新增真实API/模型调用或实际应用浏览器访问；上述结果不替代未完成的实际手机验收。
 
 独立merger随后补出语言刷新的空 `pendingWork=true` 首响应边界。新增DOM回归先失败后通过：当前刷新页仍保留原有来源候选，旧语言理由不出现；新响应同ID/规范ID资料优先，终态再替换。merger另行确认终态明确耗尽时旧页被移除，未越过原刷新范围。最新完整测试 **120/120**、类型检查、构建和差异检查通过。独立探针为 `/private/tmp/readytogo-demo-notes/final-fixes-language-pending-probe.mjs`、`final-fixes-language-exhausted-probe.mjs`，没有新增实际应用浏览器或真实API调用。
+
+
+### 最终独立复核
+
+`76b29da` 已由merger合入 `2fafc9c14934cccbde188a8613cf7ac8b85435e2`。合并后完整 **120/120** 测试、类型检查和构建通过。两个原审查代理分别检查最终修复，未读取彼此结果；工程未决发现为零。
+
+| 轴 | 原发现 | 复核结果 | 永久报告 |
+| --- | --- | --- | --- |
+| Standards | 1 项 P3 判断项，0 项硬性违规 | 共享合并已完成；新增发现 0 | [Standards 复核](final-standards-recheck.md) |
+| Spec | 4 项 P2 工程问题 | 原始复现转绿，4 项均关闭；无新实际回归 | [Spec 复核](final-spec-recheck.md) |
+
+两个轴的结论分别保留。Spec 的实际手机主线验收缺口仍未关闭；发布结果将由 [发布记录](../../../docs/delivery/deployment-record.md)继续补录。
+
+汇总：Standards 原 1 项 P3 已关闭，未决 0；Spec 原 4 项 P2 已关闭，工程未决 0，实际手机验收仍未完成。
