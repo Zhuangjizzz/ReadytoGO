@@ -1,6 +1,6 @@
 # 04: 手动逐站规划与本机恢复
 
-Status: claimed
+Status: resolved
 Type: task
 Stage: 3
 Blocked by: 02, 03
@@ -13,10 +13,10 @@ Parent: [开发规格](../spec.md)
 
 ## Acceptance criteria
 
-- [ ] 增删换序、重复确认、稳定 stopId/revision；跳过保留景点。
-- [ ] 逐站独立预览和重试，主推荐最多两个备选、完整列表保持规划语境。
-- [ ] 重排接续在途结果且复用路线；位置与全局条件变化按规格重算。
-- [ ] 保存一份行程，清除缓存，存储不可用和未知版本可继续。
+- [x] 增删换序、重复确认、稳定 stopId/revision；跳过保留景点。
+- [x] 逐站独立预览和重试，主推荐最多两个备选、完整列表保持规划语境。
+- [x] 重排接续在途结果且复用路线；位置与全局条件变化按规格重算。
+- [x] 保存一份行程，清除缓存，存储不可用和未知版本可继续。
 
 ## Execution constraints
 
@@ -29,3 +29,7 @@ Parent: [开发规格](../spec.md)
 ## Comments
 
 阶段 2 已合入 `834de6f`，依赖解除。实施交接位于 `/private/tmp/readytogo-demo-notes/plan-handoff.md`；使用既有独立工作树 `demo-plan-local`，从最新集成分支开始。
+
+## Answer
+
+已由 `69c1a8a` 实现并合入 `0c14301`，新增规划预览与一个持久状态所有者，支持逐站操作、独立异常与恢复。73 项默认测试、类型检查及构建通过；独立执行 14 项规划 HTTP/离线 DOM 回归通过，未发现新的 P1/P2。公网 HTTP 的站点 ID 生成有通用兼容回退。设计和 06 接线见 [规划实现](../../../docs/implementation/planning.md)，阶段 review 见 [stage3](../reviews/stage3.md)。

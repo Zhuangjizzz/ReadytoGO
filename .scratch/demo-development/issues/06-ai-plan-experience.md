@@ -1,6 +1,6 @@
 # 06: AI 待确认行程与页面分析闭环
 
-Status: ready-for-agent
+Status: claimed
 Type: task
 Stage: 4
 Blocked by: 04, 05
@@ -27,3 +27,5 @@ Parent: [开发规格](../spec.md)
 - 完成提交代码及测试记录，交由独立 merger 与阶段 review。
 
 ## Comments
+
+04/05 已完成并合入，当前从最新集成分支开始。使用独立 `demo-ai-plan` 工作树，复用 [规划接线接口](../../../docs/implementation/planning.md#工单-06-接入点)，确认前只修改 AI 草稿。
