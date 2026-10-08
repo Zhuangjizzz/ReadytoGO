@@ -9,12 +9,14 @@ export function PlacePicker({
   onClose,
   initialPosition,
   allowGeolocation = true,
+  initialQuery = "",
 }: {
   language: Language;
   onSelect: (place: Place) => void;
   onClose: () => void;
   initialPosition?: Position;
   allowGeolocation?: boolean;
+  initialQuery?: string;
 }) {
   const zh = language === "zh-CN";
   const [tab, setTab] = useState<"search" | "map">("search");
@@ -51,7 +53,7 @@ export function PlacePicker({
       if (!controller.signal.aborted) setResolving(false);
     }
   }
-  const [q, setQ] = useState("");
+  const [q, setQ] = useState(initialQuery);
   const [places, setPlaces] = useState<Place[]>([]);
   const [status, setStatus] = useState<
     "idle" | "loading" | "complete" | "error"
@@ -63,10 +65,20 @@ export function PlacePicker({
   useEffect(() => {
     dialog.current?.showModal();
     return () => {
+      version.current++;
       abort.current?.abort();
       pointRequest.current?.abort();
     };
   }, []);
+  useEffect(() => {
+    version.current++;
+    abort.current?.abort();
+    pointRequest.current?.abort();
+    setResolving(false);
+    setStatus("idle");
+    setPlaces([]);
+    setError("");
+  }, [language]);
   async function search(e: React.FormEvent) {
     e.preventDefault();
     if (!q.trim()) return;
@@ -196,7 +208,14 @@ export function PlacePicker({
               id="place-search"
               autoFocus
               value={q}
-              onChange={(e) => setQ(e.target.value)}
+              onChange={(e) => {
+                version.current++;
+                abort.current?.abort();
+                setQ(e.target.value);
+                setPlaces([]);
+                setStatus("idle");
+                setError("");
+              }}
               placeholder={zh ? "输入地点名称" : "Where are you starting?"}
               maxLength={120}
             />

@@ -13,6 +13,14 @@ export function placeOrigin(place: Place): Origin {
     source: place.originType === "poi" ? "place" : place.originType,
   };
 }
+export function samePlace(left: Place, right: Place): boolean {
+  return (
+    (!!left.poiId && left.poiId === right.poiId) ||
+    (left.position.lng === right.position.lng &&
+      left.position.lat === right.position.lat &&
+      left.position.crs === right.position.crs)
+  );
+}
 export function querySettings(value: QuerySettings): QuerySettings {
   return {
     language: value.language,
