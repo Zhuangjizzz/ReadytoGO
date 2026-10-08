@@ -34,10 +34,11 @@ dom.window.HTMLDialogElement.prototype.showModal = function () {
 dom.window.HTMLDialogElement.prototype.close = function () {
   this.removeAttribute("open");
 };
-const { render, screen, waitFor, cleanup, act } =
+const { render, screen, waitFor, cleanup, act, within } =
   await import("@testing-library/react");
 const { default: userEvent } = await import("@testing-library/user-event");
 const { default: App } = await import("../../src/client/App.js");
+const { DetailPage } = await import("../../src/client/DetailPage.js");
 const origin = {
   lng: 116.4,
   lat: 39.9,
@@ -189,6 +190,13 @@ test("offline app composition: home, manual nearby search, details, navigation a
     assert.equal(dom.window.location.pathname, "/toilets/garden");
     await screen.findByRole("heading", { name: "公园厕所" });
     await screen.findByRole("link", { name: /Open web route/ });
+    const visibleDetail = within(screen.getByRole("main"));
+    assert.ok(visibleDetail.getByText(candidate.reason));
+    await user.click(screen.getByRole("button", { name: "中文" }));
+    assert.equal(visibleDetail.queryByText(candidate.reason), null);
+    assert.ok(visibleDetail.getByText("根据地址、路线和已有设施资料选择。"));
+    await user.click(screen.getByRole("button", { name: "English" }));
+    assert.ok(visibleDetail.getByText(candidate.reason));
     await user.click(screen.getByRole("button", { name: /Back to results/ }));
     assert.equal(dom.window.location.pathname, "/nearby");
     assert.equal(
@@ -287,6 +295,156 @@ test("offline app composition: a late GPS conversion cannot overwrite a manually
       screen.queryByRole("button", { name: /Late GPS location/ }),
       null,
     );
+  } finally {
+    cleanup();
+    globalThis.fetch = originalFetch;
+  }
+});
+
+test("offline detail: source refresh retains the validated candidate analysis and language changes never reuse its old explanation", async () => {
+  const originalFetch = globalThis.fetch;
+  const analyzed: Candidate = {
+    ...candidate,
+    nameEn: "Garden comfort stop",
+    seatStatus: "inferred",
+    seatBasis: ["The source describes an accessible room."],
+    reason:
+      "An accessible room in the source suggests a seated toilet may be available.",
+  };
+  globalThis.fetch = (input, init) =>
+    String(input).includes("/toilets/garden")
+      ? Promise.resolve(
+          respond({
+            ...candidate,
+            id: "garden",
+            nameEn: null,
+            seatStatus: "unknown",
+            addressZh: "源资料地址",
+            facilities: { ...candidate.facilities, femaleStalls: 4 },
+            sources: [{ provider: "amap", name: "来源名称", rawFields: {} }],
+          }),
+        )
+      : requestStub(input, init);
+  try {
+    const { rerender } = render(
+      <DetailPage
+        toiletId="garden"
+        candidate={analyzed}
+        candidateLanguage="en"
+        origin={origin}
+        language="en"
+        onBack={() => {}}
+      />,
+    );
+    await screen.findByText("源资料地址", { exact: false });
+    assert.ok(screen.getByRole("heading", { name: "Garden comfort stop" }));
+    assert.ok(screen.getByText("May have a seated toilet"));
+    assert.ok(screen.getByText(analyzed.reason));
+    assert.ok(screen.getByText("Female stalls: 4"));
+    rerender(
+      <DetailPage
+        toiletId="garden"
+        candidate={analyzed}
+        candidateLanguage="en"
+        origin={origin}
+        language="zh-CN"
+        onBack={() => {}}
+      />,
+    );
+    assert.equal(screen.queryByText(analyzed.reason), null);
+    assert.equal(screen.queryByText(analyzed.seatBasis[0]), null);
+    assert.ok(screen.getByText("可能有坐便"));
+    assert.ok(screen.getByText("设施资料中有坐便线索，供选择时参考。"));
+    await screen.findByText("源资料地址", { exact: false });
+    rerender(
+      <DetailPage
+        toiletId="garden"
+        candidate={analyzed}
+        candidateLanguage="en"
+        origin={origin}
+        language="en"
+        onBack={() => {}}
+      />,
+    );
+    await screen.findByText("源资料地址", { exact: false });
+    assert.ok(screen.getByRole("heading", { name: "Garden comfort stop" }));
+    assert.ok(screen.getByText(analyzed.reason));
+  } finally {
+    cleanup();
+    globalThis.fetch = originalFetch;
+  }
+});
+
+test("offline detail: explicit source unavailability supersedes a prior inferred candidate", async () => {
+  const originalFetch = globalThis.fetch;
+  const analyzed: Candidate = {
+    ...candidate,
+    seatStatus: "inferred",
+    reason: "A seated toilet may be available.",
+  };
+  globalThis.fetch = (input, init) =>
+    String(input).includes("/toilets/garden")
+      ? Promise.resolve(
+          respond({
+            ...candidate,
+            id: "garden",
+            seatStatus: "unavailable",
+            seatBasis: ["无成人坐便"],
+            facilities: { ...candidate.facilities, adultSeated: false },
+          }),
+        )
+      : requestStub(input, init);
+  try {
+    render(
+      <DetailPage
+        toiletId="garden"
+        candidate={analyzed}
+        candidateLanguage="en"
+        origin={origin}
+        language="en"
+        onBack={() => {}}
+      />,
+    );
+    await screen.findByText("Adult seated toilet unavailable");
+    assert.equal(screen.queryByText(analyzed.reason), null);
+    assert.ok(
+      screen.getByText(
+        "The source indicates an adult seated toilet is unavailable.",
+      ),
+    );
+  } finally {
+    cleanup();
+    globalThis.fetch = originalFetch;
+  }
+});
+
+test("offline detail: a requested alias accepts canonical source details while retaining its query analysis", async () => {
+  const originalFetch = globalThis.fetch;
+  globalThis.fetch = (input, init) =>
+    String(input).includes("/toilets/garden")
+      ? Promise.resolve(
+          respond({
+            ...candidate,
+            id: "canonical-garden",
+            nameZh: "规范来源名称",
+            addressZh: "规范来源地址",
+          }),
+        )
+      : requestStub(input, init);
+  try {
+    render(
+      <DetailPage
+        toiletId="garden"
+        candidate={candidate}
+        candidateLanguage="en"
+        origin={origin}
+        language="en"
+        onBack={() => {}}
+      />,
+    );
+    await screen.findByText("规范来源地址", { exact: false });
+    assert.ok(screen.getByRole("heading", { name: "规范来源名称" }));
+    assert.ok(screen.getByText(candidate.reason));
   } finally {
     cleanup();
     globalThis.fetch = originalFetch;

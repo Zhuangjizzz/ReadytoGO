@@ -27,6 +27,7 @@ const facilityNames: Record<keyof Facilities, [string, string]> = {
 export function DetailPage({
   toiletId,
   candidate,
+  candidateLanguage,
   origin,
   language,
   onBack,
@@ -34,37 +35,78 @@ export function DetailPage({
 }: {
   toiletId: string;
   candidate?: Candidate;
+  candidateLanguage?: Language;
   origin: Origin | null;
   language: Language;
   onBack: () => void;
   onPhrases?: () => void;
 }) {
   const zh = language === "zh-CN";
-  const [toilet, setToilet] = useState<Toilet | null>(null);
+  const [loaded, setLoaded] = useState<{
+    requestedId: string;
+    toilet: Toilet;
+  } | null>(null);
   const [error, setError] = useState(false);
   const [retry, setRetry] = useState(0);
   const [showMap, setShowMap] = useState(false);
   useEffect(() => {
     const controller = new AbortController();
     setError(false);
-    setToilet(null);
+    setLoaded((previous) =>
+      previous?.requestedId === toiletId ? previous : null,
+    );
     getToilet(toiletId, language, controller.signal)
       .then((r) => {
-        if (!controller.signal.aborted) setToilet(r.data);
+        if (!controller.signal.aborted)
+          setLoaded({ requestedId: toiletId, toilet: r.data });
       })
       .catch(() => {
         if (!controller.signal.aborted) setError(true);
       });
     return () => controller.abort();
   }, [toiletId, language, retry]);
-  const facts = toilet ?? candidate;
-  const seat = facts
+  const source = loaded?.requestedId === toiletId ? loaded.toilet : null;
+  const analysis = candidate?.toiletId === toiletId ? candidate : undefined;
+  // Source detail owns the factual fields; a query analysis owns only its
+  // validated explanation, seating assessment and auxiliary translation.
+  const facts = source ?? analysis;
+  const protectedSource =
+    source &&
+    (source.seatStatus === "documented" ||
+      source.seatStatus === "unavailable" ||
+      source.seatConflict);
+  const seating = protectedSource ? source : (analysis ?? source);
+  const seatStatus = seating?.seatStatus;
+  const useExplanation =
+    analysis &&
+    candidateLanguage === language &&
+    analysis.seatStatus === seatStatus;
+  const nameEn = source?.nameEn ?? analysis?.nameEn;
+  const basis = useExplanation ? analysis.seatBasis : (source?.seatBasis ?? []);
+  const explanation = useExplanation
+    ? analysis.reason
+    : seatStatus === "documented"
+      ? zh
+        ? "原始资料记载有成人坐便。"
+        : "The source lists an adult seated toilet."
+      : seatStatus === "inferred"
+        ? zh
+          ? "设施资料中有坐便线索，供选择时参考。"
+          : "Facility records contain clues that a seated toilet may be available."
+        : seatStatus === "unavailable"
+          ? zh
+            ? "资料显示成人坐便不可用。"
+            : "The source indicates an adult seated toilet is unavailable."
+          : zh
+            ? "根据地址、路线和已有设施资料选择。"
+            : "Compare the address, route and available facility information.";
+  const seat = seatStatus
     ? {
         documented: zh ? "资料记载有坐便" : "Seated toilet listed",
         inferred: zh ? "可能有坐便" : "May have a seated toilet",
         unknown: zh ? "坐便信息未知" : "Seated toilet information unknown",
         unavailable: zh ? "无成人坐便" : "Adult seated toilet unavailable",
-      }[facts.seatStatus]
+      }[seatStatus]
     : "";
   const access = facts
     ? {
@@ -137,34 +179,19 @@ export function DetailPage({
       ) : (
         <>
           <div className="eyebrow">{zh ? "厕所详情" : "TOILET DETAILS"}</div>
-          <h1>{!zh && facts.nameEn ? facts.nameEn : facts.nameZh}</h1>
-          {!zh && facts.nameEn && <p className="detail-name">{facts.nameZh}</p>}
+          <h1>{!zh && nameEn ? nameEn : facts.nameZh}</h1>
+          {!zh && nameEn && <p className="detail-name">{facts.nameZh}</p>}
           <div className="detail-layout">
             <section className="detail-panel">
               <span
-                className={`badge ${facts.seatStatus === "documented" || facts.seatStatus === "inferred" ? "positive" : ""}`}
+                className={`badge ${seatStatus === "documented" || seatStatus === "inferred" ? "positive" : ""}`}
               >
                 {seat}
               </span>
               <div className="detail-row">
                 <h2>{zh ? "推荐说明" : "Why this option"}</h2>
-                <p>
-                  {candidate?.reason ||
-                    (facts.seatStatus === "documented"
-                      ? zh
-                        ? "原始资料记载有成人坐便。"
-                        : "The source lists an adult seated toilet."
-                      : facts.seatStatus === "inferred"
-                        ? zh
-                          ? "设施资料中有坐便线索，供选择时参考。"
-                          : "Facility records contain clues that a seated toilet may be available."
-                        : zh
-                          ? "根据地址、路线和已有设施资料选择。"
-                          : "Compare the address, route and available facility information.")}
-                </p>
-                {facts.seatBasis.length > 0 && (
-                  <p>{facts.seatBasis.join("；")}</p>
-                )}
+                <p>{explanation}</p>
+                {basis.length > 0 && <p>{basis.join("；")}</p>}
               </div>
               <div className="detail-row">
                 <h2>{zh ? "中文名称和地址" : "Chinese name & address"}</h2>

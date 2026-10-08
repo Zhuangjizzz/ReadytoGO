@@ -41,6 +41,7 @@ export default function App() {
   const [detail, setDetail] = useState<{
     candidate: Candidate;
     origin: Origin;
+    language: Language;
   } | null>(null);
   const [navigation, setNavigation] = useState<{
     toiletId: string;
@@ -91,7 +92,7 @@ export default function App() {
   }
   function showDetails(candidate: Candidate, calculationOrigin: Origin) {
     detailReturn.current = path;
-    setDetail({ candidate, origin: calculationOrigin });
+    setDetail({ candidate, origin: calculationOrigin, language });
     go(`/toilets/${encodeURIComponent(candidate.toiletId)}`);
   }
   function showPhrases() {
@@ -227,6 +228,11 @@ export default function App() {
           candidate={
             detail?.candidate.toiletId === detailId
               ? detail.candidate
+              : undefined
+          }
+          candidateLanguage={
+            detail?.candidate.toiletId === detailId
+              ? detail.language
               : undefined
           }
           origin={
