@@ -27,10 +27,19 @@ export function navigationRouter(services: CoreServices) {
     const toilet = services.catalog.get(args.toiletId);
     if (!toilet)
       throw new AppError("NOT_FOUND", "Toilet not found.", 404, false);
+    let originConfirmed = true;
     if (args.origin) {
       requireBeijing(args.origin);
-      if (args.origin.source !== "place")
-        await validateBeijingOrigin(services.provider, args.origin);
+      if (args.origin.source !== "place") {
+        try {
+          await validateBeijingOrigin(services.provider, args.origin);
+        } catch (error) {
+          if (error instanceof AppError && error.code === "OUTSIDE_BEIJING")
+            throw error;
+          // A provider outage must not remove valid-coordinate handoff links.
+          originConfirmed = false;
+        }
+      }
     }
     const searchUrl = new URL("https://uri.amap.com/search");
     searchUrl.search = new URLSearchParams({
@@ -64,11 +73,13 @@ export function navigationRouter(services: CoreServices) {
       data.webUrl = web.toString();
       web.searchParams.set("callnative", "1");
       data.appUrl = web.toString();
-      const route = await services.query.route(
-        args.origin,
-        toilet.position,
-        args.retry,
-      );
+      const route = originConfirmed
+        ? await services.query.route(args.origin, toilet.position, args.retry)
+        : {
+            status: "provider_error" as const,
+            walkSeconds: null,
+            walkMeters: null,
+          };
       data.routeStatus = route.status;
       if (route.status === "success") {
         data.walkSeconds = route.walkSeconds;

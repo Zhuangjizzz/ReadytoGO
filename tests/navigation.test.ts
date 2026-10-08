@@ -294,3 +294,17 @@ test("map-selected points are checked by administrative region, not only a Beiji
     assert.equal(uncertain.status, 503);
     assert.equal(uncertain.body.error.code, "MAP_UNAVAILABLE");
   }));
+
+test("a temporary origin-validation failure keeps coordinate-based navigation available", () =>
+  withNavigation(async (base) => {
+    const result = await post(base, "/navigation/link", {
+      toiletId: "destination",
+      origin: { ...origin, lng: 116.8, lat: 39.7, source: "map" },
+    });
+    assert.equal(result.status, 200);
+    assert.equal(result.body.data.routeStatus, "provider_error");
+    assert.equal(result.body.data.walkSeconds, null);
+    assert.equal(result.body.data.walkMeters, null);
+    assert.ok(result.body.data.appUrl);
+    assert.ok(result.body.data.webUrl);
+  }));
