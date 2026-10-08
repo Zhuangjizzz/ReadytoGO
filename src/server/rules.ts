@@ -21,21 +21,31 @@ export function seatInfo(
     (s): s is string => typeof s === "string",
   );
   const notes = [...new Set(texts)].join("；");
+  const factualNotes = notes
+    .split(/[，,；。;.!?]/)
+    .filter(
+      (clause) =>
+        !/(?:未提供|没有|无|缺少|暂无)[^；。]{0,12}(?:信息|资料|记录|说明)/.test(
+          clause,
+        ),
+    )
+    .join("；");
   const negative = new RegExp(
-    `(?:没有|无|未设(?:置)?|未配备|不设(?:置)?|不配备|不提供)${seatWord}|${seatWord}(?:为)?(?:0|零)个|no (?:adult )?(?:seated toilets?|sit[- ]down toilets?)`,
+    `(?:没有|无|未设(?:置)?|未配备|不设(?:置)?|不配备|不提供)${seatWord}|${seatWord}(?:数量)?[：:\\s]*(?:为)?(?:0|零)(?!\\d)(?:个)?|no (?:adult )?(?:seated toilets?|sit[- ]down toilets?)`,
     "i",
   );
   const childrenOnly =
     /(?:仅|只有|只设|仅设|only)[^；。;.!?]{0,12}(?:儿童|幼儿|child)|(?:儿童|幼儿)[^；。;.!?]{0,10}(?:专用|only)/i.test(
       notes,
     ) || f.childSeatedOnly === true;
-  const denied = negative.test(notes) || f.adultSeated === false;
+  const denied = negative.test(factualNotes) || f.adultSeated === false;
   // Remove clauses that assert absence or only child use before looking for positives.
-  const positiveText = notes
-    .split(/[；。;.!?]/)
+  const positiveText = factualNotes
+    .split(/[，,；。;.!?]/)
     .filter(
       (s) =>
         !negative.test(s) &&
+        (!/(?:儿童|幼儿|child)/i.test(s) || /成人|adult/i.test(s)) &&
         !/(?:仅|只有|只设|仅设)[^，,]{0,10}(?:儿童|幼儿)|未提供.*信息|信息.*未知/.test(
           s,
         ),

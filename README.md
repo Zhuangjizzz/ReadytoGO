@@ -23,7 +23,7 @@ npm start
 
 单服务默认监听 `http://localhost:3001`，可用 `PORT` 修改端口；`GET /health` 检查健康状态。无需地图凭据也能导入、构建、执行固定供应商边界测试和读取本地详情，真实地点/路线查询需要有效高德配置。
 
-当前已实现正式 CSV 导入、地点搜索、自动资料匹配和最小附近查询页面；完整推荐、地图导航、规划和 AI 按工单继续交付。共享对象见 `src/shared/contracts.ts`，对外 API 入口见 `src/server/routes/core.ts`，导入和真实联调记录见 [数据处理记录](docs/data-processing.md)。
+当前已实现正式 CSV 导入、地点搜索、自动资料匹配和最小附近查询页面；完整附近推荐、分批与重试已实现；地图导航、规划和 AI 按工单继续交付。共享对象见 `src/shared/contracts.ts`，对外 API 入口见 `src/server/routes/core.ts`，导入和真实联调记录见 [数据处理记录](docs/data-processing.md)。
 
 ## 产品文档
 
@@ -52,3 +52,5 @@ npm start
 - [公厕 CSV](data/BJ-ToiletInfo.csv)：当前可直接使用的输入文件。
 - [API 准备记录](.scratch/api-readiness/spec.md)：已执行的联调及其环境限制。
 - [原始资料索引](.scratch/prd-v1-alignment/sources/README.md)：保存需求原稿，日常开发无需加载。
+
+附近规则、批次/游标语义和离线页面测试见 [附近查询记录](docs/query-behavior.md)。
