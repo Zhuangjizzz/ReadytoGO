@@ -1,0 +1,30 @@
+[Unit]
+Description=ReadytoGo Beijing visitor restroom demo
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=exec
+DynamicUser=yes
+WorkingDirectory=/opt/readytogo/current
+ExecStart=/usr/bin/node /opt/readytogo/current/dist/server/main.js
+EnvironmentFile=/etc/readytogo/readytogo.env
+Environment=NODE_ENV=production
+Environment=TZ=Asia/Shanghai
+Environment=HOST=0.0.0.0
+Environment=PORT=3000
+Environment=CATALOG_PATH=/var/lib/readytogo/catalog.json
+Environment=MATCH_CACHE_PATH=/var/lib/readytogo/matches.json
+StateDirectory=readytogo
+StateDirectoryMode=0750
+UMask=0027
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+Restart=on-failure
+RestartSec=3
+TimeoutStopSec=130
+
+[Install]
+WantedBy=multi-user.target

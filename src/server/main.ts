@@ -15,7 +15,7 @@ try {
   );
 }
 const { app } = await createApplication(config);
-const server = app.listen(config.port, "0.0.0.0", () =>
+const server = app.listen(config.port, config.host, () =>
   console.log(JSON.stringify({ event: "server_ready", port: config.port })),
 );
 for (const signal of ["SIGINT", "SIGTERM"])

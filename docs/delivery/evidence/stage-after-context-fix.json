@@ -1,0 +1,181 @@
+{
+  "schema": "readytogo.release-http.v1",
+  "generatedAt": "2026-10-08T20:45:29.983Z",
+  "label": "stage-after-context-fix",
+  "revision": "c82770b6be6d70e3da20a81cdd0d1f196841c008",
+  "transport": "HTTP only; no browser",
+  "testInput": {
+    "query": "陶然亭公园",
+    "text": "After lunch visit Taoranting Park. I do not need a seated toilet."
+  },
+  "requests": {
+    "/health": {
+      "count": 1,
+      "firstRequestId": null,
+      "lastRequestId": null,
+      "lastStatus": 200,
+      "totalHttpMs": 57,
+      "errorCode": null
+    },
+    "/api/v1/data/summary": {
+      "count": 1,
+      "firstRequestId": "a7709a24-ef71-43f2-950f-f021af8e93f9",
+      "lastRequestId": "a7709a24-ef71-43f2-950f-f021af8e93f9",
+      "lastStatus": 200,
+      "totalHttpMs": 4,
+      "errorCode": null
+    },
+    "/api/v1/assist/parse": {
+      "count": 1,
+      "firstRequestId": "915a4c27-3ac1-4557-aa01-a20fcf2bfdf1",
+      "lastRequestId": "915a4c27-3ac1-4557-aa01-a20fcf2bfdf1",
+      "lastStatus": 200,
+      "totalHttpMs": 2846,
+      "errorCode": null
+    },
+    "/api/v1/places/search": {
+      "count": 1,
+      "firstRequestId": "830c45f7-1421-4bea-b9d6-4e842843b998",
+      "lastRequestId": "830c45f7-1421-4bea-b9d6-4e842843b998",
+      "lastStatus": 200,
+      "totalHttpMs": 1254,
+      "errorCode": null
+    },
+    "/api/v1/plans/preview": {
+      "count": 23,
+      "firstRequestId": "22632183-43bd-4a65-bb3b-fe45dfde1406",
+      "lastRequestId": "97638281-a8a0-4079-aa46-75f428a5eb37",
+      "lastStatus": 200,
+      "totalHttpMs": 3447,
+      "errorCode": null
+    },
+    "/api/v1/toilets/bj_1155d7c86129bb5e0621": {
+      "count": 1,
+      "firstRequestId": "26133ff7-f065-4a98-8a8f-03ab9a5f6f66",
+      "lastRequestId": "26133ff7-f065-4a98-8a8f-03ab9a5f6f66",
+      "lastStatus": 200,
+      "totalHttpMs": 3,
+      "errorCode": null
+    },
+    "/api/v1/navigation/link": {
+      "count": 1,
+      "firstRequestId": "07a77869-c78c-4dd5-81d2-103f10b924ba",
+      "lastRequestId": "07a77869-c78c-4dd5-81d2-103f10b924ba",
+      "lastStatus": 200,
+      "totalHttpMs": 4,
+      "errorCode": null
+    }
+  },
+  "checks": {
+    "correctService": true,
+    "sourceImported": true,
+    "clientAssets": true,
+    "terminalPreviewWithRoute": true,
+    "detailIdentity": true,
+    "navigationMatches": true,
+    "mapImage": true
+  },
+  "health": {
+    "status": "ok",
+    "service": "readytogo",
+    "catalogCount": 13124
+  },
+  "import": {
+    "inputRecords": 13156,
+    "importedCount": 13124,
+    "mergedCount": 32
+  },
+  "assets": [
+    {
+      "path": "/assets/index-BUNanOJP.js",
+      "status": 200,
+      "bytes": 389853,
+      "sha256": "4287e7384e233132a43f072426a46cc48c55f37b027b16f39c06f1dc478232bc"
+    },
+    {
+      "path": "/assets/index-CrxEjtCT.css",
+      "status": 200,
+      "bytes": 22114,
+      "sha256": "081a58051f9c6a89da545ce76f37c989f3812de83fb09125fa9f2883914babfd"
+    }
+  ],
+  "parse": {
+    "elapsedMs": 2846,
+    "status": "complete",
+    "proposedPreference": "any",
+    "places": [
+      {
+        "order": 1,
+        "originalText": "Taoranting Park",
+        "queryZh": "陶然亭公园",
+        "note": "After lunch visit Taoranting Park. I do not need a seated toilet.",
+        "noteKind": "source_context"
+      }
+    ],
+    "warnings": []
+  },
+  "place": {
+    "nameZh": "陶然亭公园",
+    "poiId": "B000A4D500",
+    "district": "西城区",
+    "returnedChoices": 10
+  },
+  "previewRequestSettings": {
+    "revision": 1,
+    "language": "en",
+    "preference": "seated_required",
+    "includeConditionalAccess": true,
+    "walkLimitMinutes": 20,
+    "extendedRadiusKm": 5
+  },
+  "flowNote": "Parse and preview are separate release checks; no saved user plan is changed.",
+  "preview": {
+    "elapsedMs": 21058,
+    "status": "complete",
+    "analysisStatus": "complete",
+    "pendingWork": false,
+    "hasMore": true,
+    "groupCounts": {
+      "matched": 2,
+      "farther": 3,
+      "otherNearby": 5,
+      "conditionalAccess": 0,
+      "routeUnknown": 0
+    },
+    "returnedCandidates": 10,
+    "successfulRoutes": 10,
+    "error": null
+  },
+  "candidate": {
+    "toiletId": "bj_1155d7c86129bb5e0621",
+    "nameZh": "永内西街北里",
+    "seatStatus": "inferred",
+    "walkSeconds": 1139,
+    "walkMeters": 1424,
+    "reason": "Accessible stalls suggest adult seated toilets may be available. Walking about 19 min.",
+    "sources": ["beijing_csv", "amap"]
+  },
+  "navigation": {
+    "routeStatus": "success",
+    "walkSeconds": 1139,
+    "walkMeters": 1424,
+    "hasAppUrl": true,
+    "hasWebUrl": true,
+    "hasCopyText": true
+  },
+  "map": {
+    "status": 200,
+    "contentType": "image/png",
+    "validPng": true,
+    "width": 640,
+    "height": 480
+  },
+  "elapsedMs": 26746,
+  "technicalChecksPass": true,
+  "semanticChecks": {
+    "status": "passed",
+    "fullSourceContextPreserved": true,
+    "correctPlaceAndExplicitPreference": true,
+    "meaning": "Software retains the full original context. This does not claim model understanding or allocation of timing to a stop."
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "checkedAt": "2026-10-08T20:48:19.054921+00:00",
+  "release": "/opt/readytogo/releases/c82770b6be6d70e3da20a81cdd0d1f196841c008",
+  "cwd": "/opt/readytogo/releases/c82770b6be6d70e3da20a81cdd0d1f196841c008",
+  "pid": 3503993,
+  "service": {
+    "exitCode": 0,
+    "output": "NRestarts=0\nMemoryCurrent=228442112\nUser=readytogo\nActiveState=active\nSubState=running\nUnitFileState=enabled"
+  },
+  "smoke": {
+    "exitCode": 0,
+    "output": "ActiveState=inactive\nUnitFileState=disabled"
+  },
+  "ports": {
+    "exitCode": 0,
+    "output": "State  Recv-Q Send-Q Local Address:Port Peer Address:PortProcess                                   \nLISTEN 0      4096         0.0.0.0:8080      0.0.0.0:*    users:((\"docker-proxy\",pid=2268209,fd=8))\nLISTEN 0      511          0.0.0.0:3000      0.0.0.0:*    users:((\"MainThread\",pid=3503993,fd=21)) \nLISTEN 0      511          0.0.0.0:80        0.0.0.0:*    users:((\"MainThread\",pid=3472909,fd=21))"
+  },
+  "configurationAndStateMetadata": {
+    "/etc/readytogo/readytogo.env": {
+      "mode": "0o600",
+      "uid": 0,
+      "gid": 0
+    },
+    "/var/lib/readytogo/catalog.json": {
+      "mode": "0o640",
+      "uid": 61684,
+      "gid": 61684
+    },
+    "/var/lib/readytogo/matches.json": {
+      "mode": "0o640",
+      "uid": 61684,
+      "gid": 61684
+    }
+  },
+  "bundleSha256": "e50372938d8ea9160ef09ed79605b25f51f2afc4ebc41e31b76e392aa88b1e58",
+  "smokeBackup": "/opt/readytogo/backups/smoke-before-1c3a84d5cd87"
+}

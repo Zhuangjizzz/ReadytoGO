@@ -1,0 +1,10 @@
+{
+  "revision": "c82770b6be6d70e3da20a81cdd0d1f196841c008",
+  "archiveSha256": "b7a2119eb96d4e285ec5e05ffe6b72c7a1d7118eff2304bea60e8c8fce76c70c",
+  "bundleSha256": "e50372938d8ea9160ef09ed79605b25f51f2afc4ebc41e31b76e392aa88b1e58",
+  "runtimeFiles": 7,
+  "credentialLeakScan": "No configured AMAP_KEY or DASHSCOPE_API_KEY value found in the runtime allowlist.",
+  "linuxProductionInstall": "Node24.15.0/npm11.12.1; npm ci --omit=dev --no-audit --no-fund; 76 packages installed.",
+  "browserCheck": "not performed; prior actual-app denial respected",
+  "phoneAcceptance": "not passed; original spec61 remains unmet"
+}

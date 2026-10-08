@@ -24,6 +24,7 @@ export interface AppConfig {
   qwenModel: string;
   aiTimeoutMs: number;
   aiAnalysisTimeoutMs: number;
+  host: string;
   port: number;
   clientPath: string;
 }
@@ -47,6 +48,7 @@ export function getConfig(): AppConfig {
     qwenModel: process.env.QWEN_MODEL || "",
     aiTimeoutMs: limits.aiParseTimeoutMs,
     aiAnalysisTimeoutMs: limits.aiAnalysisTimeoutMs,
+    host: process.env.HOST || "0.0.0.0",
     port: Number(process.env.PORT || 3001),
     clientPath: resolve("dist/client"),
   };
