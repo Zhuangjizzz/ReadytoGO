@@ -76,6 +76,40 @@ export function DetailPage({
         unknown: zh ? "进入条件未提供" : "Access details not listed",
       }[facts.accessCondition]
     : "";
+  const areaNames = new Set<string>();
+  if (facts) {
+    if ((facts.facilities.maleStalls ?? 0) > 0)
+      areaNames.add(zh ? "男厕区域" : "Men's area");
+    if ((facts.facilities.femaleStalls ?? 0) > 0)
+      areaNames.add(zh ? "女厕区域" : "Women's area");
+    if ((facts.facilities.unisexStalls ?? 0) > 0)
+      areaNames.add(zh ? "通用区域" : "Unisex area");
+    for (const source of facts.sources) {
+      const code = source.rawFields.typeCode;
+      const wording = [source.rawFields.type, source.rawFields.name]
+        .filter((v) => typeof v === "string")
+        .join(" ");
+      if (code === "200301" || /男(?:厕|洗手间|卫生间)/.test(wording))
+        areaNames.add(zh ? "男厕区域" : "Men's area");
+      if (code === "200302" || /女(?:厕|洗手间|卫生间)/.test(wording))
+        areaNames.add(zh ? "女厕区域" : "Women's area");
+      if (/男女通用|无性别|通用(?:厕|卫生间)/.test(wording))
+        areaNames.add(zh ? "通用区域" : "Unisex area");
+    }
+  }
+  const mapDescriptions =
+    facts?.sources
+      .filter((s) => s.provider === "amap")
+      .flatMap((s) => {
+        const name =
+          typeof s.rawFields.name === "string" ? s.rawFields.name : "";
+        const address =
+          typeof s.rawFields.address === "string" ? s.rawFields.address : "";
+        return name &&
+          (name !== facts.nameZh || (address && address !== facts.addressZh))
+          ? [{ name, address }]
+          : [];
+      }) ?? [];
   return (
     <main className="detail-page">
       <button className="page-back" onClick={onBack}>
@@ -141,6 +175,24 @@ export function DetailPage({
                   {facts.addressZh || facts.district}
                 </p>
               </div>
+              {mapDescriptions.length > 0 && (
+                <div className="detail-row">
+                  <h2>
+                    {zh ? "地图名称与入口提示" : "Map name & entrance details"}
+                  </h2>
+                  {mapDescriptions.map((info, i) => (
+                    <p key={i}>
+                      {info.name}
+                      {info.address && (
+                        <>
+                          <br />
+                          {info.address}
+                        </>
+                      )}
+                    </p>
+                  ))}
+                </div>
+              )}
               <div className="detail-row">
                 <h2>{zh ? "开放与进入" : "Opening & access"}</h2>
                 <p>
@@ -152,6 +204,12 @@ export function DetailPage({
               </div>
               <div className="detail-row">
                 <h2>{zh ? "设施资料" : "Facility information"}</h2>
+                {areaNames.size > 0 && (
+                  <p className="area-information">
+                    {zh ? "适用区域" : "Area information"}:{" "}
+                    {[...areaNames].join(" · ")}
+                  </p>
+                )}
                 <div className="detail-facilities">
                   {Object.entries(facts.facilities)
                     .filter(([, v]) => v !== null)

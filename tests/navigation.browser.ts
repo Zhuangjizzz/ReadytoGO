@@ -12,7 +12,7 @@ async function withFixture(
 ) {
   const built = await build({
     stdin: {
-      contents: `import React,{useState} from 'react';import{createRoot}from'react-dom/client';import{StaticMap}from'./src/client/StaticMap';import{Navigation}from'./src/client/Navigation';import{LocateButton}from'./src/client/LocateButton';import{PlacePicker}from'./src/client/PlacePicker';import{PhrasesPage}from'./src/client/PhrasesPage';import{usePageNavigation}from'./src/client/usePageNavigation';import './src/client/styles.css';function Fixture(){${body}}createRoot(document.getElementById('root')).render(<Fixture/>);`,
+      contents: `import React,{useState} from 'react';import{createRoot}from'react-dom/client';import{StaticMap}from'./src/client/StaticMap';import{Navigation}from'./src/client/Navigation';import{LocateButton}from'./src/client/LocateButton';import{PlacePicker}from'./src/client/PlacePicker';import{PhrasesPage}from'./src/client/PhrasesPage';import{usePageNavigation}from'./src/client/usePageNavigation';import{DetailPage}from'./src/client/DetailPage';import './src/client/styles.css';function Fixture(){${body}}createRoot(document.getElementById('root')).render(<Fixture/>);`,
       resolveDir: process.cwd(),
       loader: "tsx",
     },
@@ -315,5 +315,75 @@ test("returning from details restores the preserved list scroll position", () =>
       await page.getByRole("button", { name: "Back to results" }).click();
       await page.getByText("Preserved results", { exact: true }).waitFor();
       await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(600);
+    },
+  ));
+
+test("details preserve the supplier's area and entrance wording after matching a neutral local record", () =>
+  withFixture(
+    `return <DetailPage toiletId="garden" language="en" origin={null} onBack={()=>{}}/>;`,
+    async (page) => {
+      await page
+        .getByText("Area information: Women's area", { exact: true })
+        .waitFor();
+      await page.getByText("公园公厕（女洗手间）", { exact: false }).waitFor();
+      await page.getByText("园路西门内侧", { exact: false }).waitFor();
+      assert.equal(await page.getByText("200302", { exact: false }).count(), 0);
+    },
+    async (page) => {
+      await page.route("**/api/v1/toilets/garden?**", (route) =>
+        route.fulfill({
+          json: {
+            data: {
+              id: "garden",
+              nameZh: "公园厕所",
+              nameEn: null,
+              addressZh: "园路",
+              district: "东城区",
+              position: null,
+              facilities: {
+                maleStalls: 0,
+                femaleStalls: null,
+                unisexStalls: null,
+              },
+              seatStatus: "unknown",
+              seatBasis: [],
+              openingHoursRaw: null,
+              accessCondition: "unknown",
+              accessNote: null,
+              sources: [
+                {
+                  provider: "amap",
+                  name: "高德地图",
+                  rawFields: {
+                    name: "公园公厕（女洗手间）",
+                    address: "园路西门内侧",
+                    type: "公共设施;公共厕所;女洗手间",
+                    typeCode: "200302",
+                  },
+                },
+              ],
+            },
+            warnings: [],
+          },
+        }),
+      );
+      await page.route("**/api/v1/navigation/link", (route) =>
+        route.fulfill({
+          json: {
+            data: {
+              origin: null,
+              destination: null,
+              appUrl: null,
+              webUrl: null,
+              searchUrl: "https://uri.amap.com/search?keyword=公园厕所",
+              copyText: "公园厕所\n园路",
+              routeStatus: "provider_error",
+              walkSeconds: null,
+              walkMeters: null,
+            },
+            warnings: [],
+          },
+        }),
+      );
     },
   ));
