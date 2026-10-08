@@ -571,3 +571,45 @@ footer {
     animation: none;
   }
 }
+.toilet-card.is-selected {
+  outline: 2px solid #397619;
+  outline-offset: 2px;
+}
+.card-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 18px;
+}
+.card-actions button {
+  flex: 1;
+}
+.access-note {
+  font-weight: 600;
+  color: #74571d !important;
+}
+.ordinary-toggle {
+  margin: 12px 0;
+  width: 100%;
+  text-align: left;
+}
+.view-toggle {
+  margin: 18px 0;
+}
+.recovery-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.recovery-actions button {
+  font-size: 13px;
+}
+.find-button {
+  margin-top: 18px;
+}
+.straight-line {
+  font-size: 12px !important;
+}
+.results-panel > .notice p {
+  margin-top: 8px;
+  margin-bottom: 10px;
+}

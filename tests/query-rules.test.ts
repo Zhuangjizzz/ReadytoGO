@@ -230,3 +230,39 @@ test("facility notes preserve explicit negative, children-only and contradictory
     assert.equal(byId.get("5")?.seatStatus, "inferred");
   });
 });
+
+test("child equipment or missing seating information cannot become documented adult seating", async () => {
+  const notes = ["儿童坐便器1个", "无坐便信息", "坐便器数量：0个"];
+  const rows = notes.map((notes, i) => {
+    const t = fixture(String(i + 1));
+    t.facilities.notes = notes;
+    return t;
+  });
+  await withApp(rows, {}, async (url) => {
+    const r = await query(url, { preference: "any" });
+    const byId = new Map(
+      Object.values(r.groups)
+        .flat()
+        .map((c) => [c.toiletId, c]),
+    );
+    assert.equal(byId.get("1")?.seatStatus, "unknown");
+    assert.equal(byId.get("2")?.seatStatus, "unknown");
+    assert.equal(byId.get("3")?.seatStatus, "unavailable");
+  });
+});
+test("the extended seated radius does not pull ordinary unknown facilities into distant recommendations", async () => {
+  const rows = [
+    fixture("1", {
+      seatStatus: "inferred",
+      position: { lng: 116.47, lat: 39.9, crs: "GCJ02" },
+    }),
+    fixture("2", { position: { lng: 116.435, lat: 39.9, crs: "GCJ02" } }),
+  ];
+  await withApp(rows, { "1": 3000, "2": "error" }, async (url) => {
+    const short = await query(url);
+    assert.equal(Object.values(short.groups).flat().length, 0);
+    const extended = await query(url, { extendedRadiusKm: 10 });
+    assert.deepEqual(ids(extended.groups.farther), ["1"]);
+    assert.equal(extended.groups.routeUnknown.length, 0);
+  });
+});

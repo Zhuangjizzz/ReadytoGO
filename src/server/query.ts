@@ -417,7 +417,8 @@ export class QueryService {
     const fill = () => {
       for (const t of this.remaining(s, r).slice(
         0,
-        limits.routeBatchSize - b.candidates.length,
+        Math.min(limits.routeBatchSize, limits.maxCandidates) -
+          b.candidates.length,
       )) {
         if (!active()) return;
         s.used.add(t.id);

@@ -14,7 +14,8 @@
     "import:data": "tsx scripts/import-data.ts",
     "build": "vite build && esbuild src/server/main.ts --bundle --platform=node --format=esm --packages=external --outfile=dist/server/main.js",
     "check": "tsc --noEmit",
-    "test": "node --import tsx --test tests/*.test.ts"
+    "test": "node --import tsx --test tests/*.test.ts tests/dom/*.test.tsx",
+    "test:dom": "node --import tsx --test tests/dom/*.test.tsx"
   },
   "dependencies": {
     "csv-parse": "^7.0.3",
@@ -26,13 +27,17 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.64.0",
+    "@testing-library/react": "^16.3.3",
+    "@testing-library/user-event": "^14.6.7",
     "@types/express": "^5.0.6",
+    "@types/jsdom": "^30.0.0",
     "@types/node": "^26.6.4",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "@vitejs/plugin-react": "^6.1.2",
     "concurrently": "^10.0.6",
     "esbuild": "^0.28.2",
+    "jsdom": "^30.1.2",
     "prettier": "^3.9.9",
     "tsx": "^4.23.15",
     "typescript": "^7.0.2",
