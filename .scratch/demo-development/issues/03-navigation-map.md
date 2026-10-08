@@ -1,6 +1,6 @@
 # 03: 详情、真实地图、导航与询问卡
 
-Status: ready-for-agent
+Status: claimed
 Type: task
 Stage: 2
 Blocked by: 01
@@ -27,3 +27,7 @@ Parent: [开发规格](../spec.md)
 - 完成提交代码及测试记录，交由独立 merger 与阶段 review。
 
 ## Comments
+
+2026-10-09：基于 `codex/demo-integration` 的 `f8d308e` 开始，工作分支 `codex/demo-03-navigation-map`。测试按规格采用公开 HTTP 与浏览器入口；地图投影使用真实供应商标记校准。
+
+2026-10-09 模块实现完成：真实地图固定代理、地图覆盖层/选点、GPS 与行政区确认、导航重算/降级、详情、固定双语询问卡。验证见 [实现与验证记录](../../../docs/implementation/wayfinding.md)。19 个 HTTP/导入测试、4 个隔离浏览器组件测试、类型检查及构建通过。主页面接线等待工单 02 的 NearbyPage/ToiletCard 合入后完成。

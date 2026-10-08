@@ -1,0 +1,36 @@
+# 地图、定位与导航
+
+实现日期：2026-10-09。需求入口：`docs/prd/experience.md`；工单：`.scratch/demo-development/issues/03-navigation-map.md`。
+
+## 运行配置与行为
+
+复用服务端 `AMAP_KEY`（兼容 `AMAP_WEBSERVICE_KEY`），不需要浏览器 JS Key。浏览器请求同域 `GET /api/v1/maps/static`，服务端只向配置的高德 `/v3/staticmap` 请求，校验 PNG 后返回。不会接受任意 URL、上游路径或浏览器 Key；图片错误不返回供应商原始正文。图片缓存仅在服务器内存中保留五分钟并限制条目数。
+
+静态底图不是模拟地图：正式运行请求高德真实地图图片，`scale=1`、固定 `640×480`，保留供应商署名。浏览器覆盖层提供选择厕所、地图选点、拖动、方向按钮、缩放和返回起点。高德当前静态接口的像素世界尺寸按实测使用 `512 * 2**zoom`，实现集中在 `StaticMap.tsx`。图片与标记共享同一显示比例，新视口图片未完成加载时隐藏覆盖层并停止选点，旧图片的异步加载不会激活新视口。
+
+GPS 在安全上下文可用时调用浏览器 Geolocation，原始 WGS84 只由 `/location/convert` 转为 GCJ02 一次。返回位置只保存于会话内存，不写 localStorage。精度超过 150 米展示“大致位置”。定位拒绝、不支持或超时可以继续搜索地点和地图选点。
+
+经纬度矩形只作快速粗筛。地图选点由 `/location/resolve`、GPS 转换后由逆地理编码确认 `adcode` 属于北京市（11 开头）；已确认外地为 `OUTSIDE_BEIJING`/422，无法确认行政区为 `MAP_UNAVAILABLE`/503。验证结果仅内存缓存。高德 POI 搜索另按返回城市过滤。
+
+## 公开接口
+
+| 接口 | 输入 | 输出 |
+| --- | --- | --- |
+| `POST /api/v1/navigation/link` | `toiletId`、`origin`（GCJ02，可空）、`language`、可选 `retry` | `origin/destination/appUrl/webUrl/searchUrl/copyText/routeStatus/walkSeconds/walkMeters` |
+| `POST /api/v1/location/convert` | `lng/lat/crs:WGS84`、可选 `accuracyMeters/language` | 北京内的 GCJ02 `Origin` |
+| `POST /api/v1/location/resolve` | `lng/lat/crs:GCJ02`、可选 `language` | 北京内的地图 `Place`，含中文地址与所在区 |
+| `GET /api/v1/maps/static` | `lng/lat`、`zoom:3..17`、`width/height:200..1024` | PNG 图片或标准错误响应 |
+
+导航算路复用查询服务，以实际起终点缓存路线。起点变更清除页面旧值并重新请求；路线不可达/失败的秒数和米数均为空，但坐标存在时保留 App 和网页导航。目的地无坐标时只提供地图搜索与中文复制，不生成错误路线链接。App 唤起成功不会由计时器猜测，网页入口始终保留。
+
+固定五句询问卡随客户端打包，中文在上、英文在下；不调用模型。大字与按钮支持窄屏及横屏。
+
+## 验证记录
+
+- HTTP：切换起点重新计算、不可达/坏返回清除旧数字、缺目的地坐标降级、原始 GPS 一次转换、GCJ02 拒绝二次转换、行政区边界、固定上游与 PNG 检查。
+- 隔离浏览器组件：两种 zoom 对应真实高德独立标记校准值；640px/320px 的同缩放标记与点击反算；平移后选点；加载/失败状态禁止旧底图选点；导航切起点期间清数与失败保留链接；GPS 拒绝后保留手选；五句询问卡及横屏。
+- `npm run test:wayfinding` 运行组件隔离测试，首次需 `npx playwright install chromium`。测试服务器只挂载具体组件并替换外部 HTTP，不运行产品应用。
+- 2026-10-09 对现有长期服务凭据作有界真实 HTTP 联调：高德逆地理返回北京市与 110101；正式图片代理返回 HTTP 200、image/png、640×480；GPS 转换与行政区校验返回 HTTP 200、GCJ02。
+- 当前主线程的实际应用浏览器访问被工具权限拒绝；后续未访问该实际应用页面。以上浏览器记录是隔离组件自动化，不代表完整产品浏览器验收或真实手机验收。全应用返回滚动和主要页面接线在集成工单 02 后检查。
+
+官方接口参考：高德 Web 服务静态地图、逆地理编码、坐标转换、步行 v5，以及 URI 路径规划。完整校准与文档笔记见主线程共享的 provider-notes。

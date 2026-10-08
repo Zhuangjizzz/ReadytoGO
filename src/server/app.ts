@@ -7,6 +7,8 @@ import { Catalog } from "./data/catalog.js";
 import { QueryService } from "./query.js";
 import { AmapHttpProvider, type AmapProvider } from "./providers/amap.js";
 import { coreRouter, type CoreServices } from "./routes/core.js";
+import { mapsRouter } from "./routes/maps.js";
+import { navigationRouter } from "./routes/navigation.js";
 import type { CatalogFile } from "../shared/contracts.js";
 export interface RequestLog {
   event: "http_request";
@@ -65,6 +67,8 @@ export async function createApplication(options: ApplicationOptions = {}) {
     }),
   );
   app.use("/api/v1", coreRouter(services));
+  app.use("/api/v1", navigationRouter(services));
+  app.use("/api/v1", mapsRouter(config));
   options.registerRoutes?.(app, services);
   app.use("/api", (_req, _res, next) =>
     next(new AppError("NOT_FOUND", "This endpoint was not found.", 404)),
@@ -96,24 +100,22 @@ export async function createApplication(options: ApplicationOptions = {}) {
         : jsonError
           ? "INVALID_JSON"
           : "INTERNAL_ERROR";
-      res
-        .status(known ? error.status : jsonError ? 400 : 500)
-        .json({
-          requestId: res.locals.requestId,
-          error: {
-            code: known
-              ? error.code
-              : jsonError
-                ? "INVALID_JSON"
-                : "INTERNAL_ERROR",
-            message: known
-              ? error.message
-              : jsonError
-                ? "The request body is not valid JSON."
-                : "The request could not be completed.",
-            retryable: known ? error.retryable : !jsonError,
-          },
-        });
+      res.status(known ? error.status : jsonError ? 400 : 500).json({
+        requestId: res.locals.requestId,
+        error: {
+          code: known
+            ? error.code
+            : jsonError
+              ? "INVALID_JSON"
+              : "INTERNAL_ERROR",
+          message: known
+            ? error.message
+            : jsonError
+              ? "The request body is not valid JSON."
+              : "The request could not be completed.",
+          retryable: known ? error.retryable : !jsonError,
+        },
+      });
     },
   );
   return { app, services, config };

@@ -12,7 +12,14 @@ export interface ProviderPoi {
   type: string;
   openingHours: string | null;
 }
+export interface ResolvedLocation {
+  adcode: string;
+  address: string;
+  district: string;
+  city: string;
+}
 export interface AmapProvider {
+  reverseGeocode?(position: Position): Promise<ResolvedLocation>;
   searchPlaces(
     query: string,
     options?: { toiletsOnly?: boolean; page?: number; limit?: number },
@@ -259,6 +266,28 @@ export class AmapHttpProvider implements AmapProvider {
     } catch {
       return { ...base, status: "provider_error" };
     }
+  }
+  async reverseGeocode(position: Position): Promise<ResolvedLocation> {
+    const raw = await this.request("/v3/geocode/regeo", {
+      location: coordinateString(position),
+      extensions: "base",
+    });
+    const regeo = object(raw.regeocode);
+    const address = object(regeo.addressComponent);
+    const adcode = text(address.adcode);
+    if (!/^\d{6}$/.test(adcode))
+      throw new AppError(
+        "MAP_UNAVAILABLE",
+        "This location could not be confirmed. Please retry or search for a place.",
+        503,
+        true,
+      );
+    return {
+      adcode,
+      address: text(regeo.formatted_address),
+      district: text(address.district),
+      city: text(address.city) || text(address.province),
+    };
   }
   async convertGps(gps: { lng: number; lat: number }) {
     const raw = await this.request("/v3/assistant/coordinate/convert", {

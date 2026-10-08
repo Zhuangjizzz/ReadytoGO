@@ -14,7 +14,8 @@
     "import:data": "tsx scripts/import-data.ts",
     "build": "vite build && esbuild src/server/main.ts --bundle --platform=node --format=esm --packages=external --outfile=dist/server/main.js",
     "check": "tsc --noEmit",
-    "test": "node --import tsx --test tests/*.test.ts"
+    "test": "node --import tsx --test tests/*.test.ts",
+    "test:wayfinding": "node --import tsx --test tests/navigation.browser.ts"
   },
   "dependencies": {
     "csv-parse": "^7.0.3",
