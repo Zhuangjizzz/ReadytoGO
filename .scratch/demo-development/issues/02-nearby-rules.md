@@ -37,3 +37,13 @@ Parent: [开发规格](../spec.md)
 Red → green：原实现未处理上海时区关闭与备注肯否定，公开查询回归先失败后通过；儿童器具被误当成人记载的新增回归先失败后修复；旧请求迟到、终态停止轮询和普通候选主动展开通过隔离 DOM 检查。未加入任何测试输入或具体景点特例。
 
 通过 `npm test`（25 HTTP/导入 + 2 隔离 DOM）、`npm run test:dom`、`npm run check`、`npm run build`。Browser Use 拒绝后没有访问实际应用、换浏览器或换端口预览；本票不声称新增真机或实际页面视觉验收。
+
+### 阶段审查修复：进入否定与不可用状态
+
+独立 review 的两项 P2 已修复。公开 HTTP 回归先复现“无需门票/不需要消费”误入限制组，以及“已停用”仍被推荐；随后按子句作用范围保留门票/消费的肯否定与并列条件。新增 `out_of_service` 区分明确停用和永久关闭，附近与规划都排除明确不可用；保留未停用、恢复开放等有效状态，只有周期闭馆允许规划继续显示。
+
+`npm test` 29 项、`npm run check` 与 `npm run build` 全部通过；未新增真实 API 调用或实际应用预览。
+
+## Resolution
+
+Merged at `1cce44285c6ce0b1223c8d5e0017ef57db4458d8`. Independent HTTP reproductions for negated access and out-of-service records passed in both contexts. Integration checks: npm ci, 29 tests, typecheck, build passed. Full map/navigation shell wiring continues in ticket 03.

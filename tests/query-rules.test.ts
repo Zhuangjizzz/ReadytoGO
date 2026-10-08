@@ -266,3 +266,67 @@ test("the extended seated radius does not pull ordinary unknown facilities into 
     assert.equal(extended.groups.routeUnknown.length, 0);
   });
 });
+
+test("entry requirement polarity is evaluated per clause without negating parallel affirmative conditions", async () => {
+  const notes = [
+    "无需门票，游客可用",
+    "不需要消费",
+    "无须购买门票及消费",
+    "需要消费后使用",
+    "需购买门票",
+    "无需门票但需要消费",
+    "需门票，不必消费",
+    "需要门票和消费",
+    "No ticket or purchase required",
+    "No ticket required but purchase required",
+  ];
+  const rows = notes.map((notes, i) => {
+    const t = fixture(String(i + 1));
+    t.facilities.notes = notes;
+    return t;
+  });
+  await withApp(rows, {}, async (url) => {
+    const r = await query(url, { preference: "any" });
+    assert.deepEqual(ids(r.groups.matched), ["1", "2", "3", "9"]);
+    const byId = new Map(
+      r.groups.conditionalAccess.map((c) => [c.toiletId, c.accessCondition]),
+    );
+    assert.equal(byId.get("4"), "purchase_required");
+    assert.equal(byId.get("5"), "ticket_required");
+    assert.equal(byId.get("6"), "purchase_required");
+    assert.equal(byId.get("7"), "ticket_required");
+    assert.equal(byId.get("8"), "ticket_required");
+    assert.equal(byId.get("10"), "purchase_required");
+  });
+});
+test("explicit out-of-service status is excluded in both contexts, with reopening and negative statements preserved", async () => {
+  const notes = [
+    "已停用",
+    "临时停用",
+    "未停用",
+    "已恢复开放",
+    "此前停用，现已恢复开放",
+    "暂停开放",
+    "没有停用，仍正常使用",
+    "此前停用，目前未恢复开放",
+  ];
+  const rows = notes.map((notes, i) => {
+    const t = fixture(String(i + 1));
+    t.facilities.notes = notes;
+    return t;
+  });
+  const sourceOnly = fixture("9");
+  sourceOnly.sources = [
+    { provider: "beijing_csv", name: "台账", rawFields: { 指标状况: "停用" } },
+  ];
+  rows.push(sourceOnly);
+  await withApp(rows, {}, async (url) => {
+    for (const context of ["nearby", "plan_stop"] as const) {
+      const r = await query(url, { preference: "any", context });
+      assert.deepEqual(ids(r.groups.matched), ["3", "4", "5", "7"]);
+    }
+    const response = await fetch(url + "/api/v1/toilets/2");
+    const { data } = (await response.json()) as ApiSuccess<Toilet>;
+    assert.equal(data.availability, "out_of_service");
+  });
+});

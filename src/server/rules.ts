@@ -91,45 +91,160 @@ export function seatInfo(
     return { seatStatus: "inferred", seatBasis: basis, seatConflict: false };
   return prior ?? { seatStatus: "unknown", seatBasis: [] };
 }
+type RequirementEvidence = { required: boolean; optional: boolean };
+function entryRequirements(notes: string) {
+  const ticket: RequirementEvidence = { required: false, optional: false };
+  const purchase: RequirementEvidence = { required: false, optional: false };
+  const add = (scope: string, optional: boolean) => {
+    if (/门票|购票|凭票|持票|tickets?|admission/i.test(scope))
+      ticket[optional ? "optional" : "required"] = true;
+    if (/消费|顾客|purchases?|customers?/i.test(scope))
+      purchase[optional ? "optional" : "required"] = true;
+  };
+  for (const clause of notes.split(
+    /[，,；;。.!?！？\n]|但是|但|不过|然而|\bbut\b/i,
+  )) {
+    const governors = [
+      ...clause.matchAll(
+        /无需|无须|不再需要|不需要|不再需|不需|不必|不用|免于|毋须|必须|需要|须|需/g,
+      ),
+    ];
+    const scopes = governors.map((match, index) => ({
+      start: match.index!,
+      end: governors[index + 1]?.index ?? clause.length,
+      optional: /^(?:无|不|免|毋)/.test(match[0]),
+    }));
+    for (let i = 0; i < governors.length; i++) {
+      const scope = scopes[i];
+      add(
+        clause.slice(scope.start + governors[i][0].length, scope.end),
+        scope.optional,
+      );
+    }
+    for (const negative of clause.matchAll(
+      /\bno\s+[^.;,]*?\brequired\b|[^.;,]*?\bnot required\b/gi,
+    )) {
+      const scope = {
+        start: negative.index!,
+        end: negative.index! + negative[0].length,
+        optional: true,
+      };
+      scopes.push(scope);
+      add(negative[0], true);
+    }
+    for (const phrase of clause.matchAll(
+      /凭票|持票|购票后|消费后|仅限顾客|仅供顾客|(?:tickets?|admission|purchase)\s+(?:is\s+|are\s+)?required|customers? only/gi,
+    )) {
+      if (
+        scopes.some(
+          (scope) => phrase.index! >= scope.start && phrase.index! < scope.end,
+        )
+      )
+        continue;
+      const prefix = clause.slice(0, phrase.index).trim();
+      add(phrase[0], /(?:无|不|未|免|not|no)$/i.test(prefix));
+    }
+    if (/免票|免费入场|free (?:entry|admission)/i.test(clause))
+      ticket.optional = true;
+    if (
+      /(?:tickets?|admission)\s+(?:is\s+|are\s+)?not required|no (?:tickets?|admission)(?:\s+is)? required/i.test(
+        clause,
+      )
+    )
+      ticket.optional = true;
+    if (
+      /purchase\s+(?:is\s+)?not required|no purchase(?:\s+is)? required/i.test(
+        clause,
+      )
+    )
+      purchase.optional = true;
+  }
+  return { ticket, purchase };
+}
+export function availabilityFromStatements(
+  texts: string[],
+  initial: Toilet["availability"],
+): Toilet["availability"] {
+  let availability = initial;
+  for (const text of texts) {
+    for (const clause of text.split(/[，,；;。.!?！？\n]/)) {
+      // Read state statements in order: a later reopening can supersede a past closure.
+      const events = clause.matchAll(
+        /(?:尚|并)?未(?:被)?停用|没有(?:被)?停用|未停止使用|(?:尚|仍)?未(?:恢复|重新)(?:开放|使用|启用)|(?:已(?:经)?|现已)?(?:恢复|重新)(?:正常)?(?:开放|使用|启用)|永久关闭|(?:已)?撤销|(?:已)?拆除|停用|停止使用|暂停开放|临时关闭|维修中|装修中|permanently closed|temporarily closed|out of service|reopened/gi,
+      );
+      for (const event of events) {
+        const prefix = clause.slice(0, event.index).trim();
+        if (
+          /(?:此前|之前|曾经|曾|原来|历史上)$/.test(prefix) &&
+          !/恢复|重新|reopened/i.test(event[0])
+        )
+          continue;
+        if (
+          /^(?:尚|并)?未(?:被)?停用$|^没有(?:被)?停用$|^未停止使用$|reopened/i.test(
+            event[0],
+          )
+        ) {
+          availability = "active";
+          continue;
+        }
+        if (/^(?:尚|仍)?未(?:恢复|重新)/.test(event[0])) {
+          availability = "out_of_service";
+          continue;
+        }
+        if (/恢复|重新/.test(event[0])) {
+          availability = "active";
+          continue;
+        }
+        if (/(?:尚未|并未|未|没有|并非|不是|not)$/i.test(prefix)) continue;
+        availability = /永久|撤销|拆除|permanently/i.test(event[0])
+          ? "permanently_closed"
+          : "out_of_service";
+      }
+    }
+  }
+  return availability;
+}
 export function deriveToilet(t: Toilet): Toilet {
-  const notes = [
+  const noteTexts = [
     t.facilities.notes,
     ...t.sources.map((s) => s.rawFields["备注"]),
-  ]
-    .filter((x) => typeof x === "string")
-    .join("；");
+  ].filter((x): x is string => typeof x === "string");
+  const notes = [...new Set(noteTexts)].join("；");
+  const { ticket, purchase } = entryRequirements(notes);
   let accessCondition = t.accessCondition;
   let accessNote = t.accessNote;
   if (
     /不对外开放|不(?:允许|对)游客(?:开放|使用)?|谢绝游客|仅供内部|仅限内部|staff only|not open to visitors/i.test(
       notes,
     )
-  ) {
+  )
     accessCondition = "restricted";
-    accessNote = notes;
-  } else if (
-    /需(?:要)?(?:购买)?门票|凭票|持票|购票后|ticket required|admission required/i.test(
-      notes,
-    )
-  ) {
-    accessCondition = "ticket_required";
-    accessNote = notes;
-  } else if (
-    /需(?:要)?消费|消费后|仅限顾客|仅供顾客|purchase required|customers only/i.test(
-      notes,
-    )
-  ) {
-    accessCondition = "purchase_required";
-    accessNote = notes;
-  } else if (
+  else if (
+    (ticket.required && ticket.optional) ||
+    (purchase.required && purchase.optional)
+  )
+    accessCondition = "unknown";
+  else if (ticket.required) accessCondition = "ticket_required";
+  else if (purchase.required) accessCondition = "purchase_required";
+  else if (
     /免费对外开放|游客可用|公众可用|向公众开放|open to (?:the )?public/i.test(
       notes,
-    )
-  ) {
+    ) ||
+    ((ticket.optional || purchase.optional) &&
+      t.accessCondition !== "restricted")
+  )
     accessCondition = "public";
+  if (
+    accessCondition !== t.accessCondition ||
+    ticket.required ||
+    purchase.required ||
+    ticket.optional ||
+    purchase.optional
+  )
     accessNote = notes;
-  }
-  const permanent = /永久关闭|已撤销|已拆除|permanently closed/i.test(notes);
+  const statusTexts = t.sources
+    .map((s) => s.rawFields["指标状况"])
+    .filter((x): x is string => typeof x === "string");
   return {
     ...t,
     ...seatInfo(t.facilities, t.sources, {
@@ -139,7 +254,10 @@ export function deriveToilet(t: Toilet): Toilet {
     }),
     accessCondition,
     accessNote,
-    availability: permanent ? "permanently_closed" : t.availability,
+    availability: availabilityFromStatements(
+      [...statusTexts, ...noteTexts],
+      t.availability,
+    ),
   };
 }
 export function openingStatus(raw: string | null, now: Date): OpeningStatus {
@@ -212,6 +330,7 @@ export function openingStatus(raw: string | null, now: Date): OpeningStatus {
 export function eligible(t: Toilet, r: SearchRequest, now: Date): boolean {
   return (
     t.availability !== "permanently_closed" &&
+    t.availability !== "out_of_service" &&
     t.accessCondition !== "restricted" &&
     (r.context === "plan_stop" ||
       openingStatus(t.openingHoursRaw, now) !== "expected_closed")

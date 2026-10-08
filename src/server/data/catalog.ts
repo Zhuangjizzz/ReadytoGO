@@ -185,6 +185,7 @@ export class Catalog {
           !t.position &&
           t.sourcePosition &&
           t.availability !== "permanently_closed" &&
+          t.availability !== "out_of_service" &&
           distanceMeters(origin, t.sourcePosition) <= radius + 800,
       )
       .sort(
