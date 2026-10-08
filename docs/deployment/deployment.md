@@ -75,6 +75,8 @@ curl --fail --max-time 10 http://127.0.0.1:33001/api/v1/data/summary
 
 必须实际看到127.0.0.1监听；Type=exec只确认进程启动，不等于业务健康。首次导入期间做有界短间隔健康等待。
 
+可显式运行 [HTTP验证脚本](verify-release-http.mjs)，参数依次是base URL、记录标签、确切代码SHA、公共地点检索词和专门编写的解析文本；它不属于默认测试且会调用真实供应商。只以已有授权的少量输入运行一次，输出为不含凭据/精确坐标的JSON。脚本的technicalChecksPass只汇总服务、数据、资产、路线、身份和地图检查；解析语义仍须对照原文人工核对，不能把模型status=complete当作全部内容保留。
+
 验证 `/health` 的 `status=ok/service=readytogo`、导入统计、首页及实际JS/CSS资源、一次真实地点→单站预览、当前模型parse、详情/导航、静态地图PNG。有`pendingWork`时用`batchCursor`读取当前批次，只有用户式加载下一页才用`nextCursor`。记录complete/fallback/partial和实际范围，不把首次200当作结果完成，不为变绿重复实模请求。
 
 初始导入为13,124实体；运行时独立高德候选可能增加health里的catalogCount，正式导入基线以data/summary为准。测试结束后停止stage，保留无凭据证据，stage缓存不复制到正式状态。
