@@ -96,7 +96,7 @@ export class AmapHttpProvider implements AmapProvider {
         true,
       );
     const waitMs = Math.max(0, this.nextStartAt - Date.now());
-    if (waitMs > limits.batchTimeoutMs)
+    if (waitMs > limits.providerQueueTimeoutMs)
       throw new AppError(
         "MAP_BUSY",
         "Map service is busy. Please retry.",
@@ -124,7 +124,7 @@ export class AmapHttpProvider implements AmapProvider {
               true,
             ),
           );
-        }, this.options.timeoutMs ?? limits.providerTimeoutMs);
+        }, limits.providerQueueTimeoutMs);
         this.waiting.push(next);
       });
     else this.active++;

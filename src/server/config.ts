@@ -1,7 +1,8 @@
 import { resolve } from "node:path";
 export const limits = {
   providerTimeoutMs: 5000,
-  batchTimeoutMs: 30000,
+  batchTimeoutMs: 120000,
+  providerQueueTimeoutMs: 90000,
   firstResponseWaitMs: 150,
   routeCacheMs: 15 * 60_000,
   queryCacheMs: 15 * 60_000,
