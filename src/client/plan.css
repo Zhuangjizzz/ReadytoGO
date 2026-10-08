@@ -179,6 +179,25 @@
 .plan-confirm h2 {
   font-size: 24px;
 }
+.plan-note {
+  font-size: 14px;
+  margin-top: 10px;
+  border-radius: 10px;
+  background: #f5f6f3;
+  padding: 10px 12px;
+  max-width: 760px;
+}
+.plan-note summary {
+  cursor: pointer;
+  line-height: 1.5;
+  min-height: 44px;
+  padding: 10px 0;
+}
+.plan-note > p {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  margin: 12px 0 0;
+}
 .plan-confirm .plan-actions {
   justify-content: flex-end;
 }

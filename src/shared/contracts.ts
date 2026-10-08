@@ -150,6 +150,7 @@ export interface PlanStop {
   stopId: string;
   place: Place;
   note?: string;
+  noteKind?: "source_context";
   selectedToiletId?: string | null;
   skipped?: boolean;
 }
@@ -226,6 +227,7 @@ export interface ItineraryParseResult {
     originalText: string;
     queryZh: string;
     note: string | null;
+    noteKind?: "source_context";
   }[];
   unsupportedNeeds: string[];
   warnings: string[];

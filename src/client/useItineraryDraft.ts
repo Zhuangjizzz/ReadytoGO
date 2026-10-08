@@ -13,6 +13,7 @@ export interface DraftPlace {
   originalText: string;
   query: string;
   note: string;
+  noteKind?: "source_context";
   selected: Place | null;
   candidates: Place[];
   hasMore: boolean;
@@ -27,12 +28,18 @@ interface Draft {
   warnings: string[];
   unsupportedNeeds: string[];
 }
-function newRow(query = "", originalText = "", note = ""): DraftPlace {
+function newRow(
+  query = "",
+  originalText = "",
+  note = "",
+  noteKind?: "source_context",
+): DraftPlace {
   return {
     id: newClientId("draft"),
     query,
     originalText,
     note,
+    ...(noteKind ? { noteKind } : {}),
     selected: null,
     candidates: [],
     hasMore: false,
@@ -185,7 +192,12 @@ export function useItineraryDraft(context: {
         preference: data.proposedPreference,
         manual: false,
         rows: data.placeQueries.map((place) =>
-          newRow(place.queryZh, place.originalText, place.note ?? ""),
+          newRow(
+            place.queryZh,
+            place.originalText,
+            place.note ?? "",
+            place.noteKind,
+          ),
         ),
         warnings: data.warnings,
         unsupportedNeeds: data.unsupportedNeeds,
@@ -318,7 +330,7 @@ export function useItineraryDraft(context: {
   }
   function editNote(id: string, note: string) {
     interruptParse();
-    updateRow(id, (row) => ({ ...row, note }));
+    updateRow(id, (row) => ({ ...row, note, noteKind: undefined }));
   }
   function choose(id: string, place: Place) {
     if (place.originType === "geolocation") return;
