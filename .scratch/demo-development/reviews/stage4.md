@@ -8,6 +8,16 @@ A P2 was reproduced through public HTTP: concurrent stops recalling one POI coul
 
 An independent six-case real HTTP/model holdout also passed. It covered English seated preference, Chinese negation, no expressed preference, unsupported wheelchair routes, repeated visits, and explicit no preference. Ordered places and time notes were inspected. Responses completed in 2,003–2,742 ms. These are purpose-written verification inputs, with no production prompt changes made in response. The raw result record is `/private/tmp/readytogo-demo-notes/real-parse-holdout-results.json`; delivery will preserve the useful examples in repository documentation.
 
-## Remaining gate
+## Generic repair improvement
 
-Ticket 06 must still connect editable and confirmable proposals to manual plans, preserve user decisions against late responses, and demonstrate current-language analysis. Service completion alone does not close the full AI experience stage.
+A subsequent bounded real three-stop preview completed all stops with real routes in 30.6–33.9 seconds. Two stops completed AI analysis and one used rule fallback. A single instrumented follow-up reproduced an invalid-field response followed by the shared deadline during its sole repair. This identifies the reproduced failure, not conclusively the earlier uninstrumented cause.
+
+Commit `82f3b18`, merged at `3b0be4d`, makes facility basis fields an explicit finite enum and supplies bounded structured issues plus the rejected JSON for the single repair. All contextual source/ID/positive-evidence checks remain; deadlines and retry counts are unchanged. Independent review found no P1/P2 and 21 AI HTTP tests passed; the integrated suite was 78 tests. One final real ten-candidate check passed first-attempt validation, with analysis 11.49 seconds and total query 20.54 seconds. No place-specific prompt, guessed field alias, extra retry or enlarged deadline was introduced.
+
+## Experience gate resolution
+
+Ticket 06 at `5cc9198` was merged at `fcec886`. Its proposal state is independent of the saved plan; only explicit confirmation replaces 1–10 selected real places. Ambiguous, unmatched, repeated and excess stops remain editable. Null preference preserves the current choice; unsupported needs remain explanatory text. Original-input changes require reparsing or explicit manual-draft adoption before confirmation.
+
+The scoped review closed two stale-request issues in PlacePicker and automatic matching batches. It also checked explicit manual continuation after a changed input fails parsing, and clearing drafts together with the plan. Thirteen HTTP/isolated DOM tests passed independently, including a replay of existing real model/map output for three stops and nine cards. The full suite at this gate is 91 tests with successful typecheck/build. Normal parse quality, real batch analysis, safe repair/fallback and UI field correspondence all have separate evidence; no production fixture branch was added.
+
+Actual-application browser preview and actual-phone acceptance remain unperformed under the recorded access limitation; isolated DOM replay is not represented as either.

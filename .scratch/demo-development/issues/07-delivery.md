@@ -1,6 +1,6 @@
 # 07: 真实服务联调、运行说明与发布
 
-Status: ready-for-agent
+Status: claimed
 Type: task
 Stage: 5
 Blocked by: 02, 03, 04, 05, 06
@@ -27,3 +27,5 @@ Parent: [开发规格](../spec.md)
 - 完成提交代码及测试记录，交由独立 merger 与阶段 review。
 
 ## Comments
+
+功能依赖已合入 `fcec886`。从最新集成分支建立 `codex/demo-07-delivery`，使用已准备的 `demo-delivery` 工作树。发布预检及执行草稿在 `/private/tmp/readytogo-demo-notes/delivery-preflight.md`；仅使用既有独立服务与端口，补通用 HOST 配置以支持回环预发布。浏览器预览拒绝及未完成的真机验收须继续明确记录。
