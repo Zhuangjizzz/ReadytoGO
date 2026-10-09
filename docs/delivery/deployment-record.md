@@ -1,6 +1,6 @@
 # 实际发布记录
 
-当前公网演示：[ReadytoGo](http://47.85.138.198:3000/)。当前运行版本 **`2fafc9c14934cccbde188a8613cf7ac8b85435e2`**，正式服务active/running/enabled，smoke inactive/disabled。最终审查修复、第二次发布和业务版本回切见[最新发布记录](final-review-release.md)；以下保留首次发布历史。以对应证据中的观测时间为准，不把有限检查当作持续可用承诺。
+当前公网演示：[ReadytoGo](https://47.85.138.198/)。2026-10-09 已新增独立 IP HTTPS 服务，证书、自动续期和公网验证见 [HTTPS 发布记录](ip-https.md)。当前运行版本 **`2fafc9c14934cccbde188a8613cf7ac8b85435e2`**，正式服务active/running/enabled，smoke inactive/disabled。最终审查修复、第二次发布和业务版本回切见[最新发布记录](final-review-release.md)；以下保留首次发布历史。以对应证据中的观测时间为准，不把有限检查当作持续可用承诺。
 
 ## 首次发布版本（历史 c82770b）
 

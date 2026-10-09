@@ -1,6 +1,6 @@
 # 发布、运行与回滚
 
-ReadytoGo 以独立 Node 服务运行在既有公网端口 3000。域名与 HTTPS 按当前范围暂缓。实际已执行的版本、时间、健康/API、端口和回滚证据见[发布记录](../delivery/deployment-record.md)，此文定义可重复步骤。
+ReadytoGo 以独立 Node 服务运行在既有端口 3000。2026-10-09 已新增公网 IP HTTPS 入口，由独立 Caddy 服务在 443 转发到本机 3000；域名仍暂缓。HTTPS 配置、自动续期和回退见 [IP HTTPS 运维](ip-https.md)，实际验证见 [HTTPS 发布记录](../delivery/ip-https.md)。应用版本、健康/API、端口和回滚证据见[发布记录](../delivery/deployment-record.md)，此文定义可重复步骤。
 
 ## 位置与运行约定
 
@@ -8,14 +8,14 @@ ReadytoGo 以独立 Node 服务运行在既有公网端口 3000。域名与 HTTP
 | ------------------- | ------------------------------------------------------------------------------- |
 | SSH                 | `root@47.85.138.198:22`                                                         |
 | 本机私钥            | `~/.ssh/readytogo_47_85_138_198_ed25519`，仓库外                                |
-| 公网入口            | `http://47.85.138.198:3000/`                                                    |
+| 公网入口            | `https://47.85.138.198/`；原 `http://47.85.138.198:3000/` 保留                  |
 | 版本目录 / 当前链接 | `/opt/readytogo/releases/<完整提交SHA>` / `/opt/readytogo/current`              |
 | 正式服务            | `readytogo.service`；[unit 模板](readytogo.service)                             |
 | 配置                | `/etc/readytogo/readytogo.env`，root:root，0600                                 |
 | 正式状态            | `StateDirectory=readytogo`，`/var/lib/readytogo/catalog.json` 和 `matches.json` |
 | 原 smoke            | `/opt/readytogo-smoke`、`readytogo-smoke.service`，保留作为首次发布回滚目标     |
 
-80 属于 forme-footwear 服务，8080 属于 sub2api 容器，不修改其服务、目录、代理、端口或安全组。3000 已有公网 IPv4 放行。公开 HTTP 通常不能使用浏览器定位，界面必须保留手选；不能把 HTTP 健康检查当成 HTTPS/定位已实现。
+80 属于 forme-footwear 服务，8080 属于 sub2api 容器，不修改其服务、目录、代理、端口或安全组。3000 已有公网 IPv4 放行。443 已由用户在控制台放行，并通过正式证书签发和公网 HTTPS 访问验证。使用定位时必须打开 HTTPS 入口；原公开 HTTP 入口仍有定位限制。界面保留手选，TLS/健康检查不等于真实手机定位已验收。
 
 ## 1. 冻结代码并打包
 
@@ -114,4 +114,4 @@ curl --fail --max-time 10 http://127.0.0.1:3000/healthz
 
 日志使用 `journalctl -u readytogo.service`；现有HTTP日志仅含请求ID、路由模板、耗时和错误码。不要输出进程环境或原始供应商请求。服务健康但高德/千问失败时，检查配置键的存在性、供应商安全错误码及权限/配额；不要对外暴露key。
 
-回滚文档已准备不等于回滚演练通过，实际执行结果必须写入发布记录。域名、TLS、防火墙和其他服务不在本次变更范围。
+回滚文档已准备不等于回滚演练通过，实际执行结果必须写入发布记录。应用发布不应顺带修改域名、防火墙或其他服务；独立 TLS 服务按 [IP HTTPS 运维](ip-https.md) 管理。

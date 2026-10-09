@@ -1,0 +1,35 @@
+{
+  "checkedAt": "2026-10-09T03:27:39.430521+00:00",
+  "host": "47.85.138.198",
+  "certificateVerification": true,
+  "tlsVersion": "TLSv1.2",
+  "alpn": "h2",
+  "issuer": [
+    [
+      [
+        "countryName",
+        "US"
+      ]
+    ],
+    [
+      [
+        "organizationName",
+        "Let's Encrypt"
+      ]
+    ],
+    [
+      [
+        "commonName",
+        "YE1"
+      ]
+    ]
+  ],
+  "subjectAltName": [
+    [
+      "IP Address",
+      "47.85.138.198"
+    ]
+  ],
+  "notBefore": "Oct  9 02:27:53 2026 GMT",
+  "notAfter": "Oct 15 18:27:52 2026 GMT"
+}

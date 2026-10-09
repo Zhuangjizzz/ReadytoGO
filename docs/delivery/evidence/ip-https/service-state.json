@@ -1,0 +1,57 @@
+{
+  "checkedAt": "2026-10-09T03:30:17.913240+00:00",
+  "https": {
+    "MainPID": "3617455",
+    "ActiveState": "active",
+    "SubState": "running",
+    "UnitFileState": "enabled"
+  },
+  "readytogo": {
+    "MainPID": "3516638",
+    "ActiveState": "active",
+    "SubState": "running",
+    "UnitFileState": "enabled"
+  },
+  "formeFootwear": {
+    "MainPID": "3472892",
+    "ActiveState": "active",
+    "SubState": "running",
+    "UnitFileState": "enabled"
+  },
+  "listeners": [
+    "LISTEN 0      4096     0.0.0.0:8080 0.0.0.0:* users:((\"docker-proxy\",pid=2268209,fd=8))",
+    "LISTEN 0      4096   127.0.0.1:2019 0.0.0.0:* users:((\"caddy\",pid=3617455,fd=10))      ",
+    "LISTEN 0      511      0.0.0.0:3000 0.0.0.0:* users:((\"MainThread\",pid=3516638,fd=21)) ",
+    "LISTEN 0      511      0.0.0.0:80   0.0.0.0:* users:((\"MainThread\",pid=3472909,fd=21)) ",
+    "LISTEN 0      4096           *:443        *:* users:((\"caddy\",pid=3617455,fd=11))"
+  ],
+  "udp443": "",
+  "release": "/opt/readytogo/releases/2fafc9c14934cccbde188a8613cf7ac8b85435e2",
+  "fileSha256": {
+    "/etc/readytogo-https/Caddyfile": "fa9fe1839e4ad947966ec2ea49ae7744e8706eb68109f1f47865b9e7fda77165",
+    "/etc/systemd/system/readytogo-https.service": "1881223d7ec33e6c02948767751a642d1992cba4648b26df2a15cf85e8022562",
+    "/opt/readytogo-https/caddy-v2.11.7/caddy": "678ade3bfc088749c81a681adc603333ee0bb023b6a6cfe3c0f58bef8ff854e9"
+  },
+  "certificateStoreMode": "0o700",
+  "acme": {
+    "ca": "https://acme-v02.api.letsencrypt.org/directory",
+    "profile": "shortlived",
+    "httpChallengeDisabled": true,
+    "successfulIssuancesLogged": 1,
+    "challengeTypes": [
+      "tls-alpn-01"
+    ],
+    "renewalInfoReceived": true,
+    "renewalWindowUtc": {
+      "window_start": "2026-10-12T09:21:42+00:00",
+      "window_end": "2026-10-12T12:32:32+00:00"
+    }
+  },
+  "securityGroupChange": "User reported allowing TCP443 and80; console rules not read; public443 and CA challenge connectivity verified",
+  "realDeviceGeolocationTested": false,
+  "originalListenerPidsUnchanged": {
+    "80": true,
+    "3000": true,
+    "8080": true
+  }
+}
