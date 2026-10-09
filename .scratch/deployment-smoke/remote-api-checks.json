@@ -1,0 +1,65 @@
+{
+  "executedOn": "iZ0xiaxm4fstyws01cgprsZ",
+  "uid": 0,
+  "python": "3.10.12",
+  "checkedAt": "2026-10-08T16:38:53.729667+00:00",
+  "credentialsPersisted": false,
+  "checks": [
+    {
+      "name": "qianwen.text",
+      "httpStatus": 200,
+      "elapsedMs": 2342,
+      "model": "qwen3.8-flash",
+      "usage": {
+        "prompt_tokens": 40,
+        "completion_tokens": 5,
+        "total_tokens": 45
+      },
+      "passed": true,
+      "jsonResponse": {
+        "ok": true
+      }
+    },
+    {
+      "name": "amap.text",
+      "httpStatus": 200,
+      "elapsedMs": 1544,
+      "providerStatus": "1",
+      "providerCode": "10000",
+      "passed": true,
+      "poiCount": 3,
+      "sampleName": "故宫博物院-神武门"
+    },
+    {
+      "name": "amap.around",
+      "httpStatus": 200,
+      "elapsedMs": 931,
+      "providerStatus": "1",
+      "providerCode": "10000",
+      "passed": true,
+      "poiCount": 3,
+      "sampleName": "神武门外卫生间"
+    },
+    {
+      "name": "amap.walking",
+      "httpStatus": 200,
+      "elapsedMs": 1040,
+      "providerStatus": "1",
+      "providerCode": "10000",
+      "passed": true,
+      "pathCount": 1,
+      "distanceMeters": "38",
+      "durationSeconds": "30"
+    },
+    {
+      "name": "amap.convert",
+      "httpStatus": 200,
+      "elapsedMs": 978,
+      "providerStatus": "1",
+      "providerCode": "10000",
+      "passed": true,
+      "coordinateReturned": true
+    }
+  ],
+  "allPassed": true
+}

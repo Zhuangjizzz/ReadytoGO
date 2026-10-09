@@ -9,3 +9,7 @@ output/
 
 dist/
 data/generated/
+
+# Local cloud-console screenshots contain account and credit information.
+.scratch/deployment-smoke/security-group-3000-active.jpg
+.scratch/deployment-smoke/security-group-3000-pending.jpg

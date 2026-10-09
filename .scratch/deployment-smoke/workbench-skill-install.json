@@ -1,0 +1,21 @@
+{
+  "status": 200,
+  "contentType": "application/zip",
+  "contentDisposition": "attachment; filename=\"alibabacloud-workbench-cli-0.0.1.zip\"",
+  "finalHost": "skills.aliyun.com",
+  "bytes": 5943,
+  "sha256": "442baf6c658f1d74ccafb82d3f1eb6c063d49c9188b67f9a0f732a861b74d552",
+  "name": "alibabacloud-workbench-cli",
+  "version": "0.0.1",
+  "installedAt": "2026-10-08",
+  "source": "https://skills.aliyun.com/api/public/skills/alibabacloud-workbench-cli/download",
+  "destination": ".agents/skills/alibabacloud-workbench-cli",
+  "scope": "project",
+  "files": [
+    "SKILL.md",
+    "references/ram-policies.md"
+  ],
+  "modifiedFromUpstream": false,
+  "existingCliVersion": "1.0.1",
+  "workbenchConfigExists": false
+}

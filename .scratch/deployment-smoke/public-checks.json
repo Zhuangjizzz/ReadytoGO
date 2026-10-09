@@ -1,0 +1,32 @@
+{
+  "verifiedAt": "2026-10-09T00:27:46.249663+08:00",
+  "url": "http://47.85.138.198:3000",
+  "transport": "direct public IPv4 HTTP; no SSH forwarding or HTTP proxy",
+  "checks": [
+    {
+      "path": "/",
+      "httpStatus": 200,
+      "passed": true
+    },
+    {
+      "path": "/healthz",
+      "httpStatus": 200,
+      "passed": true,
+      "response": {
+        "service": "readytogo-smoke",
+        "ok": true,
+        "time": "2026-10-08T16:27:45.512Z"
+      }
+    },
+    {
+      "path": "/.env",
+      "httpStatus": 404,
+      "passed": true
+    },
+    {
+      "path": "/server.mjs",
+      "httpStatus": 404,
+      "passed": true
+    }
+  ]
+}

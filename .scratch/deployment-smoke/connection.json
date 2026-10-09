@@ -1,0 +1,50 @@
+{
+  "host": "47.85.138.198",
+  "user": "root",
+  "port": 22,
+  "instanceId": "i-0xiaxm4fstyws01cgprs",
+  "region": "us-east-1",
+  "os": "Ubuntu 22.04 64-bit",
+  "webWorkbenchConnected": true,
+  "verifiedRemoteUser": "root",
+  "workbenchCliConfigured": false,
+  "toolsFound": [
+    "/usr/bin/node",
+    "/usr/bin/docker",
+    "/usr/bin/python3"
+  ],
+  "listeningTcpPorts": [
+    22,
+    53,
+    80,
+    3000,
+    8080
+  ],
+  "publicKeyFingerprint": "256 SHA256:ZXBaH565v1pkmZTnZ2zP9x8oy3Q1xOngsyrsaOg0j5o readytogo-deploy-47.85.138.198 (ED25519)",
+  "sshKeyInstalledOnServer": true,
+  "nextAction": "Public IP deployment smoke stage complete; keep domain and HTTPS deferred until requested.",
+  "localSshVerified": true,
+  "deployment": {
+    "directory": "/opt/readytogo-smoke",
+    "service": "readytogo-smoke.service",
+    "port": 3000,
+    "active": true,
+    "enabledAtBoot": true,
+    "serverHealthcheckPassed": true,
+    "publicAccessVerified": true,
+    "publicAccessError": null,
+    "browserPreviewViaSshPassed": true,
+    "publicUrl": "http://47.85.138.198:3000",
+    "publicVerifiedAt": "2026-10-09T00:27:46.249663+08:00"
+  },
+  "existingServices": {
+    "80": "forme-footwear.service",
+    "8080": "sub2api Docker container"
+  },
+  "securityGroupId": "sg-0xiaxm4fstyws01c1v6v",
+  "scope": {
+    "currentStage": "public IP and port only",
+    "domain": "deferred by user",
+    "https": "deferred"
+  }
+}

@@ -53,7 +53,7 @@
 - 来源：IPv4 `0.0.0.0/0`（任何位置）。
 - 描述：`ReadytoGo deployment smoke test (TCP 3000)`。
 - 配置记录：`security-group-3000-draft.json`（保留最初草稿文件名，`submitted` 已更新为 `true`）。
-- 原草稿截图：`security-group-3000-pending.jpg`；生效记录截图：`security-group-3000-active.jpg`。
+- 原草稿截图：`security-group-3000-pending.jpg`；生效记录截图：`security-group-3000-active.jpg`。两张截图包含云账号与额度信息，仅保留在本地并由 `.gitignore` 排除；仓库保留 `security-group-3000-draft.json` 与 `connection.json` 中的部署摘要。
 
 来源为任意 IPv4 地址，目标仅 TCP 3000。其他安全组规则未变更。
 

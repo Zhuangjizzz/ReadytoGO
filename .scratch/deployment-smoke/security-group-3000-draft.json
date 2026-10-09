@@ -1,0 +1,16 @@
+{
+  "instanceId": "i-0xiaxm4fstyws01cgprs",
+  "publicIp": "47.85.138.198",
+  "regionId": "us-east-1",
+  "securityGroupId": "sg-0xiaxm4fstyws01c1v6v",
+  "direction": "ingress",
+  "policy": "accept",
+  "priority": 1,
+  "ipProtocol": "tcp",
+  "portRange": "3000/3000",
+  "sourceCidrIp": "0.0.0.0/0",
+  "description": "ReadytoGo deployment smoke test (TCP 3000)",
+  "submitted": true,
+  "awaitingUserConfirmation": false,
+  "consoleCreatedAt": "2026-10-09T00:26:31+08:00"
+}

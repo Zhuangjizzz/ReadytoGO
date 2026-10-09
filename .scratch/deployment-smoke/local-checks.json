@@ -1,0 +1,56 @@
+[
+  {
+    "path": "/",
+    "method": "GET",
+    "status": 200,
+    "passed": true
+  },
+  {
+    "path": "/style.css",
+    "method": "GET",
+    "status": 200,
+    "passed": true
+  },
+  {
+    "path": "/app.js",
+    "method": "GET",
+    "status": 200,
+    "passed": true
+  },
+  {
+    "path": "/healthz",
+    "method": "GET",
+    "status": 200,
+    "passed": true
+  },
+  {
+    "path": "/healthz",
+    "method": "HEAD",
+    "status": 200,
+    "passed": true
+  },
+  {
+    "path": "/.env",
+    "method": "GET",
+    "status": 404,
+    "passed": true
+  },
+  {
+    "path": "/server.mjs",
+    "method": "GET",
+    "status": 404,
+    "passed": true
+  },
+  {
+    "path": "/../.env",
+    "method": "GET",
+    "status": 404,
+    "passed": true
+  },
+  {
+    "path": "/healthz",
+    "method": "POST",
+    "status": 405,
+    "passed": true
+  }
+]
