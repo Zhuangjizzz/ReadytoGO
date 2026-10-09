@@ -1,0 +1,16 @@
+{
+  "startedAt": "2026-10-09T03:02:28.352Z",
+  "kind": "single HTTP request for the failed zoom level; public default map center",
+  "status": 503,
+  "contentType": "application/json; charset=utf-8",
+  "durationMs": 733,
+  "png": false,
+  "error": {
+    "requestId": "cbec6438-607e-4b81-b56f-0216adc909e7",
+    "error": {
+      "code": "MAP_UNAVAILABLE",
+      "message": "The map image is unavailable. You can continue using the list.",
+      "retryable": true
+    }
+  }
+}

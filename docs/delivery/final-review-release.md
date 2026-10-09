@@ -1,5 +1,7 @@
 # 最终审查修复后的发布
 
+后续验证：2026-10-09 11:06 已完成[线上地图起点专项浏览器检查](map-picker-verification.md)，并记录间歇图片503；没有重新发布或修改线上配置。下文“未满足的原验收”保留本次发布时的历史状态，实际手机验收仍未完成。
+
 当前运行代码：`2fafc9c14934cccbde188a8613cf7ac8b85435e2`。公开地址：[ReadytoGo](http://47.85.138.198:3000/)。服务状态以 UTC 2026-10-08T21:31:01 的[末检记录](evidence/final-review/service-state.json)为准：ReadytoGo active/running/enabled，smoke inactive/disabled，33001不再监听；80/8080的既有进程与首次预检相同。
 
 ## 范围与版本

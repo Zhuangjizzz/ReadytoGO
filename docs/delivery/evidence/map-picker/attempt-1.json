@@ -1,0 +1,85 @@
+{
+  "startedAt": "2026-10-09T03:01:15.841Z",
+  "timezone": "Asia/Shanghai",
+  "target": "http://47.85.138.198:3000/",
+  "transport": "Playwright Chromium, actual public application and real map APIs",
+  "actualPhone": false,
+  "scope": "Map point selection and confirmation; no nearby search or model call",
+  "checks": [
+    {
+      "name": "touch-390",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "isMobile": true,
+      "hasTouch": true,
+      "apiRequests": {
+        "/api/v1/maps/static": 1,
+        "/api/v1/location/resolve": 1
+      },
+      "responses": [
+        {
+          "path": "/api/v1/maps/static",
+          "status": 200
+        },
+        {
+          "path": "/api/v1/location/resolve",
+          "status": 200
+        }
+      ],
+      "pageErrors": [],
+      "secureContext": false,
+      "geolocationFallbackVisible": true,
+      "confirmDisabledUntilPick": true,
+      "selection": "touch map at a non-central point",
+      "resolvedDistrict": "东城区",
+      "clickedCoordinatesPreserved": true,
+      "mapDimensions": {
+        "width": 640,
+        "height": 480
+      },
+      "dialogHorizontalOverflow": false,
+      "originConfirmedOnNearbyPage": true,
+      "passed": true
+    },
+    {
+      "name": "desktop-1280",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "apiRequests": {
+        "/api/v1/maps/static": 2
+      },
+      "responses": [
+        {
+          "path": "/api/v1/maps/static",
+          "status": 200
+        },
+        {
+          "path": "/api/v1/maps/static",
+          "status": 503
+        }
+      ],
+      "pageErrors": [],
+      "secureContext": false,
+      "geolocationFallbackVisible": true,
+      "confirmDisabledUntilPick": true,
+      "passed": false,
+      "failure": "Actual map image must load"
+    }
+  ],
+  "browser": "156.0.8078.4",
+  "assets": [
+    {
+      "path": "/assets/index-DPxUhsrL.js",
+      "sha256": "81ef2031e96017e64ab1ee8543da31fc5b45d26354a22a6ff4252a18bcb281c3"
+    },
+    {
+      "path": "/assets/index-CrxEjtCT.css",
+      "sha256": "081a58051f9c6a89da545ce76f37c989f3812de83fb09125fa9f2883914babfd"
+    }
+  ],
+  "finishedAt": "2026-10-09T03:01:27.605Z"
+}

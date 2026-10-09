@@ -1,0 +1,13 @@
+{
+  "startedAt": "2026-10-09T03:05:38.690Z",
+  "runtime": "v24.15.0",
+  "kind": "one direct upstream static-map request in a temporary process on deployed host",
+  "attemptTimeoutMs": 250,
+  "passed": true,
+  "status": 200,
+  "contentType": "image/png;charset=UTF-8",
+  "png": true,
+  "width": 640,
+  "height": 480,
+  "durationMs": 1764
+}

@@ -1,0 +1,30 @@
+{
+  "kind": "Summary of captured SSH diagnostic output; temporary Node processes on deployed host",
+  "productionConfigurationChanged": false,
+  "observations": [
+    {
+      "observedAt": "2026-10-09T03:03:36.778Z",
+      "errorName": "TypeError",
+      "causeCode": "ETIMEDOUT",
+      "causeName": "AggregateError",
+      "networkErrors": [
+        { "code": "ETIMEDOUT", "syscall": "connect" },
+        { "code": "ENETUNREACH", "syscall": "connect" },
+        { "code": "ENETUNREACH", "syscall": "connect" }
+      ],
+      "durationMs": 302
+    },
+    {
+      "startedAt": "2026-10-09T03:04:15.886Z",
+      "beforeMs": 250,
+      "afterMs": 1000,
+      "status": 200,
+      "contentType": "image/png;charset=UTF-8",
+      "durationMs": 1759,
+      "png": true,
+      "width": 640,
+      "height": 480
+    }
+  ],
+  "interpretation": "Connection failures observed. A longer attempt timeout succeeded once, but the original timeout also succeeded later; mitigation is a candidate, not a proven permanent fix."
+}
