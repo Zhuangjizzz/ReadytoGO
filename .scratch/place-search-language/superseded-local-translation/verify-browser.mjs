@@ -1,0 +1,66 @@
+import assert from 'node:assert/strict';
+import { once } from 'node:events';
+import { writeFile } from 'node:fs/promises';
+import { chromium, expect } from '@playwright/test';
+import { createApplication } from '../../src/server/app.ts';
+
+const out = new URL('./', import.meta.url);
+const report = { date: '2026-10-09', environment: 'local production build', live: ['Amap place search', 'Amap static map', 'Amap reverse geocoding'], stubbed: ['unrelated toilet recommendations'], checks: {} };
+const { app } = await createApplication({ matchCachePath: null, qwenKey: '', logger: () => {} });
+const server = app.listen(0, '127.0.0.1');
+await once(server, 'listening');
+const base = `http://127.0.0.1:${server.address().port}`;
+const browser = await chromium.launch({ headless: true });
+try {
+  const page = await browser.newPage({ viewport: { width: 390, height: 844 } });
+  page.setDefaultTimeout(10000);
+  await page.route('**/api/v1/toilets/search', route => {
+    const request = route.request().postDataJSON();
+    return route.fulfill({ json: { requestId: 'unrelated-recommendations-stub', warnings: [], data: { status: 'empty', queryVersion: request.queryVersion, origin: request.origin, groups: { matched: [], farther: [], otherNearby: [], conditionalAccess: [], routeUnknown: [] }, analysisStatus: 'fallback', summary: '', pendingWork: false, hasMore: false, nextCursor: null } } });
+  });
+  await page.goto(`${base}/nearby`);
+  await page.getByRole('button', { name: /Choose a Beijing place/ }).click();
+  const dialog = page.getByRole('dialog');
+  await dialog.getByRole('textbox', { name: 'Place name' }).fill('故宫博物院');
+  const responsePending = page.waitForResponse(response => new URL(response.url()).pathname === '/api/v1/places/search');
+  await dialog.getByRole('button', { name: 'Search', exact: true }).click();
+  const response = await responsePending;
+  assert.equal(response.status(), 200);
+  const data = (await response.json()).data;
+  const selected = data.places[0];
+  assert.equal(selected.nameZh, '故宫博物院');
+  assert.equal(selected.nameEn, 'The Palace Museum');
+  await expect(dialog.locator('.place-list strong').first()).toHaveText(selected.nameEn);
+  await expect(dialog.locator('.place-original').first()).toHaveText(selected.nameZh);
+  assert.equal(await dialog.evaluate(element => element.scrollWidth > element.clientWidth + 1), false);
+  await dialog.screenshot({ path: new URL('search-mobile-en.png', out).pathname });
+  report.checks.liveSearch = { count: data.places.length, firstNameZh: selected.nameZh, firstNameEn: selected.nameEn, originalAddressKept: true };
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await dialog.screenshot({ path: new URL('search-desktop-en.png', out).pathname });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await dialog.locator('.place-list button').first().click();
+  await expect(page.locator('.origin-control strong')).toHaveText(selected.nameEn);
+  await page.getByRole('button', { name: '中文', exact: true }).click();
+  await expect(page.locator('.origin-control strong')).toHaveText(selected.nameZh);
+  await page.getByRole('button', { name: 'English', exact: true }).click();
+  await expect(page.locator('.origin-control strong')).toHaveText(selected.nameEn);
+  report.checks.selectedOriginLanguageSwitch = 'passed';
+  await page.locator('.origin-control').click();
+  await dialog.getByRole('button', { name: 'Choose on map', exact: true }).click();
+  await expect(dialog.getByAltText('Beijing map provided by Amap')).toBeVisible();
+  const resolvePending = page.waitForResponse(response => new URL(response.url()).pathname === '/api/v1/location/resolve');
+  await dialog.getByRole('button', { name: 'Choose map center', exact: true }).click();
+  const resolved = await resolvePending;
+  assert.equal(resolved.status(), 200);
+  await expect(dialog.locator('.picked-point strong')).toHaveText('Selected map point');
+  await expect(dialog.locator('.picked-point [lang="zh-CN"]')).toBeVisible();
+  await dialog.screenshot({ path: new URL('map-mobile-en.png', out).pathname });
+  report.checks.mapPointEnglishAndChinese = 'passed';
+  report.checks.mobileHorizontalOverflow = false;
+} finally {
+  await browser.close();
+  server.closeAllConnections();
+  await new Promise(resolve => server.close(resolve));
+  await writeFile(new URL('browser-checks.json', out), JSON.stringify(report, null, 2) + '\n');
+  console.log(JSON.stringify(report, null, 2));
+}

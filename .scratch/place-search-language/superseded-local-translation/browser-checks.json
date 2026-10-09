@@ -1,0 +1,23 @@
+{
+  "date": "2026-10-09",
+  "environment": "local production build",
+  "live": [
+    "Amap place search",
+    "Amap static map",
+    "Amap reverse geocoding"
+  ],
+  "stubbed": [
+    "unrelated toilet recommendations"
+  ],
+  "checks": {
+    "liveSearch": {
+      "count": 10,
+      "firstNameZh": "故宫博物院",
+      "firstNameEn": "The Palace Museum",
+      "originalAddressKept": true
+    },
+    "selectedOriginLanguageSwitch": "passed",
+    "mapPointEnglishAndChinese": "passed",
+    "mobileHorizontalOverflow": false
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "checkedAt": "2026-10-09T03:54:02.764Z",
+  "date": "2026-10-09",
+  "query": "故宫博物院",
+  "host": "restapi.amap.com",
+  "results": [
+    {
+      "endpoint": "/v5/place/text",
+      "langCode": "omitted",
+      "httpStatus": 200,
+      "status": "1",
+      "infocode": "10000",
+      "info": "OK",
+      "pois": [
+        {
+          "id": "B000A8UIN8",
+          "name": "故宫博物院",
+          "address": "景山前街4号",
+          "cityname": "北京市",
+          "adcode": "110101"
+        }
+      ]
+    },
+    {
+      "endpoint": "/v5/place/text",
+      "langCode": "en",
+      "httpStatus": 200,
+      "status": "0",
+      "infocode": "10012",
+      "info": "INSUFFICIENT_PRIVILEGES",
+      "pois": []
+    },
+    {
+      "endpoint": "/v3/place/text",
+      "langCode": "omitted",
+      "httpStatus": 200,
+      "status": "1",
+      "infocode": "10000",
+      "info": "OK",
+      "pois": [
+        {
+          "id": "B000A8UIN8",
+          "name": "故宫博物院",
+          "address": "景山前街4号",
+          "cityname": "北京市"
+        }
+      ]
+    },
+    {
+      "endpoint": "/v3/place/text",
+      "langCode": "en",
+      "httpStatus": 200,
+      "status": "0",
+      "infocode": "10012",
+      "info": "INSUFFICIENT_PRIVILEGES",
+      "pois": []
+    }
+  ]
+}

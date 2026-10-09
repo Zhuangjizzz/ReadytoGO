@@ -1,0 +1,22 @@
+{
+  "date": "2026-10-09",
+  "endpoint": "/v5/place/text",
+  "results": [
+    {
+      "langCode": "zh",
+      "httpStatus": 200,
+      "status": "0",
+      "infocode": "10012",
+      "info": "INSUFFICIENT_PRIVILEGES",
+      "pois": []
+    },
+    {
+      "langCode": "en",
+      "httpStatus": 200,
+      "status": "0",
+      "infocode": "10012",
+      "info": "INSUFFICIENT_PRIVILEGES",
+      "pois": []
+    }
+  ]
+}

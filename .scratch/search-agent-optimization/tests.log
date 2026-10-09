@@ -1,0 +1,75 @@
+✔ different complete house numbers stay separate even nearby (124.834958ms)
+✔ house-number prefixes do not match larger numbers (80.721958ms)
+✔ a matching house number accepts additional entrance wording (75.601833ms)
+✔ a conflicting source position prevents the same address from merging (73.966667ms)
+✔ a matching name does not override a different road (71.871041ms)
+✔ a named road conflict stays separate when one house number is missing (68.816792ms)
+✔ a road-name suffix is not the same road (70.419292ms)
+✔ a house-number letter is part of the complete number (78.797334ms)
+✔ concurrent stations share canonical facilities while retaining their independent walking routes and old detail IDs (91.944208ms)
+✔ a completed station refreshes its canonical identity and facilities after another station associates the POI (11.665375ms)
+✔ saved standalone IDs still resolve after persisted associations are loaded (5.561583ms)
+✔ itinerary HTTP parsing preserves repeated places, time notes and explicit needs for confirmation (36.556833ms)
+✔ invalid AI output is repaired once, while excess stops are retained for editing (11.206292ms)
+✔ unverified places or preference evidence fall back with original itinerary intact (10.008ms)
+✔ negative preference is an editable proposal and never silently inherits the current preference (6.545ms)
+✔ the shared AI deadline falls back even when an external provider ignores cancellation (19.961958ms)
+✔ candidate analysis changes facility grouping with supplied evidence and retains source negatives and real routes (19.607625ms)
+✔ rate limiting has no SDK retries and leaves the parse input editable (6.7855ms)
+✔ contradictory source statements stay unknown with a conflict explanation after AI enrichment (8.411542ms)
+✔ ambiguous matching can select only a recalled local record and preserve its facility data (7.685042ms)
+✔ candidate analysis rejects a foreign candidate ID after one repair and retains usable results (7.298583ms)
+✔ candidate analysis rejects an unknown basis field after one repair and retains usable results (4.6825ms)
+✔ candidate analysis rejects a missing basis field value after one repair and retains usable results (4.522584ms)
+✔ candidate analysis rejects a zero facility count after one repair and retains usable results (4.932917ms)
+✔ candidate analysis rejects model-provided route numbers after one repair and retains usable results (4.15975ms)
+✔ an unreturned match ID cannot attach unrelated local facility records (11.090625ms)
+✔ cached analysis preserves query versions and a language change receives its own explanation (9.05ms)
+✔ a rejected field reference can be repaired using its exact bounded feedback and previous JSON (6.364083ms)
+✔ repair feedback distinguishes an absent candidate field from a protected source fact (11.564458ms)
+✔ a second invalid answer still falls back after concrete repair feedback (6.20375ms)
+✔ repair context is bounded and rejected output stays quoted outside instructions and logs (11.351417ms)
+✔ the initial output and its repair still share one analysis deadline (49.218875ms)
+✔ itinerary notes retain surrounding source text when the model omits a relative-time phrase (4.057208ms)
+✔ itinerary source context preserves different times in one sentence without attributing or inventing notes (4.514833ms)
+✔ itinerary source context preserves a date before several visits without attributing or inventing notes (5.8845ms)
+✔ itinerary source context preserves a remark applying to several visits without attributing or inventing notes (4.264625ms)
+✔ itinerary source context preserves Chinese dates with repeated visits without attributing or inventing notes (4.832375ms)
+✔ itinerary source context preserves a date on a separate line between visits without attributing or inventing notes (4.353ms)
+✔ itinerary source context preserves punctuation within verified names and abbreviations without attributing or inventing notes (4.399667ms)
+✔ itinerary source context preserves meaningful symbols around a place list without attributing or inventing notes (4.116833ms)
+✔ itinerary source context preserves uncertainty punctuation without attributing or inventing notes (4.866875ms)
+✔ itinerary source context preserves the entire 2000-character source without attributing or inventing notes (4.9625ms)
+✔ a pure itinerary place list has no synthesized note: City Gallery (4.209917ms)
+✔ a pure itinerary place list has no synthesized note: City Gallery, Riverside Park, City Gallery (4.967291ms)
+✔ a pure itinerary place list has no synthesized note: City Gallery → Riverside Park;
+City Gallery。 (3.368542ms)
+✔ a pure itinerary place list has no synthesized note: Gallery; Annex / St. Mary's Park (3.033042ms)
+✔ source context does not create places or change a supported preference proposal (8.5075ms)
+✔ the model cannot set the software-owned source-context label (5.758833ms)
+✔ HTTP search reads nested route cost and distinguishes malformed routes from explicit empty paths (2078.163125ms)
+✔ provider filtering keeps the next raw page reachable through public search pagination (33.454667ms)
+✔ fully filtered raw pages do not hide a later valid candidate or bypass the page bound (29.234167ms)
+✔ manual pages continue past 60 without losing candidates, while a repeated batch does not advance (100.346667ms)
+✔ terminal partial results stay fixed until explicit retry, retaining previously successful routes (9.119875ms)
+✔ a bounded batch stops waiting for an unresolved provider and returns a terminal null route (84.855917ms)
+✔ empty discovery differs from provider failure (9.58825ms)
+{"event":"http_request","requestId":"d9c95923-1551-4110-9356-68770e4364dc","method":"GET","route":"/places/search","status":200,"durationMs":3}
+{"event":"http_request","requestId":"dbcb20d0-67f8-4736-931d-0ff3e31ea9a7","method":"POST","route":"/toilets/search","status":200,"durationMs":12}
+{"event":"http_request","requestId":"d9c4f8ad-53d0-4ddd-b16c-78a420c7d53f","method":"GET","route":"/toilets/:id","status":200,"durationMs":0}
+{"event":"http_request","requestId":"ee6be909-765c-4062-be73-a0968d296356","method":"POST","route":"/toilets/search","status":200,"durationMs":0}
+✔ a selected real-provider place yields a deduplicated local match, true walking values and explicit route failure (45.195084ms)
+{"event":"http_request","requestId":"e9cf42d5-3b21-4fa9-814f-71098c2506a6","method":"POST","route":"/toilets/search","status":422,"durationMs":1,"errorCode":"OUTSIDE_BEIJING"}
+{"event":"http_request","requestId":"2f80fa70-ed2d-4a8c-901b-ac6a82e7b005","method":"POST","route":"/toilets/search","status":400,"durationMs":0,"errorCode":"INVALID_INPUT"}
+✔ out-of-Beijing and malformed origins return distinct public errors (6.914458ms)
+{"event":"http_request","requestId":"0796602e-9d9d-424a-ac97-aa8ade757225","method":"GET","route":"/toilets/:id","status":200,"durationMs":0}
+✔ current imported facilities and closure state survive an older location cache (3.43275ms)
+✔ a public error shares its request ID with a log that omits request contents (3.92925ms)
+ℹ tests 59
+ℹ suites 0
+ℹ pass 59
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3560.745834
